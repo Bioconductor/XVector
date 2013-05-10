@@ -2,7 +2,7 @@
  XVector C interface: typedefs and defines
  -----------------------------------------
 
-   The XVector C interface is splitted in 2 files:
+   The XVector C interface is split in 2 files:
      1. XVector_defines.h (this file): contains the typedefs and defines
         of the interface.
      2. XVector_interface.h (in this directory): contains the prototypes
