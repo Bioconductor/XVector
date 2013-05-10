@@ -3,7 +3,7 @@
 #define CALLMETHOD_DEF(fun, numArgs) {#fun, (DL_FUNC) &fun, numArgs}
 
 #define REGISTER_CCALLABLE(fun) \
-	R_RegisterCCallable("IRanges", #fun, (DL_FUNC) &fun)
+	R_RegisterCCallable("XVector", #fun, (DL_FUNC) &fun)
 
 static const R_CallMethodDef callMethods[] = {
 
@@ -97,7 +97,7 @@ static const R_CallMethodDef callMethods[] = {
 };
 
 
-void R_init_IRanges(DllInfo *info)
+void R_init_XVector(DllInfo *info)
 {
 	R_registerRoutines(info, NULL, callMethods, NULL, NULL);
 

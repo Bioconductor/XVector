@@ -61,7 +61,7 @@ setMethod("seqselect", "GroupedIRanges",
     {
         if (!is.null(end) || !is.null(width))
             start <- IRanges(start = start, end = end, width = width)
-        irInfo <- .bracket.Index(start, length(x), names(x), asRanges = TRUE)
+        irInfo <- IRanges:::.bracket.Index(start, length(x), names(x), asRanges = TRUE)
         if (!is.null(irInfo[["msg"]]))
             stop(irInfo[["msg"]])
         if (irInfo[["useIdx"]]) {
@@ -91,9 +91,9 @@ setMethod("c", "GroupedIRanges",
         if (!identical(recursive, FALSE))
             stop("\"c\" method for GroupedIRanges objects ",
                  "does not support the 'recursive' argument")
-        old_val <- disableValidity()
-        on.exit(disableValidity(old_val))
-        disableValidity(TRUE)
+        old_val <- IRanges:::disableValidity()
+        on.exit(IRanges:::disableValidity(old_val))
+        IRanges:::disableValidity(TRUE)
         ans <- callNextMethod(x, ..., recursive=FALSE)
         ans@group <-
             do.call(c, lapply(unname(list(x, ...)), function(arg) arg@group))
@@ -250,7 +250,7 @@ XVectorList.getElement <- function(x, i)
 setMethod("[[", "XVectorList",
     function(x, i, j, ..., exact=TRUE)
     {
-        i <- checkAndTranslateDbleBracketSubscript(x, i)
+        i <- IRanges:::checkAndTranslateDbleBracketSubscript(x, i)
         XVectorList.getElement(x, i)
     }
 )
@@ -265,7 +265,7 @@ setMethod("[", "XVectorList",
         if (missing(i)) 
             i <- seq_len(length(x))
         else
-            i <- normalizeSingleBracketSubscript(i, x)
+            i <- IRanges:::normalizeSingleBracketSubscript(i, x)
         x@ranges <- x@ranges[i]
         mcols(x) <- mcols(x)[i, , drop=FALSE]
         ## Drop unused pool elements.
@@ -323,9 +323,9 @@ setMethod("subseq", "XVectorList",
 ### It's easy to implement specific "c" methods for XVectorList subclasses.
 ### Typically they just need to do something like:
 ###
-###     old_val <- disableValidity()
-###     on.exit(disableValidity(old_val))
-###     disableValidity(TRUE)
+###     old_val <- IRanges:::disableValidity()
+###     on.exit(IRanges:::disableValidity(old_val))
+###     IRanges:::disableValidity(TRUE)
 ###     ans <- callNextMethod(x, ..., recursive=FALSE)
 ###     ...
 ###
@@ -433,7 +433,7 @@ setReplaceMethod("[", "XVectorList",
 setReplaceMethod("[[", "XVectorList",
     function(x, i, j, ..., value)
     {
-        i <- checkAndTranslateDbleBracketSubscript(x, i)
+        i <- IRanges:::checkAndTranslateDbleBracketSubscript(x, i)
         if (!is(value, elementType(x)))
             stop("supplied replacement value must be a ",
                  elementType(x), " object")

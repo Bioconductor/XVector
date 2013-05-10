@@ -93,7 +93,7 @@ setMethod("[", "XVector",
         if (missing(i))
             i <- seq_len(length(x))
         else
-            i <- normalizeSingleBracketSubscript(i, x)
+            i <- IRanges:::normalizeSingleBracketSubscript(i, x)
         new_shared <- SharedVector(class(x@shared), length=length(i))
         SharedVector.copy(new_shared, x@offset + i, src=x@shared)
         x@shared <- new_shared
@@ -114,24 +114,11 @@ setGeneric("subseq<-", signature="x",
     function(x, start=NA, end=NA, width=NA, value) standardGeneric("subseq<-")
 )
 
-### Returns an IRanges instance of length 1.
-### Not exported.
-solveSubseqSEW <- function(seq_length, start, end, width)
-{
-    solved_SEW <-
-      try(solveUserSEW(seq_length, start=start, end=end, width=width),
-          silent = TRUE)
-    if (inherits(solved_SEW, "try-error"))
-        stop("Invalid sequence coordinates.\n",
-             "  Please make sure the supplied 'start', 'end' and 'width' arguments\n",
-             "  are defining a region that is within the limits of the sequence.")
-    solved_SEW
-}
-
 setMethod("subseq", "XVector",
     function(x, start=NA, end=NA, width=NA)
     {
-        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
+        solved_SEW <- IRanges:::solveUserSEWForSingleSeq(length(x),
+                                                         start, end, width)
         x@offset <- x@offset + start(solved_SEW) - 1L
         x@length <- width(solved_SEW)
         mcols(x) <- window(mcols(x),
@@ -143,7 +130,8 @@ setMethod("subseq", "XVector",
 setReplaceMethod("subseq", "XVector",
     function(x, start=NA, end=NA, width=NA, value)
     {
-        solved_SEW <- solveSubseqSEW(length(x), start, end, width)
+        solved_SEW <- IRanges:::solveUserSEWForSingleSeq(length(x),
+                                                         start, end, width)
         if (!is.null(value)) {
             if (!is(value, class(x)))
                 stop("'value' must be a ", class(x), " object or NULL")
@@ -177,7 +165,8 @@ window.XVector <- function(x, start=NA, end=NA, width=NA,
         ans <- subseq(x, start=start, end=end, width=width)
         return(ans)
     }
-    solved_SEW <- solveWindowSEW(length(x), start, end, width)
+    solved_SEW <- IRanges:::solveUserSEWForSingleSeq(length(x),
+                                                     start, end, width)
     idx <- stats:::window.default(seq_len(length(x)),
                                   start=start(solved_SEW),
                                   end=end(solved_SEW),
@@ -209,7 +198,7 @@ setMethod("show", "XVector",
         lo <- length(object)
         cat(class(object), " of length ", lo, "\n", sep="")
         if (lo != 0L)
-            cat(" [1] ", toNumSnippet(object, getOption("width")-5), "\n", sep="")
+            cat(" [1] ", IRanges:::toNumSnippet(object, getOption("width")-5), "\n", sep="")
     }
 )
 

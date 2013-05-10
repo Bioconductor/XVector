@@ -45,7 +45,7 @@
 \S4method{slice}{numeric}(x, lower=-Inf, upper=Inf,
       includeLower=TRUE, includeUpper=TRUE, rangesOnly=FALSE)
 
-\S4method{slice}{double}(x, lower=-.Machine$double.xmax, upper=.Machine$double.xmax,
+\S4method{slice}{XDouble}(x, lower=-.Machine$double.xmax, upper=.Machine$double.xmax,
       includeLower=TRUE, includeUpper=TRUE, rangesOnly=FALSE)
 
 

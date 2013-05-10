@@ -1,5 +1,7 @@
 \name{reverse-methods}
 
+\alias{reverse-methods}
+
 \alias{reverse,SharedRaw-method}
 \alias{reverse,SharedVector_Pool-method}
 \alias{reverse,XVector-method}

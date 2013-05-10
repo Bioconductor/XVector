@@ -75,8 +75,8 @@
 }
 
 \seealso{
+  \link{view-summarization-methods},
   \link[IRanges]{Views-class},
-  \link[IRanges]{Views-utils},
   \link{XDouble-class},
   \link{XIntegerViews-class}
 }

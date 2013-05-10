@@ -62,7 +62,7 @@ XDoubleViews.show_vframe_line <- function(x, i, iW, startW, endW, widthW)
     width <- end - start + 1
     snippetWidth <- getOption("width") - 6 - iW - startW - endW - widthW
     if (width > 0 && lsx > 0 && start <= lsx && end >= 1) {
-        snippet <- toNumSnippet(subseq(subject(x),
+        snippet <- IRanges:::toNumSnippet(subseq(subject(x),
                                        start=max(min(start,lsx),1),
                                        end=max(min(end,lsx),1)),
                                 snippetWidth)
@@ -120,7 +120,7 @@ setMethod("show", "XDoubleViews",
         subject <- subject(object)
         lsub <- length(subject)
         cat("Views on a ", lsub, "-double ", class(subject), " subject", sep="")
-        cat("\nsubject: ", toNumSnippet(subject, getOption("width")-9), sep="")
+        cat("\nsubject: ", IRanges:::toNumSnippet(subject, getOption("width")-9), sep="")
         XDoubleViews.show_vframe(object)
     }
 )

@@ -72,8 +72,8 @@
 \author{P. Aboyoun}
 
 \seealso{
+  \link{view-summarization-methods},
   \link[IRanges]{Views-class},
-  \link[IRanges]{Views-utils},
   \link{XInteger-class},
   \link{XDoubleViews-class}
 }
