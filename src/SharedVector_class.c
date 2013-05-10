@@ -21,6 +21,22 @@ SEXP debug_SharedVector_class()
 
 
 /****************************************************************************
+ * --- .Call ENTRY POINT ---
+ * From R:
+ *   .Call("address_asSTRSXP", 6:4, PACKAGE="XVector")
+ *   .Call("address_asSTRSXP", new("externalptr"), PACKAGE="XVector")
+ */
+
+SEXP address_asSTRSXP(SEXP s)
+{
+        char buf[40]; /* should be enough, even for 128-bit addresses */
+
+        snprintf(buf, sizeof(buf), "%p", s);
+        return mkString(buf);
+}
+
+
+/****************************************************************************
  * Some .Call entry points for manipulating externalptr objects.
  */
 

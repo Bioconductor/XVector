@@ -206,6 +206,8 @@ void _vector_mcopy(
 
 SEXP debug_SharedVector_class();
 
+SEXP address_asSTRSXP(SEXP s);
+
 SEXP externalptr_new();
 
 SEXP externalptr_get_tag(SEXP x);
