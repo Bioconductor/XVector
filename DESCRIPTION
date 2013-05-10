@@ -1,0 +1,34 @@
+Package: XVector
+Title: Representation and manpulation of external sequences
+Description: Memory efficient S4 classes for storing sequences "externally"
+	(behind an R external pointer, or on disk).
+Version: 0.0.0
+Author: H. Pages and P. Aboyoun
+Maintainer: H. Pages <hpages@fhcrc.org>
+biocViews: Infrastructure, DataRepresentation
+Depends: R (>= 2.8.0), methods, BiocGenerics (>= 0.7.2), IRanges (>= 1.19.5)
+Imports: methods, BiocGenerics, IRanges
+LinkingTo: IRanges
+Suggests: Biostrings, drosophila2probe, RUnit
+License: Artistic-2.0
+Collate: SharedVector-class.R
+	SharedRaw-class.R
+	SharedInteger-class.R
+	SharedDouble-class.R
+	XVector-class.R
+	XRaw-class.R
+	XInteger-class.R
+	XDouble-class.R
+	XVectorList-class.R
+	XRawList-class.R
+	XRawList-comparison.R
+	XIntegerViews-class.R
+	XDoubleViews-class.R
+	OnDiskRaw-class.R
+	intra-range-methods.R
+	compact-methods.R
+	reverse-methods.R
+	view-summarization-methods.R
+	updateObject-methods.R
+	debug.R
+	zzz.R
