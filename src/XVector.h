@@ -665,7 +665,7 @@ SEXP XDouble_slice(
 );
 
 
-/* XIntegerViews_utils.c */
+/* view_summarization_methods.c */
 
 SEXP XIntegerViews_summary1(
 	SEXP x,
@@ -673,16 +673,13 @@ SEXP XIntegerViews_summary1(
 	SEXP method
 );
 
-SEXP XIntegerViews_summary2(
+SEXP XDoubleViews_summary1(
 	SEXP x,
 	SEXP na_rm,
 	SEXP method
 );
 
-
-/* XDoubleViews_utils.c */
-
-SEXP XDoubleViews_summary1(
+SEXP XIntegerViews_summary2(
 	SEXP x,
 	SEXP na_rm,
 	SEXP method

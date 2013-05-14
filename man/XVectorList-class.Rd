@@ -13,16 +13,19 @@
 \alias{show,GroupedIRanges-method}
 \alias{[,GroupedIRanges-method}
 \alias{seqselect,GroupedIRanges-method}
+\alias{window.GroupedIRanges}
 \alias{window,GroupedIRanges-method}
 \alias{c,GroupedIRanges-method}
 
 \alias{length,XVectorList-method}
 \alias{width,XVectorList-method}
+\alias{elementLengths,XVectorList-method}
 \alias{names,XVectorList-method}
 \alias{names<-,XVectorList-method}
 \alias{[[,XVectorList-method}
 \alias{[,XVectorList-method}
 \alias{seqselect,XVectorList-method}
+\alias{window.XVectorList}
 \alias{window,XVectorList-method}
 \alias{subseq,XVectorList-method}
 \alias{c,XVectorList-method}
@@ -30,6 +33,8 @@
 \alias{[[<-,XVectorList-method}
 
 \alias{endoapply,XVectorList-method}
+
+\alias{showAsCell,XVectorList-method}
 
 \alias{unlist_list_of_XVectorList}
 \alias{unsplit_list_of_XVectorList}

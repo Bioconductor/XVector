@@ -32,6 +32,7 @@
 \alias{SharedRaw_Pool}
 
 \alias{[[,SharedRaw_Pool-method}
+\alias{[[<-,SharedRaw_Pool-method}
 \alias{SharedRaw.readInts}
 \alias{SharedRaw.writeInts}
 \alias{SharedRaw.read}

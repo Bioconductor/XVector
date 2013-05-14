@@ -88,12 +88,10 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(XInteger_slice, 3),
 	CALLMETHOD_DEF(XDouble_slice, 5),
 
-/* XIntegerViews_utils.c */
+/* view_summarization_methods.c */
 	CALLMETHOD_DEF(XIntegerViews_summary1, 3),
-	CALLMETHOD_DEF(XIntegerViews_summary2, 3),
-
-/* XDoubleViews_utils.c */
 	CALLMETHOD_DEF(XDoubleViews_summary1, 3),
+	CALLMETHOD_DEF(XIntegerViews_summary2, 3),
 	CALLMETHOD_DEF(XDoubleViews_summary2, 3),
 
 	{NULL, NULL, 0}

@@ -5,13 +5,22 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### compare() and related methods.
+### compare()
 ###
 
 setMethod("compare", c("XRawList", "XRawList"),
     function(x, y)
         .Call2("XRawList_compare", x, y, PACKAGE="XVector")
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Element-wise (aka "parallel") comparison of 2 XRawList objects.
+###
+### We only need to implement "==" and "<=" methods. The other comparison
+### binary operators (!=, >=, <, >) will then work out-of-the-box on
+### XRawList objects thanks to the methods for Vector objects.
+###
 
 setMethod("==", c("XRawList", "XRawList"),
     function(e1, e2) compare(e1, e2) == 0L
@@ -23,7 +32,44 @@ setMethod("<=", c("XRawList", "XRawList"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Order and rank of the elements in an XRawList object.
+### match() and duplicated()
+###
+
+setMethod("match", c("XRawList", "XRawList"),
+    function(x, table, nomatch=NA_integer_, incomparables=NULL)
+    {
+        if (!is.numeric(nomatch) || length(nomatch) != 1L)
+            stop("'nomatch' must be a single integer value")
+        if (!is.integer(nomatch))
+            nomatch <- as.integer(nomatch)
+        if (!is.null(incomparables))
+            stop("\"match\" method for XRawList objects ",
+                 "only accepts 'incomparables=NULL'")
+        .Call2("XRawList_match_hash", x, table, nomatch, PACKAGE="XVector")
+    }
+)
+
+.selfmatchXRawList <- function(x)
+{
+    .Call2("XRawList_selfmatch_hash", x, PACKAGE="XVector")
+}
+
+.duplicated.XRawList <- function(x, incomparables=FALSE)
+{
+    if (!identical(incomparables, FALSE))
+        stop("\"duplicated\" method for XRawList objects ",
+             "only accepts 'incomparables=FALSE'")
+    sm <- .selfmatchXRawList(x)
+    sm != seq_len(length(sm))
+}
+### S3/S4 combo for duplicated.XRawList
+duplicated.XRawList <- function(x, incomparables=FALSE, ...)
+    .duplicated.XRawList(x, incomparables=incomparables, ...)
+setMethod("duplicated", "XRawList", duplicated.XRawList)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### order() and related methods
 ###
 
 setMethod("is.unsorted", "XRawList",
@@ -71,42 +117,4 @@ setMethod("rank", "XRawList",
         .Call2("XRawList_rank", x, ties.method, PACKAGE="XVector")
     }
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Matches between 2 XRawList objects, and self-matches within an XRawList
-### object.
-###
-
-setMethod("match", c("XRawList", "XRawList"),
-    function(x, table, nomatch=NA_integer_, incomparables=NULL)
-    {
-        if (!is.numeric(nomatch) || length(nomatch) != 1L)
-            stop("'nomatch' must be a single integer value")
-        if (!is.integer(nomatch))
-            nomatch <- as.integer(nomatch)
-        if (!is.null(incomparables))
-            stop("\"match\" method for XRawList objects ",
-                 "only accepts 'incomparables=NULL'")
-        .Call2("XRawList_match_hash", x, table, nomatch, PACKAGE="XVector")
-    }
-)
-
-.selfmatchXRawList <- function(x)
-{
-    .Call2("XRawList_selfmatch_hash", x, PACKAGE="XVector")
-}
-
-.duplicated.XRawList <- function(x, incomparables=FALSE)
-{
-    if (!identical(incomparables, FALSE))
-        stop("\"duplicated\" method for XRawList objects ",
-             "only accepts 'incomparables=FALSE'")
-    sm <- .selfmatchXRawList(x)
-    sm != seq_len(length(sm))
-}
-### S3/S4 combo for duplicated.XRawList
-duplicated.XRawList <- function(x, incomparables=FALSE, ...)
-    .duplicated.XRawList(x, incomparables=incomparables, ...)
-setMethod("duplicated", "XRawList", duplicated.XRawList)
 

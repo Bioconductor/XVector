@@ -21,7 +21,7 @@
 \description{
   The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, and \code{viewMeans}
   methods described here calculate respectively the minima, maxima, sums,
-  and means of the views of an \link{XIntegerViews} or \link{XDoubleViews}
+  and means of the views in an \link{XIntegerViews} or \link{XDoubleViews}
   object.
 }
 
