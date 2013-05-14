@@ -1,11 +1,6 @@
 \name{view-summarization-methods}
-\alias{view-summarization-methods}
 
-\alias{slice}
-\alias{slice,integer-method}
-\alias{slice,XInteger-method}
-\alias{slice,numeric-method}
-\alias{slice,XDouble-method}
+\alias{view-summarization-methods}
 
 \alias{viewMins,XIntegerViews-method}
 \alias{viewMins,XDoubleViews-method}
@@ -24,31 +19,13 @@
 \title{Summarize views on an XInteger or XDouble object}
 
 \description{
-  The \code{\link[IRanges]{slice}} methods for \link{XInteger} and
-  \link{XDouble} objects create views corresponding to the indices where
-  the data are within the specified bounds. The views are returned in a
-  \link{XIntegerViews} or \link{XDoubleViews} object.
-
-  The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, \code{viewMeans}
-  functions calculate the minima, maxima, sums, and means on views,
-  respectively.
+  The \code{viewMins}, \code{viewMaxs}, \code{viewSums}, and \code{viewMeans}
+  methods described here calculate respectively the minima, maxima, sums,
+  and means of the views of an \link{XIntegerViews} or \link{XDoubleViews}
+  object.
 }
 
 \usage{
-## "slice" methods:
-## ----------------
-
-\S4method{slice}{integer}(x, lower=-.Machine$integer.max, upper=.Machine$integer.max)
-
-\S4method{slice}{XInteger}(x, lower=-.Machine$integer.max, upper=.Machine$integer.max)
-
-\S4method{slice}{numeric}(x, lower=-Inf, upper=Inf,
-      includeLower=TRUE, includeUpper=TRUE, rangesOnly=FALSE)
-
-\S4method{slice}{XDouble}(x, lower=-.Machine$double.xmax, upper=.Machine$double.xmax,
-      includeLower=TRUE, includeUpper=TRUE, rangesOnly=FALSE)
-
-
 ## "viewMins" methods:
 ## -------------------
 
@@ -99,21 +76,7 @@
 
 \arguments{
   \item{x}{
-    An integer vector, or \link{XInteger} object, or numeric vector,
-    or \link{XDouble} object for \code{slice}.
-
-    An \link{XIntegerViews} or \link{XDoubleViews} object for any of the
-    \code{view*} functions.
-  }
-  \item{lower, upper}{
-    The lower and upper bounds for the slice.
-  }
-  \item{includeLower, includeUpper}{
-    Logical indicating whether or not the specified boundary is open or closed.
-  }
-  \item{rangesOnly}{
-    A logical indicating whether or not to drop the original data from the
-    output.
+    An \link{XIntegerViews} or \link{XDoubleViews} object.
   }
   \item{na.rm}{
     Logical indicating whether or not to include missing values in the results.
@@ -121,11 +84,7 @@
 }
 
 \value{
-  For \code{slice}: An \link{XIntegerViews} or \link{XDoubleViews} object
-  if \code{rangesOnly=FALSE}. An \link[IRanges]{IRanges} object if
-  \code{rangesOnly=TRUE}.
-
-  For the \code{view*} functions: A numeric vector of the length of \code{x}.
+  A numeric vector of the length of \code{x}.
 }
 
 \note{
@@ -138,15 +97,18 @@
 \author{P. Aboyoun}
 
 \seealso{
-  \link[IRanges]{view-summarization-methods},
-  \link{XInteger-class}, \link{XIntegerViews-class},
-  \link{XDouble-class}, \link{XDoubleViews-class}
+  \itemize{
+    \item \link{slice-methods} for slicing an \link{XInteger} or
+          \link{XDouble} object.
+
+    \item \link[IRanges]{view-summarization-methods} in the IRanges package
+          for the view summarization generics.
+
+    \item The \link{XIntegerViews} and \link{XDoubleViews} classes.
+  }
 }
 
 \examples{
-vec <- as.integer(c(19, 5, 0, 8, 5))
-slice(vec, lower=5, upper=8)
-
 set.seed(0)
 vec <- sample(24)
 vec_views <- slice(vec, lower=4, upper=16)

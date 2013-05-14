@@ -5,56 +5,6 @@
 
 #define R_INT_MIN	(1+INT_MIN)
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP XInteger_slice(SEXP x, SEXP lower, SEXP upper)
-{
-	cachedIntSeq X;
-	SEXP ans, start, width;
-	int i, ans_length;
-	const int *X_elt;
-	int *start_elt, *width_elt, lower_elt, upper_elt, curr_elt, prev_elt;
-
-	lower_elt = INTEGER(lower)[0];
-	upper_elt = INTEGER(upper)[0];
-
-	X = _cache_XInteger(x);
-	ans_length = 0;
-	prev_elt = 0;
-	for (i = 1, X_elt = X.seq; i <= X.length; i++, X_elt++) {
-		curr_elt = (*X_elt >= lower_elt) && (*X_elt <= upper_elt);
-		if (curr_elt && !prev_elt)
-			ans_length++;
-		prev_elt = curr_elt;
-	}
-
-	PROTECT(start = NEW_INTEGER(ans_length));
-	PROTECT(width = NEW_INTEGER(ans_length));
-	if (ans_length > 0) {
-		start_elt = INTEGER(start) - 1;
-		width_elt = INTEGER(width) - 1;
-		prev_elt = 0;
-		for (i = 1, X_elt = X.seq; i <= X.length; i++, X_elt++) {
-			curr_elt = (*X_elt >= lower_elt) && (*X_elt <= upper_elt);
-			if (curr_elt) {
-				if (prev_elt)
-					*width_elt += 1;
-				else {
-					start_elt++;
-					width_elt++;
-					*start_elt = i;
-					*width_elt = 1;
-				}
-			}
-			prev_elt = curr_elt;
-		}
-	}
-	PROTECT(ans = new_IRanges("IRanges", start, width, R_NilValue));
-	UNPROTECT(3);
-	return ans;
-}
-
 
 /****************************************************************************
  * Low-level operations on cachedIntSeq structures (sequences of ints).

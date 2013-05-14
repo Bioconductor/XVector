@@ -648,13 +648,24 @@ SEXP XRawList_selfmatch_hash(
 );
 
 
-/* XIntegerViews_utils.c */
+/* slice_methods.c */
 
 SEXP XInteger_slice(
 	SEXP x,
 	SEXP lower,
 	SEXP upper
 );
+
+SEXP XDouble_slice(
+	SEXP x,
+	SEXP lower,
+	SEXP upper,
+	SEXP include_lower,
+	SEXP include_upper
+);
+
+
+/* XIntegerViews_utils.c */
 
 SEXP XIntegerViews_summary1(
 	SEXP x,
@@ -670,14 +681,6 @@ SEXP XIntegerViews_summary2(
 
 
 /* XDoubleViews_utils.c */
-
-SEXP XDouble_slice(
-	SEXP x,
-	SEXP lower,
-	SEXP upper,
-	SEXP include_lower,
-	SEXP include_upper
-);
 
 SEXP XDoubleViews_summary1(
 	SEXP x,
