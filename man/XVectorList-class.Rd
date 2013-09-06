@@ -29,7 +29,6 @@
 \alias{window,XVectorList-method}
 \alias{subseq,XVectorList-method}
 \alias{c,XVectorList-method}
-\alias{[<-,XVectorList-method}
 \alias{[[<-,XVectorList-method}
 
 \alias{endoapply,XVectorList-method}

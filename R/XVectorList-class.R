@@ -250,7 +250,7 @@ XVectorList.getElement <- function(x, i)
 setMethod("[[", "XVectorList",
     function(x, i, j, ..., exact=TRUE)
     {
-        i <- IRanges:::checkAndTranslateDbleBracketSubscript(x, i)
+        i <- IRanges:::normalizeDoubleBracketSubscript(i, x)
         XVectorList.getElement(x, i)
     }
 )
@@ -418,22 +418,10 @@ setMethod("c", "XVectorList",
 ### Replacement methods.
 ###
 
-setReplaceMethod("[", "XVectorList",
-    function(x, i, j,..., value)
-    {
-        ans <- c(x, value)
-        idx <- seq_len(length(x))
-        idx[i] <- length(x) + seq_len(length(value))
-        ans <- ans[idx]
-        names(ans) <- names(x)
-        ans
-    }
-)
-
 setReplaceMethod("[[", "XVectorList",
     function(x, i, j, ..., value)
     {
-        i <- IRanges:::checkAndTranslateDbleBracketSubscript(x, i)
+        i <- IRanges:::normalizeDoubleBracketSubscript(i, x)
         if (!is(value, elementType(x)))
             stop("supplied replacement value must be a ",
                  elementType(x), " object")
