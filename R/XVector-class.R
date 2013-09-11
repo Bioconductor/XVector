@@ -83,17 +83,10 @@ setMethod("c", "XVector",
 ### Subsetting.
 ###
 
-### Always behaves like an endomorphism (i.e. ignores the 'drop' argument and
-### behaves like if it was actually set to FALSE).
-setMethod("[", "XVector",
-    function(x, i, j, ..., drop=TRUE)
+setMethod(IRanges:::extractROWS, "XVector",
+    function(x, i)
     {
-        if (!missing(j) || length(list(...)) > 0)
-            stop("invalid subsetting")
-        if (missing(i))
-            i <- seq_len(length(x))
-        else
-            i <- IRanges:::normalizeSingleBracketSubscript(i, x)
+        i <- IRanges:::extractROWS(seq_len(NROW(x)), i)
         new_shared <- SharedVector(class(x@shared), length=length(i))
         SharedVector.copy(new_shared, x@offset + i, src=x@shared)
         x@shared <- new_shared
@@ -139,21 +132,6 @@ setReplaceMethod("subseq", "XVector",
         c(subseq(x, end=start(solved_SEW)-1L),
           value,
           subseq(x, start=end(solved_SEW)+1L))
-    }
-)
-
-### Works as long as c() works on objects of the same class as 'x'.
-setMethod("seqselect", "XVector",
-    function(x, start=NULL, end=NULL, width=NULL)
-    {
-        xv <- Views(x, start=start, end=end, width=width)
-        if (length(xv) == 0L)
-            return(x[NULL])
-        ## TODO: Implement a fast "unlist" method for Views objects.
-        ans <- do.call(c, as.list(xv))  # i.e. 'unlist(xv)'
-        mcols(ans) <- seqselect(mcols(x),
-                                start=start, end=end, width=width)
-        ans
     }
 )
 

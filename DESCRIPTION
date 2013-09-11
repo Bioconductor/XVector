@@ -6,7 +6,7 @@ Version: 0.1.1
 Author: H. Pages and P. Aboyoun
 Maintainer: H. Pages <hpages@fhcrc.org>
 biocViews: Infrastructure, DataRepresentation
-Depends: R (>= 2.8.0), methods, BiocGenerics (>= 0.7.2), IRanges (>= 1.19.30)
+Depends: R (>= 2.8.0), methods, BiocGenerics (>= 0.7.2), IRanges (>= 1.19.33)
 Imports: methods, BiocGenerics, IRanges
 LinkingTo: IRanges
 Suggests: Biostrings, drosophila2probe, RUnit

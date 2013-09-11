@@ -62,7 +62,6 @@ exportMethods(
 
     rev, reverse,
     window,
-    seqselect,
     endoapply,
 
     Views,

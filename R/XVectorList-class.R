@@ -47,28 +47,12 @@ setMethod("show", "GroupedIRanges",
     function(object) show(as.data.frame(object))
 )
 
-setMethod("[", "GroupedIRanges",
-    function(x, i, j, ... , drop=TRUE)
+setMethod(IRanges:::extractROWS, "GroupedIRanges",
+    function(x, i)
     {
+        i <- IRanges:::extractROWS(seq_len(NROW(x)), i)
+        x@group <- IRanges:::extractROWS(x@group, i)
         x <- callNextMethod()
-        x@group <- x@group[i]
-        x
-    }
-)
-
-setMethod("seqselect", "GroupedIRanges",
-    function(x, start=NULL, end=NULL, width=NULL)
-    {
-        if (!is.null(end) || !is.null(width))
-            start <- IRanges(start = start, end = end, width = width)
-        irInfo <- IRanges:::.bracket.Index(start, length(x), names(x), asRanges = TRUE)
-        if (!is.null(irInfo[["msg"]]))
-            stop(irInfo[["msg"]])
-        if (irInfo[["useIdx"]]) {
-            ir <- irInfo[["idx"]]
-            slot(x, "group", check=FALSE) <- callGeneric(x@group, ir)
-            x <- callNextMethod(x, ir)
-        }
         x
     }
 )
@@ -128,7 +112,7 @@ setReplaceMethod("names", "XVectorList",
 ### clean and tidy.
 ###
 
-### Used in "[" method for XVectorList objects.
+### Used in "extractROWS" method for XVectorList objects.
 .dropUnusedPoolElts <- function(x)
 {
     pool_len <- length(x@pool)
@@ -233,6 +217,7 @@ XVectorList <- function(classname, length=0L)
 ### XVectorList subsetting.
 ###
 
+### TODO: Make this a "getListElement" method for XVectorList objects.
 XVectorList.getElement <- function(x, i)
 {
     ans_class <- elementType(x)
@@ -255,31 +240,14 @@ setMethod("[[", "XVectorList",
     }
 )
 
-### Always behaves like an endomorphism (i.e. ignores the 'drop' argument and
-### behaves like if it was actually set to FALSE).
-setMethod("[", "XVectorList",
-    function(x, i, j, ... , drop=TRUE)
+setMethod(IRanges:::extractROWS, "XVectorList",
+    function(x, i)
     {
-        if (!missing(j) || length(list(...)) > 0L)
-            stop("invalid subsetting")
-        if (missing(i)) 
-            i <- seq_len(length(x))
-        else
-            i <- IRanges:::normalizeSingleBracketSubscript(i, x)
-        x@ranges <- x@ranges[i]
-        mcols(x) <- mcols(x)[i, , drop=FALSE]
+        i <- IRanges:::extractROWS(seq_len(NROW(x)), i)
+        x@ranges <- IRanges:::extractROWS(x@ranges, i)
+        x@elementMetadata <- IRanges:::extractROWS(x@elementMetadata, i)
         ## Drop unused pool elements.
         x <- .dropUnusedPoolElts(x)
-        x
-    }
-)
-
-setMethod("seqselect", "XVectorList",
-    function(x, start=NULL, end=NULL, width=NULL)
-    {
-        x@ranges <- seqselect(x@ranges, start=start, end=end, width=width)
-        mcols(x) <- seqselect(mcols(x),
-                                        start=start, end=end, width=width)
         x
     }
 )

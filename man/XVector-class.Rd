@@ -13,7 +13,6 @@
 \alias{subseq<-}
 \alias{subseq,XVector-method}
 \alias{subseq<-,XVector-method}
-\alias{seqselect,XVector-method}
 \alias{window.XVector}
 \alias{window,XVector-method}
 \alias{as.numeric,XVector-method}
