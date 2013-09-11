@@ -15,6 +15,11 @@ setClass("OnDiskRaw",
     )
 )
 
+### OnDiskRaw API:
+###   - length()
+###   - loadSequence()
+###   - readXRaw()
+
 setMethod("length", "OnDiskRaw", function(x) x@length)
 
 ### Load a sequence of values from an on-disk raw vector, and return them in
@@ -22,6 +27,7 @@ setMethod("length", "OnDiskRaw", function(x) x@length)
 ### "loadSequence" method.
 setGeneric("loadSequence", signature="x",
     function(x, offset=0, length=NA) standardGeneric("loadSequence")
+    #function(x, offset=0, length=NA, cyclic) standardGeneric("loadSequence")
 )
 
 
