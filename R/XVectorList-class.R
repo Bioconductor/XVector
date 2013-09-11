@@ -50,7 +50,7 @@ setMethod("show", "GroupedIRanges",
 setMethod(IRanges:::extractROWS, "GroupedIRanges",
     function(x, i)
     {
-        i <- IRanges:::extractROWS(seq_len(NROW(x)), i)
+        i <- IRanges:::extractROWS(setNames(seq_along(x), names(x)), i)
         x@group <- IRanges:::extractROWS(x@group, i)
         x <- callNextMethod()
         x
@@ -243,7 +243,7 @@ setMethod("[[", "XVectorList",
 setMethod(IRanges:::extractROWS, "XVectorList",
     function(x, i)
     {
-        i <- IRanges:::extractROWS(seq_len(NROW(x)), i)
+        i <- IRanges:::extractROWS(setNames(seq_along(x), names(x)), i)
         x@ranges <- IRanges:::extractROWS(x@ranges, i)
         x@elementMetadata <- IRanges:::extractROWS(x@elementMetadata, i)
         ## Drop unused pool elements.

@@ -86,7 +86,7 @@ setMethod("c", "XVector",
 setMethod(IRanges:::extractROWS, "XVector",
     function(x, i)
     {
-        i <- IRanges:::extractROWS(seq_len(NROW(x)), i)
+        i <- IRanges:::extractROWS(setNames(seq_along(x), names(x)), i)
         new_shared <- SharedVector(class(x@shared), length=length(i))
         SharedVector.copy(new_shared, x@offset + i, src=x@shared)
         x@shared <- new_shared
