@@ -52,8 +52,7 @@ setMethod(IRanges:::extractROWS, "GroupedIRanges",
     {
         i <- IRanges:::extractROWS(setNames(seq_along(x), names(x)), i)
         x@group <- IRanges:::extractROWS(x@group, i)
-        x <- callNextMethod()
-        x
+        callNextMethod()
     }
 )
 
@@ -61,11 +60,9 @@ setMethod(IRanges:::extractROWS, "GroupedIRanges",
 window.GroupedIRanges <- function(x, start=NA, end=NA, width=NA,
                                      frequency=NULL, delta=NULL, ...)
 {
-    x <- callNextMethod(x, start=start, end=end, width=width,
-                           frequency=frequency, delta=delta)
     x@group <- window(x@group, start=start, end=end, width=width,
                                frequency=frequency, delta=delta, ...)
-    x
+    callNextMethod()
 }
 setMethod("window", "GroupedIRanges", window.GroupedIRanges)
 
