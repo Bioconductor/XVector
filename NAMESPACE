@@ -20,19 +20,11 @@ exportClasses(
 
 S3method(duplicated, XRawList)
 
-S3method(window, XVector)
-S3method(window, GroupedIRanges)
-S3method(window, XVectorList)
-
 ### We also export them thru the export() directive so that (a) they can be
 ### called directly, (b) tab-completion on the name of the generic shows them,
 ### and (c) methods() doesn't asterisk them.
 export(
-    duplicated.XRawList,
-
-    window.XVector,
-    window.GroupedIRanges,
-    window.XVectorList
+    duplicated.XRawList
 )
 
 
@@ -61,7 +53,6 @@ exportMethods(
     order, rank, is.unsorted,
 
     rev, reverse,
-    window,
     endoapply,
 
     Views,

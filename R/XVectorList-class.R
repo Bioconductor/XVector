@@ -56,16 +56,6 @@ setMethod(IRanges:::extractROWS, "GroupedIRanges",
     }
 )
 
-### S3/S4 combo for window.GroupedIRanges
-window.GroupedIRanges <- function(x, start=NA, end=NA, width=NA,
-                                     frequency=NULL, delta=NULL, ...)
-{
-    x@group <- window(x@group, start=start, end=end, width=width,
-                               frequency=frequency, delta=delta, ...)
-    callNextMethod()
-}
-setMethod("window", "GroupedIRanges", window.GroupedIRanges)
-
 setMethod("c", "GroupedIRanges",
     function(x, ..., recursive=FALSE)
     {
@@ -248,18 +238,6 @@ setMethod(IRanges:::extractROWS, "XVectorList",
         x
     }
 )
-
-### S3/S4 combo for window.XVectorList
-window.XVectorList <- function(x, start=NA, end=NA, width=NA,
-                                  frequency=NULL, delta=NULL, ...)
-{
-    x@ranges <- window(x@ranges, start=start, end=end, width=width,
-                                 frequency=frequency, delta=delta, ...)
-    mcols(x) <- window(mcols(x), start=start, end=end, width=width,
-                                 frequency=frequency, delta=delta, ...)
-    x
-}
-setMethod("window", "XVectorList", window.XVectorList)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

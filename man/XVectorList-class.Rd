@@ -12,8 +12,6 @@
 \alias{as.data.frame,GroupedIRanges-method}
 \alias{show,GroupedIRanges-method}
 \alias{[,GroupedIRanges-method}
-\alias{window.GroupedIRanges}
-\alias{window,GroupedIRanges-method}
 \alias{c,GroupedIRanges-method}
 
 \alias{length,XVectorList-method}
@@ -23,8 +21,6 @@
 \alias{names<-,XVectorList-method}
 \alias{[[,XVectorList-method}
 \alias{[,XVectorList-method}
-\alias{window.XVectorList}
-\alias{window,XVectorList-method}
 \alias{subseq,XVectorList-method}
 \alias{c,XVectorList-method}
 \alias{[[<-,XVectorList-method}

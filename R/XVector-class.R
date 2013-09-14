@@ -114,8 +114,7 @@ setMethod("subseq", "XVector",
                                                          start, end, width)
         x@offset <- x@offset + start(solved_SEW) - 1L
         x@length <- width(solved_SEW)
-        mcols(x) <- window(mcols(x),
-                           start=start, end=end, width=width)
+        mcols(x) <- IRanges:::extractROWS(mcols(x), solved_SEW)
         x
     }
 )
@@ -134,26 +133,6 @@ setReplaceMethod("subseq", "XVector",
           subseq(x, start=end(solved_SEW)+1L))
     }
 )
-
-### S3/S4 combo for window.XVector
-window.XVector <- function(x, start=NA, end=NA, width=NA,
-                              frequency=NULL, delta=NULL, ...)
-{
-    if (is.null(frequency) && is.null(delta)) {
-        ans <- subseq(x, start=start, end=end, width=width)
-        return(ans)
-    }
-    solved_SEW <- IRanges:::solveUserSEWForSingleSeq(length(x),
-                                                     start, end, width)
-    idx <- stats:::window.default(seq_len(length(x)),
-                                  start=start(solved_SEW),
-                                  end=end(solved_SEW),
-                                  frequency=frequency,
-                                  deltat=delta, ...)
-    attributes(idx) <- NULL
-    x[idx]
-}
-setMethod("window", "XVector", window.XVector)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
