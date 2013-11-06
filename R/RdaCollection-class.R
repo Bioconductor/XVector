@@ -19,11 +19,26 @@ setClass("RdaCollection",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### 2 low-level helper functions.
+### 3 low-level helper functions.
 ###
 
+.check_objname <- function(objname, x_objnames)
+{
+    not_ok_idx <- which(!(objname %in% x_objnames))
+    nb_not_ok_idx <- length(not_ok_idx)
+    if (nb_not_ok_idx != 0L) {
+        if (nb_not_ok_idx == 1L) {
+            what <- "name"
+        } else {
+            what <- "names"
+        }
+        objnames_in_1string <- paste(objname[not_ok_idx], collapse=", ")
+        stop("invalid object ", what, ": ", objnames_in_1string)
+    }
+}
+
 ### Recycles shortest arg along longest.
-.get_rda_filepath <- function(dirpath, objname)
+.get_rdapath <- function(dirpath, objname)
 {
     if (length(objname) == 0L)
         return(character(0))
@@ -33,7 +48,7 @@ setClass("RdaCollection",
 
 .load_serialized_object <- function(dirpath, objname)
 {
-    filepath <- .get_rda_filepath(dirpath, objname)
+    filepath <- .get_rdapath(dirpath, objname)
     tempenv <- new.env(parent=emptyenv())
     loaded_names <- load(filepath, envir=tempenv)
     if (length(loaded_names) != 1L)
@@ -55,6 +70,21 @@ setMethod("length", "RdaCollection", function(x) length(x@objnames))
 
 setMethod("names", "RdaCollection", function(x) x@objnames)
 
+setGeneric("rdaPath", signature="x",
+    function(x, objname) standardGeneric("rdaPath")
+)
+
+### Vectorized with respect to 'objname'.
+setMethod("rdaPath", "RdaCollection",
+    function(x, objname)
+    {
+        if (!is.character(objname))
+            stop("'objname' must be a character vector")
+        .check_objname(objname, names(x))
+        .get_rdapath(x@dirpath, objname)
+    }
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
@@ -73,11 +103,11 @@ setMethod("names", "RdaCollection", function(x) x@objnames)
 
     ## Only checks that all the rda files exist. Does NOT try to check
     ## their content (that would be too expensive).
-    filepaths <- .get_rda_filepath(x_dirpath, x_objnames)
+    filepaths <- .get_rdapath(x_dirpath, x_objnames)
     missing_idx <- which(!file.exists(filepaths))
-    nmissing <- length(missing_idx)
-    if (nmissing != 0L) {
-        if (nmissing == 1L) {
+    nb_missing <- length(missing_idx)
+    if (nb_missing != 0L) {
+        if (nb_missing == 1L) {
             what <- "file"
             is_or_are <- "is"
         } else {
@@ -123,9 +153,7 @@ setMethod("[[", "RdaCollection",
             stop("attempt to select less than one element")
         if (length(i) > 1L)
             stop("attempt to select more than one element")
-        idx <- match(i, names(x))
-        if (is.na(idx))
-            stop("invalid object name: ", i)
+        .check_objname(i, names(x))
         .load_serialized_object(x@dirpath, i)
     }
 )

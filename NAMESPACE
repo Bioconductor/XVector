@@ -93,6 +93,9 @@ export(
     ## XVector-class.R:
     subseq, "subseq<-",
 
+    ## RdaCollection-class.R:
+    rdaPath,
+
     ## compact-methods.R:
     xvcopy, compact,
 
@@ -103,6 +106,7 @@ export(
 ### Exactly the same list as above.
 exportMethods(
     subseq, "subseq<-",
+    rdaPath,
     xvcopy, compact,
     reverse
 )
