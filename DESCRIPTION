@@ -2,7 +2,7 @@ Package: XVector
 Title: Representation and manpulation of external sequences
 Description: Memory efficient S4 classes for storing sequences "externally"
 	(behind an R external pointer, or on disk).
-Version: 0.3.0
+Version: 0.3.1
 Author: H. Pages and P. Aboyoun
 Maintainer: H. Pages <hpages@fhcrc.org>
 biocViews: Infrastructure, DataRepresentation
@@ -25,6 +25,7 @@ Collate: SharedVector-class.R
 	XIntegerViews-class.R
 	XDoubleViews-class.R
 	OnDiskRaw-class.R
+	RdaCollection-class.R
 	intra-range-methods.R
 	compact-methods.R
 	reverse-methods.R
