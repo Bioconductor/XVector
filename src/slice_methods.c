@@ -6,7 +6,7 @@
  */
 SEXP XInteger_slice(SEXP x, SEXP lower, SEXP upper)
 {
-	cachedIntSeq X;
+	Ints_holder X;
 	SEXP ans, start, width;
 	int i, ans_length;
 	const int *X_elt;
@@ -15,7 +15,7 @@ SEXP XInteger_slice(SEXP x, SEXP lower, SEXP upper)
 	lower_elt = INTEGER(lower)[0];
 	upper_elt = INTEGER(upper)[0];
 
-	X = _cache_XInteger(x);
+	X = _hold_XInteger(x);
 	ans_length = 0;
 	prev_elt = 0;
 	for (i = 1, X_elt = X.seq; i <= X.length; i++, X_elt++) {
@@ -73,7 +73,7 @@ static int le(double x, double y) {
 SEXP XDouble_slice(SEXP x, SEXP lower, SEXP upper,
 		SEXP include_lower, SEXP include_upper)
 {
-	cachedDoubleSeq X;
+	Doubles_holder X;
 	SEXP ans, start, width;
 	int i, ans_length;
 	const double *X_elt;
@@ -88,7 +88,7 @@ SEXP XDouble_slice(SEXP x, SEXP lower, SEXP upper,
 	lower_elt = REAL(lower)[0];
 	upper_elt = REAL(upper)[0];
 
-	X = _cache_XDouble(x);
+	X = _hold_XDouble(x);
 	ans_length = 0;
 	prev_elt = 0;
 	for (i = 1, X_elt = X.seq; i <= X.length; i++, X_elt++) {

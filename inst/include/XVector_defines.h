@@ -21,22 +21,22 @@
 #include <R_ext/Rdynload.h>
 
 
-typedef struct cached_charseq {
+typedef struct chars_holder {
 	const char *seq;
 	int length;
-} cachedCharSeq;
+} Chars_holder;
 
-typedef struct cached_intseq {
+typedef struct ints_holder {
 	const int *seq;
 	int length;
-} cachedIntSeq;
+} Ints_holder;
 
-typedef struct cached_doubleseq {
+typedef struct doubles_holder {
 	const double *seq;
 	int length;
-} cachedDoubleSeq;
+} Doubles_holder;
 
-typedef struct cached_xvectorlist {
+typedef struct x_holdervectorlist {
 	const char *classname;
 	const char *element_type;
 	SEXP xp_list;
@@ -44,6 +44,6 @@ typedef struct cached_xvectorlist {
 	const int *start;
 	const int *width;
 	const int *group;
-} cachedXVectorList;
+} XVectorList_holder;
 
 #endif

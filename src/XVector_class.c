@@ -60,43 +60,43 @@ SEXP _get_XVector_tag(SEXP x)
  * Caching.
  */
 
-cachedCharSeq _cache_XRaw(SEXP x)
+Chars_holder _hold_XRaw(SEXP x)
 {
-	cachedCharSeq cached_x;
+	Chars_holder x_holder;
 	SEXP tag;
 	int offset;
 
 	tag = _get_XVector_tag(x);
 	offset = _get_XVector_offset(x);
-	cached_x.seq = (const char *) (RAW(tag) + offset);
-	cached_x.length = _get_XVector_length(x);
-	return cached_x;
+	x_holder.seq = (const char *) (RAW(tag) + offset);
+	x_holder.length = _get_XVector_length(x);
+	return x_holder;
 }
 
-cachedIntSeq _cache_XInteger(SEXP x)
+Ints_holder _hold_XInteger(SEXP x)
 {
-	cachedIntSeq cached_x;
+	Ints_holder x_holder;
 	SEXP tag;
 	int offset;
 
 	tag = _get_XVector_tag(x);
 	offset = _get_XVector_offset(x);
-	cached_x.seq = (const int *) (INTEGER(tag) + offset);
-	cached_x.length = _get_XVector_length(x);
-	return cached_x;
+	x_holder.seq = (const int *) (INTEGER(tag) + offset);
+	x_holder.length = _get_XVector_length(x);
+	return x_holder;
 }
 
-cachedDoubleSeq _cache_XDouble(SEXP x)
+Doubles_holder _hold_XDouble(SEXP x)
 {
-	cachedDoubleSeq cached_x;
+	Doubles_holder x_holder;
 	SEXP tag;
 	int offset;
 
 	tag = _get_XVector_tag(x);
 	offset = _get_XVector_offset(x);
-	cached_x.seq = (const double *) (REAL(tag) + offset);
-	cached_x.length = _get_XVector_length(x);
-	return cached_x;
+	x_holder.seq = (const double *) (REAL(tag) + offset);
+	x_holder.length = _get_XVector_length(x);
+	return x_holder;
 }
 
 

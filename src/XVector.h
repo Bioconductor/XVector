@@ -459,11 +459,11 @@ int _get_XVector_length(SEXP x);
 
 SEXP _get_XVector_tag(SEXP x);
 
-cachedCharSeq _cache_XRaw(SEXP x);
+Chars_holder _hold_XRaw(SEXP x);
 
-cachedIntSeq _cache_XInteger(SEXP x);
+Ints_holder _hold_XInteger(SEXP x);
 
-cachedDoubleSeq _cache_XDouble(SEXP x);
+Doubles_holder _hold_XDouble(SEXP x);
 
 SEXP _new_XVector(
 	const char *classname,
@@ -517,22 +517,22 @@ SEXP _get_XVectorList_width(SEXP x);
 
 SEXP _get_XVectorList_names(SEXP x);
 
-cachedXVectorList _cache_XVectorList(SEXP x);
+XVectorList_holder _hold_XVectorList(SEXP x);
 
-int _get_cachedXVectorList_length(const cachedXVectorList *cached_x);
+int _get_length_from_XVectorList_holder(const XVectorList_holder *x_holder);
 
-cachedCharSeq _get_cachedXRawList_elt(
-	const cachedXVectorList *cached_x,
+Chars_holder _get_elt_from_XRawList_holder(
+	const XVectorList_holder *x_holder,
 	int i
 );
 
-cachedIntSeq _get_cachedXIntegerList_elt(
-	const cachedXVectorList *cached_x,
+Ints_holder _get_elt_from_XIntegerList_holder(
+	const XVectorList_holder *x_holder,
 	int i
 );
 
-cachedDoubleSeq _get_cachedXDoubleList_elt(
-	const cachedXVectorList *cached_x,
+Doubles_holder _get_elt_from_XDoubleList_holder(
+	const XVectorList_holder *x_holder,
 	int i
 );
 

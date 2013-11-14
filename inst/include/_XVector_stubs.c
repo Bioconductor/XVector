@@ -129,17 +129,17 @@ DEFINE_CCALLABLE_STUB(SEXP, get_XVector_tag,
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(cachedCharSeq, cache_XRaw,
+DEFINE_CCALLABLE_STUB(Chars_holder, hold_XRaw,
 	(SEXP x),
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(cachedIntSeq, cache_XInteger,
+DEFINE_CCALLABLE_STUB(Ints_holder, hold_XInteger,
 	(SEXP x),
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(cachedDoubleSeq, cache_XDouble,
+DEFINE_CCALLABLE_STUB(Doubles_holder, hold_XDouble,
 	(SEXP x),
 	(     x)
 )
@@ -198,29 +198,29 @@ DEFINE_CCALLABLE_STUB(SEXP, get_XVectorList_names,
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(cachedXVectorList, cache_XVectorList,
+DEFINE_CCALLABLE_STUB(XVectorList_holder, hold_XVectorList,
 	(SEXP x),
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(int, get_cachedXVectorList_length,
-	(const cachedXVectorList *cached_x),
-	(                         cached_x)
+DEFINE_CCALLABLE_STUB(int, get_length_from_XVectorList_holder,
+	(const XVectorList_holder *x_holder),
+	(                          x_holder)
 )
 
-DEFINE_CCALLABLE_STUB(cachedCharSeq, get_cachedXRawList_elt,
-	(const cachedXVectorList *cached_x, int i),
-	(                         cached_x,     i)
+DEFINE_CCALLABLE_STUB(Chars_holder, get_elt_from_XRawList_holder,
+	(const XVectorList_holder *x_holder, int i),
+	(                          x_holder,     i)
 )
 
-DEFINE_CCALLABLE_STUB(cachedIntSeq, get_cachedXIntegerList_elt,
-	(const cachedXVectorList *cached_x, int i),
-	(                         cached_x,     i)
+DEFINE_CCALLABLE_STUB(Ints_holder, get_elt_from_XIntegerList_holder,
+	(const XVectorList_holder *x_holder, int i),
+	(                          x_holder,     i)
 )
 
-DEFINE_CCALLABLE_STUB(cachedDoubleSeq, get_cachedXDoubleList_elt,
-	(const cachedXVectorList *cached_x, int i),
-	(                         cached_x,     i)
+DEFINE_CCALLABLE_STUB(Doubles_holder, get_elt_from_XDoubleList_holder,
+	(const XVectorList_holder *x_holder, int i),
+	(                          x_holder,     i)
 )
 
 DEFINE_NOVALUE_CCALLABLE_STUB(set_XVectorList_names,

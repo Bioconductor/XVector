@@ -99,64 +99,64 @@ static SEXP new_GroupedIRanges(SEXP ranges, SEXP group)
  * C-level abstract getters.
  */
 
-cachedXVectorList _cache_XVectorList(SEXP x)
+XVectorList_holder _hold_XVectorList(SEXP x)
 {
-	cachedXVectorList cached_x;
+	XVectorList_holder x_holder;
 	SEXP ranges;
 
-	cached_x.classname = get_classname(x);
-	cached_x.element_type = get_List_elementType(x);
-	cached_x.xp_list = _get_SharedVector_Pool_xp_list(
+	x_holder.classname = get_classname(x);
+	x_holder.element_type = get_List_elementType(x);
+	x_holder.xp_list = _get_SharedVector_Pool_xp_list(
 				_get_XVectorList_pool(x));
 	ranges = _get_XVectorList_ranges(x);
-	cached_x.length = get_IRanges_length(ranges);
-	cached_x.start = INTEGER(get_IRanges_start(ranges));
-	cached_x.width = INTEGER(get_IRanges_width(ranges));
-	cached_x.group = INTEGER(get_GroupedIRanges_group(ranges));
-	return cached_x;
+	x_holder.length = get_IRanges_length(ranges);
+	x_holder.start = INTEGER(get_IRanges_start(ranges));
+	x_holder.width = INTEGER(get_IRanges_width(ranges));
+	x_holder.group = INTEGER(get_GroupedIRanges_group(ranges));
+	return x_holder;
 }
 
-int _get_cachedXVectorList_length(const cachedXVectorList *cached_x)
+int _get_length_from_XVectorList_holder(const XVectorList_holder *x_holder)
 {
-	return cached_x->length;
+	return x_holder->length;
 }
 
-cachedCharSeq _get_cachedXRawList_elt(const cachedXVectorList *cached_x,
+Chars_holder _get_elt_from_XRawList_holder(const XVectorList_holder *x_holder,
 		int i)
 {
 	SEXP tag;
-	cachedCharSeq charseq;
+	Chars_holder charseq;
 
-	tag = R_ExternalPtrTag(VECTOR_ELT(cached_x->xp_list,
-					  cached_x->group[i] - 1));
-	charseq.seq = (const char *) RAW(tag) + cached_x->start[i] - 1;
-	charseq.length = cached_x->width[i];
+	tag = R_ExternalPtrTag(VECTOR_ELT(x_holder->xp_list,
+					  x_holder->group[i] - 1));
+	charseq.seq = (const char *) RAW(tag) + x_holder->start[i] - 1;
+	charseq.length = x_holder->width[i];
 	return charseq;
 }
 
-cachedIntSeq _get_cachedXIntegerList_elt(const cachedXVectorList *cached_x,
+Ints_holder _get_elt_from_XIntegerList_holder(const XVectorList_holder *x_holder,
 		int i)
 {
 	SEXP tag;
-	cachedIntSeq intseq;
+	Ints_holder intseq;
 
-	tag = R_ExternalPtrTag(VECTOR_ELT(cached_x->xp_list,
-					  cached_x->group[i] - 1));
-	intseq.seq = INTEGER(tag) + cached_x->start[i] - 1;
-	intseq.length = cached_x->width[i];
+	tag = R_ExternalPtrTag(VECTOR_ELT(x_holder->xp_list,
+					  x_holder->group[i] - 1));
+	intseq.seq = INTEGER(tag) + x_holder->start[i] - 1;
+	intseq.length = x_holder->width[i];
 	return intseq;
 }
 
-cachedDoubleSeq _get_cachedXDoubleList_elt(const cachedXVectorList *cached_x,
+Doubles_holder _get_elt_from_XDoubleList_holder(const XVectorList_holder *x_holder,
 		int i)
 {
 	SEXP tag;
-	cachedDoubleSeq doubleseq;
+	Doubles_holder doubleseq;
 
-	tag = R_ExternalPtrTag(VECTOR_ELT(cached_x->xp_list,
-					  cached_x->group[i] - 1));
-	doubleseq.seq = REAL(tag) + cached_x->start[i] - 1;
-	doubleseq.length = cached_x->width[i];
+	tag = R_ExternalPtrTag(VECTOR_ELT(x_holder->xp_list,
+					  x_holder->group[i] - 1));
+	doubleseq.seq = REAL(tag) + x_holder->start[i] - 1;
+	doubleseq.length = x_holder->width[i];
 	return doubleseq;
 }
 
@@ -427,8 +427,8 @@ SEXP _new_XRawList_from_CharAEAE(const char *classname,
 	int lkup_length, nelt, i;
 	SEXP ans_width, ans;
 	const CharAE *src;
-	cachedXVectorList cached_ans;
-	cachedCharSeq dest;
+	XVectorList_holder ans_holder;
+	Chars_holder dest;
 
 	if (lkup == R_NilValue) {
 		lkup0 = NULL;
@@ -443,10 +443,10 @@ SEXP _new_XRawList_from_CharAEAE(const char *classname,
 		INTEGER(ans_width)[i] = CharAE_get_nelt(src);
 	}
 	PROTECT(ans = _alloc_XRawList(classname, element_type, ans_width));
-	cached_ans = _cache_XVectorList(ans);
+	ans_holder = _hold_XVectorList(ans);
 	for (i = 0; i < nelt; i++) {
 		src = char_aeae->elts + i;
-		dest = _get_cachedXRawList_elt(&cached_ans, i);
+		dest = _get_elt_from_XRawList_holder(&ans_holder, i);
 		/* dest.seq is a const char * so we need to cast it to
 		   char * before we can write to it */
 		_Ocopy_bytes_to_i1i2_with_lkup(0, dest.length - 1,
@@ -465,8 +465,8 @@ SEXP _new_XIntegerList_from_IntAEAE(const char *classname,
 	int nelt, i;
 	SEXP ans_width, ans;
 	const IntAE *src;
-	cachedXVectorList cached_ans;
-	cachedIntSeq dest;
+	XVectorList_holder ans_holder;
+	Ints_holder dest;
 
 	nelt = IntAEAE_get_nelt(int_aeae);
 	PROTECT(ans_width = NEW_INTEGER(nelt));
@@ -475,10 +475,10 @@ SEXP _new_XIntegerList_from_IntAEAE(const char *classname,
 		INTEGER(ans_width)[i] = IntAE_get_nelt(src);
 	}
 	PROTECT(ans = _alloc_XIntegerList(classname, element_type, ans_width));
-	cached_ans = _cache_XVectorList(ans);
+	ans_holder = _hold_XVectorList(ans);
 	for (i = 0; i < nelt; i++) {
 		src = int_aeae->elts + i;
-		dest = _get_cachedXIntegerList_elt(&cached_ans, i);
+		dest = _get_elt_from_XIntegerList_holder(&ans_holder, i);
 		/* dest.seq is a const int * so we need to cast it to
 		   char * before we can write to it */
 		_Ocopy_byteblocks_to_i1i2(0, dest.length - 1,
