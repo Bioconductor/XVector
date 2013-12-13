@@ -37,31 +37,31 @@ exportMethods(
     length, 
     names, "names<-",
     "[", "[<-", "[[", "[[<-",
-    elementLengths,
-
+    rev,
     as.vector, as.integer, as.numeric, as.raw, as.data.frame,
     toString,
     coerce,
     c,
     show,
-    showAsCell,
-
-    width,
-
-    compare,
     "==", "!=", "<=",
     duplicated, match,
     order, rank, is.unsorted,
+    relist,
+    updateObject,
 
-    rev, reverse,
+    ## Generics defined in IRanges:
     endoapply,
-
+    showAsCell,
+    elementLengths,
+    width,
+    compare,
     Views,
-    slice,
     viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs,
-
-    updateObject
+    splitAsListReturnedClass,
+    extractList,
+    reverse,
+    slice
 )
 
 

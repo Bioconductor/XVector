@@ -201,6 +201,46 @@ XVectorList <- function(classname, length=0L)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Going from XVector to XVectorList with extractList() and family.
+###
+
+setMethod("splitAsListReturnedClass", "XVector",
+    function(x) paste0(class(x), "List")
+)
+
+### Does not copy the sequence data!
+setMethod("relist", c("XVector", "PartitioningByEnd"),
+    function(flesh, skeleton)
+    {
+        ans_class <- splitAsListReturnedClass(flesh)
+        skeleton_len <- length(skeleton)
+        if (skeleton_len == 0L) {
+            flesh_len2 <- 0L
+        } else {
+            flesh_len2 <- end(skeleton)[skeleton_len]
+        }
+        if (length(flesh) != flesh_len2)
+            stop("shape of 'skeleton' is not compatible with 'length(flesh)'")
+        unsafe.newXVectorList1(ans_class, flesh, as(skeleton, "IRanges"))
+    }
+)
+
+### Does not copy the sequence data!
+setMethod("extractList", c("XVector", "Ranges"),
+    function(x, i)
+    {
+        ans_class <- splitAsListReturnedClass(x)
+        if (length(i) != 0L) {
+            x_len <- length(x)
+            if (min(start(i)) < 1L || max(end(i)) > x_len)
+                stop("some ranges are out of bounds")
+        }
+        unsafe.newXVectorList1(ans_class, x, as(i, "IRanges"))
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### XVectorList subsetting.
 ###
 
