@@ -135,21 +135,6 @@ setReplaceMethod("names", "XVectorList",
 ### XVectorList constructors.
 ###
 
-### Takes one XVector object ('xvector') and an IRanges object defining
-### 1-based ranges on 'xvector' (conceptually equivalent to defining views
-### on subject 'xvector').
-unsafe.newXVectorList1 <- function(classname, xvector, ranges)
-{
-    if (is.null(classname))
-        classname <- paste(class(xvector), "List", sep="")
-    ans_pool <- as(xvector@shared, "SharedVector_Pool")
-    ranges_group <- rep.int(1L, length(ranges))
-    ans_ranges <- new2("GroupedIRanges",
-                       shift(ranges, xvector@offset),
-                       group=ranges_group, check=FALSE)
-    new2(classname, pool=ans_pool, ranges=ans_ranges, check=FALSE)
-}
-
 new_XVectorList_from_list_of_XVector <- function(classname, x)
 {
     if (!is.list(x))
@@ -208,11 +193,26 @@ setMethod("splitAsListReturnedClass", "XVector",
     function(x) paste0(class(x), "List")
 )
 
+### Takes one XVector object ('x') and a Ranges object ('i') defining
+### 1-based ranges on 'x' (conceptually equivalent to defining views on
+### subject 'x').
+.unsafe.extractList <- function(x, i)
+{
+    ans_class <- splitAsListReturnedClass(x)
+    ans_pool <- as(x@shared, "SharedVector_Pool")
+    if (!is(i, "IRanges"))
+        i <- as(i, "IRanges")
+    ranges_group <- rep.int(1L, length(i))
+    ans_ranges <- new2("GroupedIRanges",
+                       shift(i, x@offset),
+                       group=ranges_group, check=FALSE)
+    new2(ans_class, pool=ans_pool, ranges=ans_ranges, check=FALSE)
+}
+
 ### Does not copy the sequence data!
 setMethod("relist", c("XVector", "PartitioningByEnd"),
     function(flesh, skeleton)
     {
-        ans_class <- splitAsListReturnedClass(flesh)
         skeleton_len <- length(skeleton)
         if (skeleton_len == 0L) {
             flesh_len2 <- 0L
@@ -221,7 +221,7 @@ setMethod("relist", c("XVector", "PartitioningByEnd"),
         }
         if (length(flesh) != flesh_len2)
             stop("shape of 'skeleton' is not compatible with 'length(flesh)'")
-        unsafe.newXVectorList1(ans_class, flesh, as(skeleton, "IRanges"))
+        .unsafe.extractList(flesh, skeleton)
     }
 )
 
@@ -229,13 +229,10 @@ setMethod("relist", c("XVector", "PartitioningByEnd"),
 setMethod("extractList", c("XVector", "Ranges"),
     function(x, i)
     {
-        ans_class <- splitAsListReturnedClass(x)
-        if (length(i) != 0L) {
-            x_len <- length(x)
-            if (min(start(i)) < 1L || max(end(i)) > x_len)
-                stop("some ranges are out of bounds")
-        }
-        unsafe.newXVectorList1(ans_class, x, as(i, "IRanges"))
+        if (length(i) != 0L
+         && (min(start(i)) < 1L || max(end(i)) > length(x)))
+            stop("some ranges are out of bounds")
+        .unsafe.extractList(x, i)
     }
 )
 
