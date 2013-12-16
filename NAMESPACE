@@ -58,6 +58,7 @@ exportMethods(
     Views,
     viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs,
+    relistReturnedClass,
     splitAsListReturnedClass,
     extractList,
     reverse,
