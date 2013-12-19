@@ -223,6 +223,11 @@ DEFINE_CCALLABLE_STUB(Doubles_holder, get_elt_from_XDoubleList_holder,
 	(                          x_holder,     i)
 )
 
+DEFINE_CCALLABLE_STUB(XVectorList_holder, get_linear_subset_from_XVectorList_holder,
+	(const XVectorList_holder *x_holder, int offset, int length),
+	(                          x_holder,     offset,     length)
+)
+
 DEFINE_NOVALUE_CCALLABLE_STUB(set_XVectorList_names,
 	(SEXP x, SEXP names),
 	(     x,      names)

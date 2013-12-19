@@ -206,6 +206,12 @@ Doubles_holder get_elt_from_XDoubleList_holder(
 	int i
 );
 
+XVectorList_holder get_linear_subset_from_XVectorList_holder(
+	const XVectorList_holder *x_holder,
+	int offset,
+	int length
+);
+
 void set_XVectorList_names(SEXP x, SEXP names);
 
 SEXP new_XRawList_from_tags(

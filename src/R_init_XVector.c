@@ -145,6 +145,7 @@ void R_init_XVector(DllInfo *info)
 	REGISTER_CCALLABLE(_get_elt_from_XRawList_holder);
 	REGISTER_CCALLABLE(_get_elt_from_XIntegerList_holder);
 	REGISTER_CCALLABLE(_get_elt_from_XDoubleList_holder);
+	REGISTER_CCALLABLE(_get_linear_subset_from_XVectorList_holder);
 	REGISTER_CCALLABLE(_set_XVectorList_names);
 	REGISTER_CCALLABLE(_new_XRawList_from_tags);
 	REGISTER_CCALLABLE(_new_XIntegerList_from_tags);

@@ -36,7 +36,7 @@ typedef struct doubles_holder {
 	int length;
 } Doubles_holder;
 
-typedef struct x_holdervectorlist {
+typedef struct xvector_list_holder {
 	const char *classname;
 	const char *element_type;
 	SEXP xp_list;

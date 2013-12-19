@@ -160,6 +160,19 @@ Doubles_holder _get_elt_from_XDoubleList_holder(const XVectorList_holder *x_hold
 	return doubleseq;
 }
 
+XVectorList_holder _get_linear_subset_from_XVectorList_holder(
+		const XVectorList_holder *x_holder, int offset, int length)
+{
+	XVectorList_holder y_holder;
+
+	y_holder = *x_holder;
+	y_holder.length = length;
+	y_holder.start += offset;
+	y_holder.width += offset;
+	y_holder.group += offset;
+	return y_holder;
+}
+
 
 /****************************************************************************
  * C-level slot setters.
