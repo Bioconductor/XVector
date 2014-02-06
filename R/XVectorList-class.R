@@ -189,12 +189,12 @@ XVectorList <- function(classname, length=0L)
 ### Going from XVector to XVectorList with extractList() and family.
 ###
 
-setMethod("relistReturnedClass", "XVector",
+setMethod("relistToClass", "XVector",
     function(x) paste0(class(x), "List")
 )
 
 setMethod("splitAsListReturnedClass", "XVector",
-    function(x) {.Deprecated("relistReturnedClass"); paste0(class(x), "List")}
+    function(x) {.Deprecated("relistToClass"); paste0(class(x), "List")}
 )
 
 ### Takes one XVector object ('x') and a Ranges object ('i') defining
@@ -202,7 +202,7 @@ setMethod("splitAsListReturnedClass", "XVector",
 ### subject 'x').
 .unsafe.extractList <- function(x, i)
 {
-    ans_class <- relistReturnedClass(x)
+    ans_class <- relistToClass(x)
     ans_pool <- as(x@shared, "SharedVector_Pool")
     if (!is(i, "IRanges"))
         i <- as(i, "IRanges")
