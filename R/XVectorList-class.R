@@ -194,7 +194,7 @@ setMethod("relistToClass", "XVector",
 )
 
 setMethod("splitAsListReturnedClass", "XVector",
-    function(x) {.Deprecated("relistToClass"); paste0(class(x), "List")}
+    function(x) {.Defunct("relistToClass"); paste0(class(x), "List")}
 )
 
 ### Takes one XVector object ('x') and a Ranges object ('i') defining
