@@ -17,28 +17,28 @@
     ## the 3 XVector concrete subclasses defined in this package.
 
     ## 3 SharedVector concrete subclasses:
-    IRanges:::setDefaultSlotValue("SharedRaw", "xp",
+    S4Vectors:::setDefaultSlotValue("SharedRaw", "xp",
                         newExternalptrWithTag(raw(0L)),
                         where=asNamespace(pkgname))
 
-    IRanges:::setDefaultSlotValue("SharedInteger", "xp",
+    S4Vectors:::setDefaultSlotValue("SharedInteger", "xp",
                         newExternalptrWithTag(integer(0L)),
                         where=asNamespace(pkgname))
 
-    IRanges:::setDefaultSlotValue("SharedDouble", "xp",
+    S4Vectors:::setDefaultSlotValue("SharedDouble", "xp",
                         newExternalptrWithTag(double(0L)),
                         where=asNamespace(pkgname))
 
     ## 3 XVector concrete subclasses:
-    IRanges:::setDefaultSlotValue("XRaw", "shared",
+    S4Vectors:::setDefaultSlotValue("XRaw", "shared",
                         new("SharedRaw"),  # is fixed now!
                         where=asNamespace(pkgname))
 
-    IRanges:::setDefaultSlotValue("XInteger", "shared",
+    S4Vectors:::setDefaultSlotValue("XInteger", "shared",
                         new("SharedInteger"),  # is fixed now!
                         where=asNamespace(pkgname))
 
-    IRanges:::setDefaultSlotValue("XDouble", "shared",
+    S4Vectors:::setDefaultSlotValue("XDouble", "shared",
                         new("SharedDouble"),  # is fixed now!
                         where=asNamespace(pkgname))
 }

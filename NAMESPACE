@@ -2,6 +2,7 @@ useDynLib(XVector)
 
 import(methods)
 import(BiocGenerics)
+import(S4Vectors)
 import(IRanges)
 
 exportClasses(

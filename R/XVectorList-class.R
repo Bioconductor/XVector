@@ -62,9 +62,9 @@ setMethod("c", "GroupedIRanges",
         if (!identical(recursive, FALSE))
             stop("\"c\" method for GroupedIRanges objects ",
                  "does not support the 'recursive' argument")
-        old_val <- IRanges:::disableValidity()
-        on.exit(IRanges:::disableValidity(old_val))
-        IRanges:::disableValidity(TRUE)
+        old_val <- S4Vectors:::disableValidity()
+        on.exit(S4Vectors:::disableValidity(old_val))
+        S4Vectors:::disableValidity(TRUE)
         ans <- callNextMethod(x, ..., recursive=FALSE)
         ans@group <-
             do.call(c, lapply(unname(list(x, ...)), function(arg) arg@group))
@@ -307,9 +307,9 @@ setMethod("subseq", "XVectorList",
 ### It's easy to implement specific "c" methods for XVectorList subclasses.
 ### Typically they just need to do something like:
 ###
-###     old_val <- IRanges:::disableValidity()
-###     on.exit(IRanges:::disableValidity(old_val))
-###     IRanges:::disableValidity(TRUE)
+###     old_val <- S4Vectors:::disableValidity()
+###     on.exit(S4Vectors:::disableValidity(old_val))
+###     S4Vectors:::disableValidity(TRUE)
 ###     ans <- callNextMethod(x, ..., recursive=FALSE)
 ###     ...
 ###

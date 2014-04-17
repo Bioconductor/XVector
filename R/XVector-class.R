@@ -155,7 +155,7 @@ setMethod("show", "XVector",
         lo <- length(object)
         cat(class(object), " of length ", lo, "\n", sep="")
         if (lo != 0L)
-            cat(" [1] ", IRanges:::toNumSnippet(object, getOption("width")-5), "\n", sep="")
+            cat(" [1] ", S4Vectors:::toNumSnippet(object, getOption("width")-5), "\n", sep="")
     }
 )
 
