@@ -47,11 +47,11 @@ setMethod("show", "GroupedIRanges",
     function(object) show(as.data.frame(object))
 )
 
-setMethod(IRanges:::extractROWS, "GroupedIRanges",
+setMethod("extractROWS", "GroupedIRanges",
     function(x, i)
     {
-        i <- IRanges:::extractROWS(setNames(seq_along(x), names(x)), i)
-        x@group <- IRanges:::extractROWS(x@group, i)
+        i <- extractROWS(setNames(seq_along(x), names(x)), i)
+        x@group <- extractROWS(x@group, i)
         callNextMethod()
     }
 )
@@ -263,17 +263,17 @@ XVectorList.getElement <- function(x, i)
 setMethod("[[", "XVectorList",
     function(x, i, j, ..., exact=TRUE)
     {
-        i <- IRanges:::normalizeDoubleBracketSubscript(i, x)
+        i <- normalizeDoubleBracketSubscript(i, x)
         XVectorList.getElement(x, i)
     }
 )
 
-setMethod(IRanges:::extractROWS, "XVectorList",
+setMethod("extractROWS", "XVectorList",
     function(x, i)
     {
-        i <- IRanges:::extractROWS(setNames(seq_along(x), names(x)), i)
-        x@ranges <- IRanges:::extractROWS(x@ranges, i)
-        x@elementMetadata <- IRanges:::extractROWS(x@elementMetadata, i)
+        i <- extractROWS(setNames(seq_along(x), names(x)), i)
+        x@ranges <- extractROWS(x@ranges, i)
+        x@elementMetadata <- extractROWS(x@elementMetadata, i)
         ## Drop unused pool elements.
         x <- .dropUnusedPoolElts(x)
         x
@@ -405,7 +405,7 @@ setMethod("c", "XVectorList",
 setReplaceMethod("[[", "XVectorList",
     function(x, i, j, ..., value)
     {
-        i <- IRanges:::normalizeDoubleBracketSubscript(i, x)
+        i <- normalizeDoubleBracketSubscript(i, x)
         if (!is(value, elementType(x)))
             stop("supplied replacement value must be a ",
                  elementType(x), " object")
