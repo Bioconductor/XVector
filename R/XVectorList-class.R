@@ -371,7 +371,7 @@ unlist_list_of_XVectorList <- function(Class, x,
     ans_ranges@group <- ans_ranges@group + offsets
 
     ## Combine "mcols" slots.
-    ans_mcols <- do.call(IRanges:::rbind.mcols, x)
+    ans_mcols <- do.call(S4Vectors:::rbind.mcols, x)
 
     ## Make 'ans' and return it.
     ans <- new(Class, pool=ans_pool,

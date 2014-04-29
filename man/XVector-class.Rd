@@ -56,7 +56,7 @@
 
 \description{
   The XVector virtual class is a general container for storing
-  an "external vector". It inherits from the \link[IRanges]{Vector}
+  an "external vector". It inherits from the \link[S4Vectors]{Vector}
   class, which has a rich interface.
 
   The following classes derive directly from the XVector class:
@@ -128,7 +128,7 @@
 \author{H. Pages}
 
 \seealso{
-  \link[IRanges]{Vector-class},
+  \link[S4Vectors]{Vector-class},
   \link[Biostrings]{DNAString-class},
   \link{XVectorList-class},
   \link[IRanges]{Views-class},
