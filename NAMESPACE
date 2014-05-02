@@ -5,6 +5,11 @@ import(BiocGenerics)
 import(S4Vectors)
 import(IRanges)
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Export S4 classes
+###
+
 exportClasses(
     SharedVector, SharedVector_Pool,
     SharedRaw, SharedRaw_Pool,
