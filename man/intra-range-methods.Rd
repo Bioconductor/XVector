@@ -2,7 +2,10 @@
 
 \alias{intra-range-methods}
 
+\alias{narrow}
 \alias{narrow,XVectorList-method}
+
+\alias{threebands}
 \alias{threebands,XVectorList-method}
 
 
