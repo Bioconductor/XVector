@@ -45,7 +45,7 @@
 \seealso{
   \link{XVector-class},
   \link{XVectorList-class},
-  \code{\link[IRanges]{endoapply}},
+  \code{\link[S4Vectors]{endoapply}},
   \code{\link[base]{rev}}
 }
 
