@@ -144,6 +144,9 @@ setMethod("as.numeric", "XVector",
     function(x, ...) as.numeric(as.integer(x))
 )
 
+setAs("XVector", "Rle", function(from) {
+  Rle(as.vector(from))
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
