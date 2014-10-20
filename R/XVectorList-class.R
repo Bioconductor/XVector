@@ -193,10 +193,6 @@ setMethod("relistToClass", "XVector",
     function(x) paste0(class(x), "List")
 )
 
-setMethod("splitAsListReturnedClass", "XVector",
-    function(x) {.Defunct("relistToClass"); paste0(class(x), "List")}
-)
-
 ### Takes one XVector object ('x') and a Ranges object ('i') defining
 ### 1-based ranges on 'x' (conceptually equivalent to defining views on
 ### subject 'x').
