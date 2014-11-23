@@ -21,21 +21,6 @@
 #include <R_ext/Rdynload.h>
 
 
-typedef struct chars_holder {
-	const char *seq;
-	int length;
-} Chars_holder;
-
-typedef struct ints_holder {
-	const int *seq;
-	int length;
-} Ints_holder;
-
-typedef struct doubles_holder {
-	const double *seq;
-	int length;
-} Doubles_holder;
-
 typedef struct xvector_list_holder {
 	const char *classname;
 	const char *element_type;
