@@ -126,39 +126,39 @@ Chars_holder _get_elt_from_XRawList_holder(const XVectorList_holder *x_holder,
 		int i)
 {
 	SEXP tag;
-	Chars_holder charseq;
+	Chars_holder x_elt_holder;
 
 	tag = R_ExternalPtrTag(VECTOR_ELT(x_holder->xp_list,
 					  x_holder->group[i] - 1));
-	charseq.seq = (const char *) RAW(tag) + x_holder->start[i] - 1;
-	charseq.length = x_holder->width[i];
-	return charseq;
+	x_elt_holder.ptr = (const char *) RAW(tag) + x_holder->start[i] - 1;
+	x_elt_holder.length = x_holder->width[i];
+	return x_elt_holder;
 }
 
 Ints_holder _get_elt_from_XIntegerList_holder(const XVectorList_holder *x_holder,
 		int i)
 {
 	SEXP tag;
-	Ints_holder intseq;
+	Ints_holder x_elt_holder;
 
 	tag = R_ExternalPtrTag(VECTOR_ELT(x_holder->xp_list,
 					  x_holder->group[i] - 1));
-	intseq.seq = INTEGER(tag) + x_holder->start[i] - 1;
-	intseq.length = x_holder->width[i];
-	return intseq;
+	x_elt_holder.ptr = INTEGER(tag) + x_holder->start[i] - 1;
+	x_elt_holder.length = x_holder->width[i];
+	return x_elt_holder;
 }
 
 Doubles_holder _get_elt_from_XDoubleList_holder(const XVectorList_holder *x_holder,
 		int i)
 {
 	SEXP tag;
-	Doubles_holder doubleseq;
+	Doubles_holder x_elt_holder;
 
 	tag = R_ExternalPtrTag(VECTOR_ELT(x_holder->xp_list,
 					  x_holder->group[i] - 1));
-	doubleseq.seq = REAL(tag) + x_holder->start[i] - 1;
-	doubleseq.length = x_holder->width[i];
-	return doubleseq;
+	x_elt_holder.ptr = REAL(tag) + x_holder->start[i] - 1;
+	x_elt_holder.length = x_holder->width[i];
+	return x_elt_holder;
 }
 
 XVectorList_holder _get_linear_subset_from_XVectorList_holder(
@@ -461,10 +461,10 @@ SEXP _new_XRawList_from_CharAEAE(const char *classname,
 	for (i = 0; i < nelt; i++) {
 		src = char_aeae->elts + i;
 		dest = _get_elt_from_XRawList_holder(&ans_holder, i);
-		/* dest.seq is a const char * so we need to cast it to
+		/* dest.ptr is a const char * so we need to cast it to
 		   char * before we can write to it */
 		_Ocopy_bytes_to_i1i2_with_lkup(0, dest.length - 1,
-			(char *) dest.seq, dest.length,
+			(char *) dest.ptr, dest.length,
 			src->elts, CharAE_get_nelt(src),
 			lkup0, lkup_length);
 	}
@@ -493,10 +493,10 @@ SEXP _new_XIntegerList_from_IntAEAE(const char *classname,
 	for (i = 0; i < nelt; i++) {
 		src = int_aeae->elts + i;
 		dest = _get_elt_from_XIntegerList_holder(&ans_holder, i);
-		/* dest.seq is a const int * so we need to cast it to
+		/* dest.ptr is a const int * so we need to cast it to
 		   char * before we can write to it */
 		_Ocopy_byteblocks_to_i1i2(0, dest.length - 1,
-			(char *) dest.seq, dest.length,
+			(char *) dest.ptr, dest.length,
 			(const char *) src->elts, IntAE_get_nelt(src),
 			sizeof(int));
 	}

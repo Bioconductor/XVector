@@ -13,12 +13,12 @@
  */
 
 static int compar_Chars_holders(const Chars_holder *x1,
-				 const Chars_holder *x2)
+				const Chars_holder *x2)
 {
 	int n, ret;
 
 	n = x1->length < x2->length ? x1->length : x2->length;
-	ret = memcmp(x1->seq, x2->seq, n);
+	ret = memcmp(x1->ptr, x2->ptr, n);
 	if (ret != 0)
 		return ret;
 	ret = x1->length - x2->length;
@@ -30,7 +30,7 @@ static int equal_Chars_holders(const Chars_holder *x1,
 				const Chars_holder *x2)
 {
 	return x1->length == x2->length &&
-	       memcmp(x1->seq, x2->seq, x1->length) == 0;
+	       memcmp(x1->ptr, x2->ptr, x1->length) == 0;
 }
 
 
@@ -288,7 +288,7 @@ static int get_bucket_idx_for_Chars_holder(const struct htab *htab,
 	const int *buckets;
 	Chars_holder charseq2;
 
-	hval = djb2_hash((unsigned char *) charseq1->seq, charseq1->length);
+	hval = djb2_hash((unsigned char *) charseq1->ptr, charseq1->length);
 	bucket_idx = hval & htab->Mminus1;
 	buckets = htab->buckets;
 	while ((i2 = buckets[bucket_idx]) != NA_INTEGER) {

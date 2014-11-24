@@ -68,7 +68,7 @@ Chars_holder _hold_XRaw(SEXP x)
 
 	tag = _get_XVector_tag(x);
 	offset = _get_XVector_offset(x);
-	x_holder.seq = (const char *) (RAW(tag) + offset);
+	x_holder.ptr = (const char *) (RAW(tag) + offset);
 	x_holder.length = _get_XVector_length(x);
 	return x_holder;
 }
@@ -81,7 +81,7 @@ Ints_holder _hold_XInteger(SEXP x)
 
 	tag = _get_XVector_tag(x);
 	offset = _get_XVector_offset(x);
-	x_holder.seq = (const int *) (INTEGER(tag) + offset);
+	x_holder.ptr = (const int *) (INTEGER(tag) + offset);
 	x_holder.length = _get_XVector_length(x);
 	return x_holder;
 }
@@ -94,7 +94,7 @@ Doubles_holder _hold_XDouble(SEXP x)
 
 	tag = _get_XVector_tag(x);
 	offset = _get_XVector_offset(x);
-	x_holder.seq = (const double *) (REAL(tag) + offset);
+	x_holder.ptr = (const double *) (REAL(tag) + offset);
 	x_holder.length = _get_XVector_length(x);
 	return x_holder;
 }

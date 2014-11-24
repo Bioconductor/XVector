@@ -25,7 +25,7 @@ static Ints_holder get_view_from_Ints_holder(const Ints_holder *X,
 	}
 	if (view_width > (tmp = X->length - view_offset))
 		view_width = tmp;
-	X_view.seq = X->seq + view_offset;
+	X_view.ptr = X->ptr + view_offset;
 	X_view.length = view_width;
 	return X_view;
 }
@@ -44,7 +44,7 @@ static Doubles_holder get_view_from_Doubles_holder(const Doubles_holder *X,
 	}
 	if (view_width > (tmp = X->length - view_offset))
 		view_width = tmp;
-	X_view.seq = X->seq + view_offset;
+	X_view.ptr = X->ptr + view_offset;
 	X_view.length = view_width;
 	return X_view;
 }
@@ -63,7 +63,7 @@ static int get_min_from_Ints_holder(const Ints_holder *X, int narm)
 	xlen = X->length;
 	val = NA_INTEGER;
 	for (i = 0; i < xlen; i++) {
-		x = X->seq[i];
+		x = X->ptr[i];
 		if (x == NA_INTEGER) {
 			if (narm)
 				continue;
@@ -91,7 +91,7 @@ static double get_min_from_Doubles_holder(const Doubles_holder *X, int narm)
 	xlen = X->length;
 	val = R_PosInf;
 	for (i = 0; i < xlen; i++) {
-		x = X->seq[i];
+		x = X->ptr[i];
 		if (ISNAN(x)) { /* NA or NaN */
 			if (narm)
 				continue;
@@ -117,7 +117,7 @@ static int get_max_from_Ints_holder(const Ints_holder *X, int narm)
 	xlen = X->length;
 	val = NA_INTEGER;
 	for (i = 0; i < xlen; i++) {
-		x = X->seq[i];
+		x = X->ptr[i];
 		if (x == NA_INTEGER) {
 			if (narm)
 				continue;
@@ -145,7 +145,7 @@ static double get_max_from_Doubles_holder(const Doubles_holder *X, int narm)
 	xlen = X->length;
 	val = R_NegInf;
 	for (i = 0; i < xlen; i++) {
-		x = X->seq[i];
+		x = X->ptr[i];
 		if (ISNAN(x)) { /* NA or NaN */
 			if (narm)
 				continue;
@@ -164,7 +164,7 @@ static int get_sum_from_Ints_holder(const Ints_holder *X, int narm)
 	xlen = X->length;
 	val = 0;
 	for (i = 0; i < xlen; i++) {
-		x = X->seq[i];
+		x = X->ptr[i];
 		if (x == NA_INTEGER) {
 			if (narm)
 				continue;
@@ -193,7 +193,7 @@ static double get_sum_from_Doubles_holder(const Doubles_holder *X, int narm)
 	xlen = X->length;
 	val = 0.00;
 	for (i = 0; i < xlen; i++) {
-		x = X->seq[i];
+		x = X->ptr[i];
 		if (narm && ISNAN(x)) /* expensive ISNAN(x) in 2nd place */
 			continue;
 		val += x;
@@ -210,7 +210,7 @@ static int get_which_min_from_Ints_holder(const Ints_holder *X, int narm)
 	xlen = X->length;
 	which_min = NA_INTEGER;
 	for (i = 0; i < xlen; i++) {
-		x = X->seq[i];
+		x = X->ptr[i];
 		if (x == NA_INTEGER) {
 			if (narm)
 				continue;
@@ -237,7 +237,7 @@ static int get_which_min_from_Doubles_holder(const Doubles_holder *X, int narm)
 	xlen = X->length;
 	which_min = NA_INTEGER;
 	for (i = 0; i < xlen; i++) {
-		x = X->seq[i];
+		x = X->ptr[i];
 		if (ISNAN(x)) { /* NA or NaN */
 			if (narm)
 				continue;
@@ -260,7 +260,7 @@ static int get_which_max_from_Ints_holder(const Ints_holder *X, int narm)
 	xlen = X->length;
 	which_max = NA_INTEGER;
 	for (i = 0; i < xlen; i++) {
-		x = X->seq[i];
+		x = X->ptr[i];
 		if (x == NA_INTEGER) {
 			if (narm)
 				continue;
@@ -287,7 +287,7 @@ static int get_which_max_from_Doubles_holder(const Doubles_holder *X, int narm)
 	xlen = X->length;
 	which_max = NA_INTEGER;
 	for (i = 0; i < xlen; i++) {
-		x = X->seq[i];
+		x = X->ptr[i];
 		if (ISNAN(x)) { /* NA or NaN */
 			if (narm)
 				continue;
@@ -411,7 +411,7 @@ SEXP XIntegerViews_summary2(SEXP x, SEXP na_rm, SEXP method)
 		if (which_min == NA_INTEGER)
 			*ans_elt = which_min;
 		else
-			*ans_elt = S_view.seq - S.seq + which_min;
+			*ans_elt = S_view.ptr - S.ptr + which_min;
 	}
 	UNPROTECT(1);
 	return ans;
@@ -447,7 +447,7 @@ SEXP XDoubleViews_summary2(SEXP x, SEXP na_rm, SEXP method)
 		if (which_min == NA_INTEGER)
 			*ans_elt = which_min;
 		else
-			*ans_elt = S_view.seq - S.seq + which_min;
+			*ans_elt = S_view.ptr - S.ptr + which_min;
 	}
 	UNPROTECT(1);
 	return ans;

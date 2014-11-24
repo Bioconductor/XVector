@@ -18,7 +18,7 @@ SEXP XInteger_slice(SEXP x, SEXP lower, SEXP upper)
 	X = _hold_XInteger(x);
 	ans_length = 0;
 	prev_elt = 0;
-	for (i = 1, X_elt = X.seq; i <= X.length; i++, X_elt++) {
+	for (i = 1, X_elt = X.ptr; i <= X.length; i++, X_elt++) {
 		curr_elt = (*X_elt >= lower_elt) && (*X_elt <= upper_elt);
 		if (curr_elt && !prev_elt)
 			ans_length++;
@@ -31,7 +31,7 @@ SEXP XInteger_slice(SEXP x, SEXP lower, SEXP upper)
 		start_elt = INTEGER(start) - 1;
 		width_elt = INTEGER(width) - 1;
 		prev_elt = 0;
-		for (i = 1, X_elt = X.seq; i <= X.length; i++, X_elt++) {
+		for (i = 1, X_elt = X.ptr; i <= X.length; i++, X_elt++) {
 			curr_elt = (*X_elt >= lower_elt) && (*X_elt <= upper_elt);
 			if (curr_elt) {
 				if (prev_elt)
@@ -91,7 +91,7 @@ SEXP XDouble_slice(SEXP x, SEXP lower, SEXP upper,
 	X = _hold_XDouble(x);
 	ans_length = 0;
 	prev_elt = 0;
-	for (i = 1, X_elt = X.seq; i <= X.length; i++, X_elt++) {
+	for (i = 1, X_elt = X.ptr; i <= X.length; i++, X_elt++) {
 		curr_elt = lower_fun(*X_elt, lower_elt) && upper_fun(*X_elt, upper_elt);
 		if (curr_elt && !prev_elt)
 			ans_length++;
@@ -104,7 +104,7 @@ SEXP XDouble_slice(SEXP x, SEXP lower, SEXP upper,
 		start_elt = INTEGER(start) - 1;
 		width_elt = INTEGER(width) - 1;
 		prev_elt = 0;
-		for (i = 1, X_elt = X.seq; i <= X.length; i++, X_elt++) {
+		for (i = 1, X_elt = X.ptr; i <= X.length; i++, X_elt++) {
 			curr_elt = lower_fun(*X_elt, lower_elt) && upper_fun(*X_elt, upper_elt);
 			if (curr_elt) {
 				if (prev_elt)
