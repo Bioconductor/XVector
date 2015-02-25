@@ -4,7 +4,7 @@ Description: Memory efficient S4 classes for storing sequences "externally"
 	(behind an R external pointer, or on disk).
 Version: 0.7.4
 Author: H. Pages and P. Aboyoun
-Maintainer: H. Pages <hpages@fhcrc.org>
+Maintainer: H. Pages <hpages@fredhutch.org>
 biocViews: Infrastructure, DataRepresentation
 Depends: R (>= 2.8.0), methods, BiocGenerics (>= 0.11.3),
 	S4Vectors (>= 0.5.19), IRanges (>= 2.1.38)
