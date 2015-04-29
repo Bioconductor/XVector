@@ -353,7 +353,7 @@ static SEXP alloc_XVectorList(const char *classname,
 {
 	int ans_length, tag_length, new_tag_length, i, nelt;
 	SEXP start, group, ranges, tags, tag, ans;
-	IntAE tag_lengths;
+	IntAE *tag_lengths;
 
 	ans_length = LENGTH(width);
 	PROTECT(start = NEW_INTEGER(ans_length));
@@ -365,24 +365,24 @@ static SEXP alloc_XVectorList(const char *classname,
 			new_tag_length = tag_length + INTEGER(width)[i];
 			if (new_tag_length > MAX_TAG_LENGTH
 			 || new_tag_length < tag_length) {
-				IntAE_insert_at(&tag_lengths,
-					IntAE_get_nelt(&tag_lengths),
+				IntAE_insert_at(tag_lengths,
+					IntAE_get_nelt(tag_lengths),
 					tag_length);
 				tag_length = 0;
 			}
 			INTEGER(start)[i] = tag_length + 1;
-			INTEGER(group)[i] = IntAE_get_nelt(&tag_lengths) + 1;
+			INTEGER(group)[i] = IntAE_get_nelt(tag_lengths) + 1;
 			tag_length += INTEGER(width)[i];
 		}
-		IntAE_insert_at(&tag_lengths,
-			IntAE_get_nelt(&tag_lengths), tag_length);
+		IntAE_insert_at(tag_lengths,
+			IntAE_get_nelt(tag_lengths), tag_length);
 	}
 	PROTECT(ranges = new_IRanges("IRanges", start, width, NULL));
-	nelt = IntAE_get_nelt(&tag_lengths);
+	nelt = IntAE_get_nelt(tag_lengths);
 	PROTECT(tags = NEW_LIST(nelt));
 	if (strcmp(tag_type, "raw") == 0) {
 		for (i = 0; i < nelt; i++) {
-			PROTECT(tag = NEW_RAW(tag_lengths.elts[i]));
+			PROTECT(tag = NEW_RAW(tag_lengths->elts[i]));
 			SET_VECTOR_ELT(tags, i, tag);
 			UNPROTECT(1);
 		}
@@ -390,7 +390,7 @@ static SEXP alloc_XVectorList(const char *classname,
 					element_type, tags, ranges, group));
 	} else if (strcmp(tag_type, "integer") == 0) {
 		for (i = 0; i < nelt; i++) {
-			PROTECT(tag = NEW_INTEGER(tag_lengths.elts[i]));
+			PROTECT(tag = NEW_INTEGER(tag_lengths->elts[i]));
 			SET_VECTOR_ELT(tags, i, tag);
 			UNPROTECT(1);
 		}
@@ -398,7 +398,7 @@ static SEXP alloc_XVectorList(const char *classname,
 					element_type, tags, ranges, group));
 	} else if (strcmp(tag_type, "double") == 0) {
 		for (i = 0; i < nelt; i++) {
-			PROTECT(tag = NEW_NUMERIC(tag_lengths.elts[i]));
+			PROTECT(tag = NEW_NUMERIC(tag_lengths->elts[i]));
 			SET_VECTOR_ELT(tags, i, tag);
 			UNPROTECT(1);
 		}
@@ -453,13 +453,13 @@ SEXP _new_XRawList_from_CharAEAE(const char *classname,
 	nelt = CharAEAE_get_nelt(char_aeae);
 	PROTECT(ans_width = NEW_INTEGER(nelt));
 	for (i = 0; i < nelt; i++) {
-		src = char_aeae->elts + i;
+		src = char_aeae->elts[i];
 		INTEGER(ans_width)[i] = CharAE_get_nelt(src);
 	}
 	PROTECT(ans = _alloc_XRawList(classname, element_type, ans_width));
 	ans_holder = _hold_XVectorList(ans);
 	for (i = 0; i < nelt; i++) {
-		src = char_aeae->elts + i;
+		src = char_aeae->elts[i];
 		dest = _get_elt_from_XRawList_holder(&ans_holder, i);
 		/* dest.ptr is a const char * so we need to cast it to
 		   char * before we can write to it */
@@ -485,13 +485,13 @@ SEXP _new_XIntegerList_from_IntAEAE(const char *classname,
 	nelt = IntAEAE_get_nelt(int_aeae);
 	PROTECT(ans_width = NEW_INTEGER(nelt));
 	for (i = 0; i < nelt; i++) {
-		src = int_aeae->elts + i;
+		src = int_aeae->elts[i];
 		INTEGER(ans_width)[i] = IntAE_get_nelt(src);
 	}
 	PROTECT(ans = _alloc_XIntegerList(classname, element_type, ans_width));
 	ans_holder = _hold_XVectorList(ans);
 	for (i = 0; i < nelt; i++) {
-		src = int_aeae->elts + i;
+		src = int_aeae->elts[i];
 		dest = _get_elt_from_XIntegerList_holder(&ans_holder, i);
 		/* dest.ptr is a const int * so we need to cast it to
 		   char * before we can write to it */

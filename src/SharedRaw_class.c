@@ -63,36 +63,36 @@ SEXP SharedRaw_read_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 {
 	SEXP src_tag;
 	int i1, i2, n;
-	CharAE dest;
+	CharAE *dest;
 
 	src_tag = _get_SharedVector_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
 	dest = new_CharAE(n + 1);
-	dest.elts[n] = '\0';
+	dest->elts[n] = '\0';
 	/* assumes that sizeof(Rbyte) == sizeof(char) */
 	_Ocopy_byteblocks_from_i1i2(i1, i2,
-			dest.elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
+			dest->elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
 			sizeof(char));
-	return mkString(dest.elts);
+	return mkString(dest->elts);
 }
 
 SEXP SharedRaw_read_chars_from_subscript(SEXP src, SEXP subscript)
 {
 	SEXP src_tag;
 	int n;
-	CharAE dest;
+	CharAE *dest;
 
 	src_tag = _get_SharedVector_tag(src);
 	n = LENGTH(subscript);
 	dest = new_CharAE(n + 1);
-	dest.elts[n] = '\0';
+	dest->elts[n] = '\0';
 	/* assumes that sizeof(Rbyte) == sizeof(char) */
 	_Ocopy_byteblocks_from_subscript(INTEGER(subscript), n,
-			dest.elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
+			dest->elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
 			sizeof(char));
-	return mkString(dest.elts);
+	return mkString(dest->elts);
 }
 
 /*
@@ -266,34 +266,34 @@ SEXP SharedRaw_read_enc_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax, SEXP lku
 {
 	SEXP src_tag;
 	int i1, i2, n;
-	CharAE dest;
+	CharAE *dest;
 
 	src_tag = _get_SharedVector_tag(src);
 	i1 = INTEGER(imin)[0] - 1;
 	i2 = INTEGER(imax)[0] - 1;
 	n = i2 - i1 + 1;
 	dest = new_CharAE(n + 1);
-	dest.elts[n] = '\0';
+	dest->elts[n] = '\0';
 	_Ocopy_bytes_from_i1i2_with_lkup(i1, i2,
-			dest.elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
+			dest->elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
 			INTEGER(lkup), LENGTH(lkup));
-	return mkString(dest.elts);
+	return mkString(dest->elts);
 }
 
 SEXP SharedRaw_read_enc_chars_from_subscript(SEXP src, SEXP subscript, SEXP lkup)
 {
 	SEXP src_tag;
 	int n;
-	CharAE dest;
+	CharAE *dest;
 
 	src_tag = _get_SharedVector_tag(src);
 	n = LENGTH(subscript);
 	dest = new_CharAE(n + 1);
-	dest.elts[n] = '\0';
+	dest->elts[n] = '\0';
 	_Ocopy_bytes_from_subscript_with_lkup(INTEGER(subscript), n,
-			dest.elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
+			dest->elts, n, (char *) RAW(src_tag), LENGTH(src_tag),
 			INTEGER(lkup), LENGTH(lkup));
-	return mkString(dest.elts);
+	return mkString(dest->elts);
 }
 
 /*
