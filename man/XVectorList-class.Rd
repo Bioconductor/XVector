@@ -38,6 +38,7 @@
 \description{
   THIS IS A WORK-IN-PROGRESS!
 
+
   An XVectorList object is *conceptually* a list of \link{XVector}
   objects.
 }
