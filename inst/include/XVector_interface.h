@@ -13,6 +13,40 @@
 
 
 /*
+ * io_utils.c
+ */
+
+int filexp_gets(
+	SEXP filexp,
+	char *buf,
+	int buf_size,
+	int *EOL_in_buf
+);
+
+void filexp_seek(
+	SEXP filexp,
+	long long int offset,
+	int whence
+);
+
+void filexp_rewind(SEXP filexp);
+
+int filexp_puts(
+	SEXP filexp,
+	const char *s
+);
+
+void filexp_putc(
+	SEXP filexp,
+	int c
+);
+
+int delete_trailing_LF_or_CRLF(
+	const char *buf,
+	int buf_len
+);
+
+/*
  * Ocopy_byteblocks.c
  */
 

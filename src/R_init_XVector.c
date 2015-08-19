@@ -7,6 +7,11 @@
 
 static const R_CallMethodDef callMethods[] = {
 
+/* io_utils.c */
+	CALLMETHOD_DEF(new_input_filexp, 1),
+	CALLMETHOD_DEF(new_output_filexp, 4),
+	CALLMETHOD_DEF(finalize_filexp, 1),
+
 /* Ocopy_byteblocks.c */
 	CALLMETHOD_DEF(debug_Ocopy_byteblocks, 0),
 
@@ -101,6 +106,14 @@ static const R_CallMethodDef callMethods[] = {
 void R_init_XVector(DllInfo *info)
 {
 	R_registerRoutines(info, NULL, callMethods, NULL, NULL);
+
+/* io_utils.c */
+	REGISTER_CCALLABLE(_filexp_gets);
+	REGISTER_CCALLABLE(_filexp_seek);
+	REGISTER_CCALLABLE(_filexp_rewind);
+	REGISTER_CCALLABLE(_filexp_puts);
+	REGISTER_CCALLABLE(_filexp_putc);
+	REGISTER_CCALLABLE(_delete_trailing_LF_or_CRLF);
 
 /* Ocopy_byteblocks.c */
 	REGISTER_CCALLABLE(_Ocopy_byteblocks_from_i1i2);

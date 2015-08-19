@@ -3,11 +3,57 @@
 
 #define DEBUG_XVECTOR 1
 
+#define INTERNAL_ERR_IN "XVector internal error in "
+
 #define INIT_STATIC_SYMBOL(NAME) \
 { \
 	if (NAME ## _symbol == NULL) \
 		NAME ## _symbol = install(# NAME); \
 }
+
+
+/* io_utils.c */
+
+int _filexp_gets(
+	SEXP filexp,
+	char *buf,
+	int buf_size,
+	int *EOL_in_buf
+);
+
+void _filexp_seek(
+	SEXP filexp,
+	long long int offset,
+	int whence
+);
+
+void _filexp_rewind(SEXP filexp);
+
+int _filexp_puts(
+	SEXP filexp,
+	const char *s
+);
+
+void _filexp_putc(
+	SEXP filexp,
+	int c
+);
+
+SEXP new_input_filexp(SEXP filepath);
+
+SEXP new_output_filexp(
+	SEXP filepath,
+	SEXP append,
+	SEXP compress,
+	SEXP compression_level
+);
+
+SEXP finalize_filexp(SEXP filexp);
+
+int _delete_trailing_LF_or_CRLF(
+	const char *buf,
+	int buf_len
+);
 
 
 /* Ocopy_byteblocks.c */

@@ -28,6 +28,40 @@ void stubname Targs \
 
 
 /*
+ * Stubs for callables defined in io_utils.c
+ */
+
+DEFINE_CCALLABLE_STUB(int, filexp_gets,
+	(SEXP filexp, char *buf, int buf_size, int *EOL_in_buf),
+	(     filexp,       buf,     buf_size,      EOL_in_buf)
+)
+
+DEFINE_NOVALUE_CCALLABLE_STUB(filexp_seek,
+	(SEXP filexp, long long int offset, int whence),
+	(     filexp,               offset,     whence)
+)
+
+DEFINE_NOVALUE_CCALLABLE_STUB(filexp_rewind,
+	(SEXP filexp),
+	(     filexp)
+)
+
+DEFINE_CCALLABLE_STUB(int, filexp_puts,
+	(SEXP filexp, const char *s),
+	(     filexp,             s)
+)
+
+DEFINE_NOVALUE_CCALLABLE_STUB(filexp_putc,
+	(SEXP filexp, int c),
+	(     filexp,     c)
+)
+
+DEFINE_CCALLABLE_STUB(int, delete_trailing_LF_or_CRLF,
+	(const char *buf, int buf_len),
+	(            buf,     buf_len)
+)
+
+/*
  * Stubs for callables defined in Ocopy_byteblocks.c
  */
 
