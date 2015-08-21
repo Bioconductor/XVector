@@ -425,7 +425,7 @@ static void ZFile_close(const ZFile *zfile)
 
 
 /****************************************************************************
- *             Low-level manipulation of External File Pointers             *
+ *            Low-level manipulation of "file external pointers"            *
  ****************************************************************************/
 
 #define CHECK_USER_INTERRUPT() \
