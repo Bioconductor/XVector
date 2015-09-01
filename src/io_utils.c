@@ -428,10 +428,10 @@ static void ZFile_close(const ZFile *zfile)
  *            Low-level manipulation of "file external pointers"            *
  ****************************************************************************/
 
-#define CHECK_USER_INTERRUPT() \
+#define CHECK_USER_INTERRUPT(ncall) \
 { \
 	static int i = 0; \
-	if (i++ >= 10000) { \
+	if (i++ >= (ncall)) { \
 		R_CheckUserInterrupt(); \
 		i = 0; \
 	} \
@@ -439,34 +439,34 @@ static void ZFile_close(const ZFile *zfile)
 
 int _filexp_gets(SEXP filexp, char *buf, int buf_size, int *EOL_in_buf)
 {
-	CHECK_USER_INTERRUPT();
+	CHECK_USER_INTERRUPT(2000);
 	return iZFile_gets(R_ExternalPtrAddr(filexp),
 			   buf, buf_size, EOL_in_buf);
 }
 
 void _filexp_seek(SEXP filexp, long long int offset, int whence)
 {
-	CHECK_USER_INTERRUPT();
+	CHECK_USER_INTERRUPT(100);
 	iZFile_seek(R_ExternalPtrAddr(filexp), offset, whence);
 	return;
 }
 
 void _filexp_rewind(SEXP filexp)
 {
-	CHECK_USER_INTERRUPT();
+	CHECK_USER_INTERRUPT(100);
 	iZFile_rewind(R_ExternalPtrAddr(filexp));
 	return;
 }
 
 int _filexp_puts(SEXP filexp, const char *s)
 {
-	CHECK_USER_INTERRUPT();
+	CHECK_USER_INTERRUPT(2000);
 	return oZFile_puts(R_ExternalPtrAddr(filexp), s);
 }
 
 void _filexp_putc(SEXP filexp, int c)
 {
-	CHECK_USER_INTERRUPT();
+	CHECK_USER_INTERRUPT(100000);
 	oZFile_putc(R_ExternalPtrAddr(filexp), c);
 	return;
 }
@@ -511,6 +511,13 @@ SEXP new_input_filexp(SEXP filepath)
 	return new_filexp(filepath, "r", NULL, 0);
 }
 
+/* --- .Call ENTRY POINT --- */
+SEXP rewind_filexp(SEXP filexp)
+{
+	_filexp_rewind(filexp);
+	return R_NilValue;
+}
+
 /* --- .Call ENTRY POINT ---
  * Returns an external pointer.
  */
@@ -527,7 +534,7 @@ SEXP new_output_filexp(SEXP filepath, SEXP append,
 }
 
 /* --- .Call ENTRY POINT ---
- * Closes the file pointed to by e.
+ * Closes the file pointed to by 'filexp'.
  */
 SEXP finalize_filexp(SEXP filexp)
 {

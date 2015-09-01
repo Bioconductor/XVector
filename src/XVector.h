@@ -41,6 +41,8 @@ void _filexp_putc(
 
 SEXP new_input_filexp(SEXP filepath);
 
+SEXP rewind_filexp(SEXP filexp);
+
 SEXP new_output_filexp(
 	SEXP filepath,
 	SEXP append,

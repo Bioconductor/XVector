@@ -9,6 +9,7 @@ static const R_CallMethodDef callMethods[] = {
 
 /* io_utils.c */
 	CALLMETHOD_DEF(new_input_filexp, 1),
+	CALLMETHOD_DEF(rewind_filexp, 1),
 	CALLMETHOD_DEF(new_output_filexp, 4),
 	CALLMETHOD_DEF(finalize_filexp, 1),
 

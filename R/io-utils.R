@@ -11,6 +11,11 @@ new_input_filexp <- function(filepath)
     .Call2("new_input_filexp", filepath, PACKAGE="XVector")
 }
 
+rewind_filexp <- function(filexp)
+{
+    .Call2("rewind_filexp", filexp, PACKAGE="XVector")
+}
+
 new_output_filexp <- function(filepath, append, compress, compression_level)
 {
     .Call2("new_output_filexp",
