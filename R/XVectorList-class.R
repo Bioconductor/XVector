@@ -29,6 +29,12 @@ setClass("XVectorList",
 ### GroupedIRanges methods.
 ###
 
+### Combine the new parallel slots with those of the parent class. Make sure
+### to put the new parallel slots *first*.
+setMethod("parallelSlotNames", "GroupedIRanges",
+    function(x) c("group", callNextMethod())
+)
+
 .valid.GroupedIRanges <- function(x)
 {
     if (length(x@group) != length(x))
@@ -45,15 +51,6 @@ setMethod("as.data.frame", "GroupedIRanges",
 
 setMethod("show", "GroupedIRanges",
     function(object) show(as.data.frame(object))
-)
-
-setMethod("extractROWS", "GroupedIRanges",
-    function(x, i)
-    {
-        i <- extractROWS(setNames(seq_along(x), names(x)), i)
-        x@group <- extractROWS(x@group, i)
-        callNextMethod()
-    }
 )
 
 setMethod("c", "GroupedIRanges",

@@ -11,7 +11,6 @@
 
 \alias{as.data.frame,GroupedIRanges-method}
 \alias{show,GroupedIRanges-method}
-\alias{[,GroupedIRanges-method}
 \alias{c,GroupedIRanges-method}
 
 \alias{length,XVectorList-method}
