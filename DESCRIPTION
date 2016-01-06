@@ -2,7 +2,7 @@ Package: XVector
 Title: Representation and manpulation of external sequences
 Description: Memory efficient S4 classes for storing sequences "externally"
 	(behind an R external pointer, or on disk).
-Version: 0.11.1
+Version: 0.11.2
 Author: H. Pages and P. Aboyoun
 Maintainer: H. Pages <hpages@fredhutch.org>
 biocViews: Infrastructure, DataRepresentation
