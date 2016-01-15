@@ -29,7 +29,7 @@ void _vector_Ocopy(SEXP out, int out_offset, SEXP in, int in_offset, int nelt,
 	size_t blocksize = 0; /* gcc -Wall */
 
 	if (lkup == R_NilValue && reverse == 0 && Omode == 0) {
-		vector_memcpy(out, out_offset, in, in_offset, nelt);
+		copy_vector_block(out, out_offset, in, in_offset, nelt);
 		return;
 	}
 	if (Omode >= 0) {
