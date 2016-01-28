@@ -78,7 +78,7 @@ setMethod("length", "XVectorList", function(x) length(x@ranges))
 
 setMethod("width", "XVectorList", function(x) width(x@ranges))
 
-setMethod("elementLengths", "XVectorList", function(x) width(x))
+setMethod("elementNROWS", "XVectorList", function(x) width(x))
 
 setMethod("names", "XVectorList", function(x) names(x@ranges))
 
@@ -358,9 +358,9 @@ unlist_list_of_XVectorList <- function(Class, x,
     ## arg) and use it here.
     ans_ranges <- do.call(c, ranges_slots)
 
-    breakpoints <- cumsum(elementLengths(pool_slots))
+    breakpoints <- cumsum(elementNROWS(pool_slots))
     offsets <- c(0L, breakpoints[-length(breakpoints)])
-    offsets <- rep.int(offsets, elementLengths(ranges_slots))
+    offsets <- rep.int(offsets, elementNROWS(ranges_slots))
     ans_ranges@group <- ans_ranges@group + offsets
 
     ## Combine "mcols" slots.
@@ -441,7 +441,7 @@ setMethod("showAsCell", "XVectorList", function(object) as.character(object))
 ### Not intended for the end user.
 ###
 ### 'f' must be a factor with number of levels equal to 'length(x)' and
-### length equal to 'sum(elementLengths(x))'. 
+### length equal to 'sum(elementNROWS(x))'. 
 unsplit_list_of_XVectorList <- function(classname, x, f)
 {
     ans <- XVectorList(classname, length(f))

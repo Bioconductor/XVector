@@ -54,18 +54,20 @@ exportMethods(
     duplicated, match,
     order, rank, is.unsorted,
     relist,
+    width,
     updateObject,
 
-    ## Generics defined in IRanges:
-    endoapply,
+    ## Methods for generics defined in the S4Vectors package:
     showAsCell,
-    elementLengths,
-    width,
     compare,
+    elementNROWS,
+    relistToClass,
+    endoapply,
+
+    ## Methods for generics defined in the IRanges package:
     Views,
     viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs,
-    relistToClass,
     extractList,
     reverse,
     slice

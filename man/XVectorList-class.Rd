@@ -15,7 +15,7 @@
 
 \alias{length,XVectorList-method}
 \alias{width,XVectorList-method}
-\alias{elementLengths,XVectorList-method}
+\alias{elementNROWS,XVectorList-method}
 \alias{names,XVectorList-method}
 \alias{names<-,XVectorList-method}
 \alias{[[,XVectorList-method}
