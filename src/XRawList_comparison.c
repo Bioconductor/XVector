@@ -65,7 +65,7 @@ static void pcompar_from_XRawList_holders(const XVectorList_holder *x,
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP XRawList_compare(SEXP x, SEXP y)
+SEXP XRawList_pcompare(SEXP x, SEXP y)
 {
 	XVectorList_holder x_holder, y_holder;
 	int x_len, y_len, ans_len;

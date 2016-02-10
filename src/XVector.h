@@ -671,7 +671,7 @@ SEXP _new_XIntegerList_from_IntAEAE(
 
 /* XRawList_comparison.c */
 
-SEXP XRawList_compare(
+SEXP XRawList_pcompare(
 	SEXP x,
 	SEXP y
 );

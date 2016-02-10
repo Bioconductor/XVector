@@ -5,12 +5,12 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### compare()
+### pcompare()
 ###
 
-setMethod("compare", c("XRawList", "XRawList"),
+setMethod("pcompare", c("XRawList", "XRawList"),
     function(x, y)
-        .Call2("XRawList_compare", x, y, PACKAGE="XVector")
+        .Call2("XRawList_pcompare", x, y, PACKAGE="XVector")
 )
 
 
@@ -23,11 +23,11 @@ setMethod("compare", c("XRawList", "XRawList"),
 ###
 
 setMethod("==", c("XRawList", "XRawList"),
-    function(e1, e2) compare(e1, e2) == 0L
+    function(e1, e2) pcompare(e1, e2) == 0L
 )
 
 setMethod("<=", c("XRawList", "XRawList"),
-    function(e1, e2) compare(e1, e2) <= 0L
+    function(e1, e2) pcompare(e1, e2) <= 0L
 )
 
 

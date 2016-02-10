@@ -2,7 +2,8 @@
 
 \alias{XRawList-comparison}
 
-\alias{compare,XRawList,XRawList-method}
+\alias{pcompare}
+\alias{pcompare,XRawList,XRawList-method}
 
 \alias{==,XRawList,XRawList-method}
 \alias{<=,XRawList,XRawList-method}
@@ -55,7 +56,7 @@
 ## Generalized element-wise (aka "parallel") comparison of 2 XRawList objects
 ## --------------------------------------------------------------------------
 
-\S4method{compare}{XRawList,XRawList}(x, y)
+\S4method{pcompare}{XRawList,XRawList}(x, y)
 }
 
 \arguments{
