@@ -21,9 +21,9 @@ setClass("XIntegerViews",
 
 setMethod("Views", "XInteger",
     function(subject, start=NULL, end=NULL, width=NULL, names=NULL)
-        newViews(subject,
-                 start=start, end=end, width=width, names=names,
-                 Class="XIntegerViews")
+        IRanges:::new_Views(subject,
+                            start=start, end=end, width=width, names=names,
+                            Class="XIntegerViews")
 )
 
 setMethod("Views", "integer",

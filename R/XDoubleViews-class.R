@@ -21,9 +21,9 @@ setClass("XDoubleViews",
 
 setMethod("Views", "XDouble",
     function(subject, start=NULL, end=NULL, width=NULL, names=NULL)
-        newViews(subject,
-                 start=start, end=end, width=width, names=names,
-                 Class="XDoubleViews")
+        IRanges:::new_Views(subject,
+                            start=start, end=end, width=width, names=names,
+                            Class="XDoubleViews")
 )
 
 setMethod("Views", "numeric",
