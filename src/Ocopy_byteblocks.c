@@ -1,20 +1,6 @@
 #include "XVector.h"
 
 
-static int debug = 0;
-
-SEXP debug_Ocopy_byteblocks()
-{
-#ifdef DEBUG_XVECTOR
-	debug = !debug;
-	Rprintf("Debug mode turned %s in file %s\n",
-		debug ? "on" : "off", __FILE__);
-#else
-	Rprintf("Debug mode not available in file %s\n", __FILE__);
-#endif
-	return R_NilValue;
-}
-
 static int translate_byte(char byte, const int *lkup, int lkup_length)
 {
 	int key;

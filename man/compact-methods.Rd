@@ -89,7 +89,7 @@ xvcopy(x, start=NA, end=NA, width=NA, lkup=NULL, reverse=FALSE)
   An object equivalent to \code{x} but eventually smaller in memory.
 }
 
-\author{H. Pages}
+\author{H. Pagès}
 
 \seealso{
   \link{XVector-class},

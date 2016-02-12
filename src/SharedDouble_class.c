@@ -1,22 +1,8 @@
 /****************************************************************************
  *              Low-level manipulation of SharedDouble objects              *
- *                           Author: Herve Pages                            *
+ *                            Author: H. Pag\`es                            *
  ****************************************************************************/
 #include "XVector.h"
-
-static int debug = 0;
-
-SEXP debug_SharedDouble_class()
-{
-#ifdef DEBUG_XVECTOR
-	debug = !debug;
-	Rprintf("Debug mode turned %s in file %s\n",
-		debug ? "on" : "off", __FILE__);
-#else
-	Rprintf("Debug mode not available in file %s\n", __FILE__);
-#endif
-	return R_NilValue;
-}
 
 
 SEXP SharedDouble_new(SEXP length, SEXP val)

@@ -13,11 +13,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(new_output_filexp, 4),
 	CALLMETHOD_DEF(finalize_filexp, 1),
 
-/* Ocopy_byteblocks.c */
-	CALLMETHOD_DEF(debug_Ocopy_byteblocks, 0),
-
 /* SharedVector_class.c */
-	CALLMETHOD_DEF(debug_SharedVector_class, 0),
 	CALLMETHOD_DEF(address_asSTRSXP, 1),
 	CALLMETHOD_DEF(externalptr_new, 0),
 	CALLMETHOD_DEF(externalptr_get_tag, 1),
@@ -32,8 +28,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedVector_mcopy, 7),
 
 /* SharedRaw_class.c */
-	CALLMETHOD_DEF(debug_SharedRaw_class, 0),
-
 	CALLMETHOD_DEF(SharedRaw_new, 2),
 
 	CALLMETHOD_DEF(SharedRaw_read_chars_from_i1i2, 3),
@@ -55,8 +49,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedRaw_read_complexes_from_subscript, 3),
 
 /* SharedInteger_class.c */
-	CALLMETHOD_DEF(debug_SharedInteger_class, 0),
-
 	CALLMETHOD_DEF(SharedInteger_new, 2),
 	CALLMETHOD_DEF(SharedInteger_get_show_string, 1),
 
@@ -66,8 +58,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedInteger_write_ints_to_subscript, 3),
 
 /* SharedDouble_class.c */
-	CALLMETHOD_DEF(debug_SharedDouble_class, 0),
-
 	CALLMETHOD_DEF(SharedDouble_new, 2),
 	CALLMETHOD_DEF(SharedDouble_get_show_string, 1),
 
@@ -75,12 +65,6 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedDouble_read_nums_from_subscript, 2),
 	CALLMETHOD_DEF(SharedDouble_write_nums_to_i1i2, 4),
 	CALLMETHOD_DEF(SharedDouble_write_nums_to_subscript, 3),
-
-/* XVector_class.c */
-	CALLMETHOD_DEF(debug_XVector_class, 0),
-
-/* XVectorList_class.c */
-	CALLMETHOD_DEF(debug_XVectorList_class, 0),
 
 /* XRawList_comparison.c */
 	CALLMETHOD_DEF(XRawList_pcompare, 2),

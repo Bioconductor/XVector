@@ -42,7 +42,7 @@
   objects.
 }
 
-\author{H. Pages}
+\author{H. Pagès}
 
 \seealso{
   \link{XVector-class},

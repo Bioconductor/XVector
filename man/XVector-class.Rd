@@ -125,7 +125,7 @@
   }
 }
 
-\author{H. Pages}
+\author{H. Pagès}
 
 \seealso{
   \link[S4Vectors]{Vector-class},

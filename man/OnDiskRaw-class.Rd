@@ -14,7 +14,7 @@
   THIS IS A WORK-IN-PROGRESS!
 }
 
-\author{H. Pages}
+\author{H. Pagès}
 
 \keyword{methods}
 \keyword{classes}

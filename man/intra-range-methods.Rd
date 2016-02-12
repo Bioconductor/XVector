@@ -13,8 +13,8 @@
 
 \description{
   The \emph{intra range transformations} are a set of generic functions
-  defined in the IRanges package.
-  Only 2 of them have methods for XVectorList objects:
+  defined in the \pkg{IRanges} package.
+  Only 2 of them have methods for \link{XVectorList} objects:
   \code{\link[IRanges]{narrow}} and \code{\link[IRanges]{threebands}}.
   This man page describes those 2 methods only.
 
@@ -33,7 +33,7 @@
   }
   \item{start, end, width}{
     Vectors of integers, possibly with NAs. See the SEW (Start/End/Width)
-    interface in the IRanges package for the details
+    interface in the \pkg{IRanges} package for the details
     (\code{?\link[IRanges]{solveUserSEW}}).
   }
   \item{use.names}{
@@ -55,14 +55,14 @@
   of the original ranges during the narrowing.
 }
 
-\author{H. Pages}
+\author{H. Pagès}
 
 \seealso{
   \itemize{
-    \item \link[IRanges]{intra-range-methods} in the IRanges package for
-          intra range transformations.
-    \item \code{\link[IRanges]{solveUserSEW}} in the IRanges package for
-          the SEW (Start/End/Width) interface.
+    \item \link[IRanges]{intra-range-methods} in the \pkg{IRanges} package
+          for intra range transformations.
+    \item \code{\link[IRanges]{solveUserSEW}} in the \pkg{IRanges} package
+          for the SEW (Start/End/Width) interface.
     \item The \link{XVectorList} class.
   }
 }

@@ -1,23 +1,9 @@
 /****************************************************************************
  *               Low-level manipulation of SharedRaw objects                *
- *                           Author: Herve Pages                            *
+ *                            Author: H. Pag\`es                            *
  ****************************************************************************/
 #include "XVector.h"
 #include "S4Vectors_interface.h"
-
-static int debug = 0;
-
-SEXP debug_SharedRaw_class()
-{
-#ifdef DEBUG_XVECTOR
-	debug = !debug;
-	Rprintf("Debug mode turned %s in file %s\n",
-		debug ? "on" : "off", __FILE__);
-#else
-	Rprintf("Debug mode not available in file %s\n", __FILE__);
-#endif
-	return R_NilValue;
-}
 
 
 SEXP SharedRaw_new(SEXP length, SEXP val)

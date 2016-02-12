@@ -48,5 +48,5 @@
     library.dynam.unload("XVector", libpath)
 }
 
-run_unitTests <- function() BiocGenerics:::testPackage("XVector")
+.test <- function() BiocGenerics:::testPackage("XVector")
 

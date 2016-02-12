@@ -1,8 +1,6 @@
 #include "../inst/include/XVector_defines.h"
 #include <string.h>
 
-#define DEBUG_XVECTOR 1
-
 #define INTERNAL_ERR_IN "XVector internal error in "
 
 #define INIT_STATIC_SYMBOL(NAME) \
@@ -59,8 +57,6 @@ int _delete_trailing_LF_or_CRLF(
 
 
 /* Ocopy_byteblocks.c */
-
-SEXP debug_Ocopy_byteblocks();
 
 void _Ocopy_byteblocks_from_i1i2(
 	int i1,
@@ -252,8 +248,6 @@ void _vector_mcopy(
 
 /* SharedVector_class.c */
 
-SEXP debug_SharedVector_class();
-
 SEXP address_asSTRSXP(SEXP s);
 
 SEXP externalptr_new();
@@ -325,8 +319,6 @@ SEXP _new_SharedVector_Pool1(SEXP shared);
 
 
 /* SharedRaw_class.c */
-
-SEXP debug_SharedRaw_class();
 
 SEXP SharedRaw_new(
 	SEXP length,
@@ -425,8 +417,6 @@ SEXP SharedRaw_read_complexes_from_subscript(
 
 /* SharedInteger_class.c */
 
-SEXP debug_SharedInteger_class();
-
 SEXP SharedInteger_new(
 	SEXP length,
 	SEXP val
@@ -461,8 +451,6 @@ SEXP SharedInteger_write_ints_to_subscript(
 
 /* SharedDouble_class.c */
 
-SEXP debug_SharedDouble_class();
-
 SEXP SharedDouble_new(
 	SEXP length,
 	SEXP val
@@ -496,8 +484,6 @@ SEXP SharedDouble_write_nums_to_subscript(
 
 
 /* XVector_class.c */
-
-SEXP debug_XVector_class();
 
 SEXP _get_XVector_shared(SEXP x);
 
@@ -552,8 +538,6 @@ SEXP _alloc_XDouble(
 
 
 /* XVectorList_class.c */
-
-SEXP debug_XVectorList_class();
 
 SEXP _get_XVectorList_pool(SEXP x);
 

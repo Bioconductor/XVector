@@ -15,7 +15,7 @@
   objects.
 }
 
-\author{H. Pages}
+\author{H. Pagès}
 
 \seealso{
   \link{XRaw-class},

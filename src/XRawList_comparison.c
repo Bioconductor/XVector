@@ -1,6 +1,6 @@
 /****************************************************************************
  *   Comparing and ordering the elements in one or more XRawList objects    *
- *                           Author: Herve Pages                            *
+ *                            Author: H. Pag\`es                            *
  ****************************************************************************/
 #include "XVector.h"
 #include "S4Vectors_interface.h"
