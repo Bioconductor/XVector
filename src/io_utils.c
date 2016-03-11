@@ -386,7 +386,7 @@ static ZFile new_ZFile(const char *path, const char *expath,
 		const char *mode, const char *compress, int level)
 {
 	ZFile zfile;
-	int ztype, subtype;
+	int ztype, subtype = 0;
 	void *file;
 
 	if (strcmp(mode, "r") == 0) {
