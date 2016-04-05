@@ -278,16 +278,9 @@ setMethod("extractROWS", "XVectorList",
 ### subseq()
 ###
 
-narrowXVectorList <- function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-{
-    x@ranges <- narrow(x@ranges, start=start, end=end, width=width,
-                       use.names=use.names)
-    x
-}
-
 setMethod("subseq", "XVectorList",
     function(x, start=NA, end=NA, width=NA)
-        narrowXVectorList(x, start=start, end=end, width=width)
+        narrow(x, start=start, end=end, width=width)
 )
 
 

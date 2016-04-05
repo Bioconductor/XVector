@@ -4,7 +4,14 @@
 ###
 
 
-setMethod("narrow", "XVectorList", narrowXVectorList)
+setMethod("narrow", "XVectorList",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+    {
+        x@ranges <- narrow(x@ranges, start=start, end=end, width=width,
+                                     use.names=use.names)
+        x
+    }
+)
 
 setMethod("threebands", "XVectorList",
     function(x, start=NA, end=NA, width=NA)
