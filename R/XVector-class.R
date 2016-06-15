@@ -86,17 +86,24 @@ setMethod("c", "XVector",
 setMethod("extractROWS", "XVector",
     function(x, i)
     {
-        i <- extractROWS(setNames(seq_along(x), names(x)), i)
-        new_shared <- SharedVector(class(x@shared), length=length(i))
-        SharedVector.copy(new_shared, x@offset + i, src=x@shared)
-        x@shared <- new_shared
-        x@offset <- 0L
-        x@length <- length(new_shared)
-        mcols(x) <- mcols(x)[i, , drop=FALSE]
-        x
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS = TRUE)
+        callGeneric()
     }
 )
 
+setMethod("extractROWS", c("XVector", "NSBS"),
+          function(x, i)
+          {
+              i <- as.integer(i)
+              new_shared <- SharedVector(class(x@shared), length=length(i))
+              SharedVector.copy(new_shared, x@offset + i, src=x@shared)
+              x@shared <- new_shared
+              x@offset <- 0L
+              x@length <- length(new_shared)
+              mcols(x) <- mcols(x)[i, , drop=FALSE]
+              x
+          })
+          
 ### Extracts a linear subsequence without copying the sequence data!
 setGeneric("subseq", signature="x",
     function(x, start=NA, end=NA, width=NA) standardGeneric("subseq")
