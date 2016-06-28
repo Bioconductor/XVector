@@ -29,10 +29,16 @@ setClass("XVectorList",
 ### GroupedIRanges methods.
 ###
 
+### Ugly workaround a serious callNextMethod inefficiency reported here:
+###   https://bugs.r-project.org/bugzilla/show_bug.cgi?id=16974
+.GroupedIRanges_parallelSlotNames <-
+    c("group", parallelSlotNames(new("IRanges")))
+
 ### Combine the new parallel slots with those of the parent class. Make sure
 ### to put the new parallel slots *first*.
 setMethod("parallelSlotNames", "GroupedIRanges",
-    function(x) c("group", callNextMethod())
+    #function(x) c("group", callNextMethod())
+    function(x) .GroupedIRanges_parallelSlotNames
 )
 
 .valid.GroupedIRanges <- function(x)
