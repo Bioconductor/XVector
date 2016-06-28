@@ -264,7 +264,7 @@ setMethod("[[", "XVectorList",
 setMethod("extractROWS", "XVectorList",
     function(x, i)
     {
-        i <- extractROWS(setNames(seq_along(x), names(x)), i)
+        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         x@ranges <- extractROWS(x@ranges, i)
         x@elementMetadata <- extractROWS(x@elementMetadata, i)
         ## Drop unused pool elements.

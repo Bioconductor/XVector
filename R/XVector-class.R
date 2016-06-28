@@ -92,7 +92,7 @@ setMethod("extractROWS", "XVector",
         x@shared <- new_shared
         x@offset <- 0L
         x@length <- length(new_shared)
-        mcols(x) <- mcols(x)[i, , drop=FALSE]
+        x@elementMetadata <- extractROWS(x@elementMetadata, i)
         x
     }
 )
