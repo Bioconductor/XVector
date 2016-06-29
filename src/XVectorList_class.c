@@ -331,7 +331,7 @@ SEXP _new_XDoubleList_from_tag(const char *classname,
  * This is a soft limit. Some tags could be longer than this limit if the
  * XVectorList object to allocate contains elements that are also longer
  * than this limit. */
-#define	MAX_TAG_LENGTH 1073741824
+#define	MAX_TAG_LENGTH 268435456  /* = 256 Mb if tag is a raw vector */
 
 static SEXP alloc_XVectorList(const char *classname,
 		const char *element_type, const char *tag_type,
