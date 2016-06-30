@@ -271,11 +271,13 @@ setMethod("extractROWS", "XVectorList",
     function(x, i)
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        x@ranges <- extractROWS(x@ranges, i)
-        x@elementMetadata <- extractROWS(x@elementMetadata, i)
+        ans_ranges <- extractROWS(x@ranges, i)
+        ans_mcols <- extractROWS(x@elementMetadata, i)
+        ans <- BiocGenerics:::replaceSlots(x, ranges=ans_ranges,
+                                              mcols=ans_mcols,
+                                              check=FALSE)
         ## Drop unused pool elements.
-        x <- .dropUnusedPoolElts(x)
-        x
+        .dropUnusedPoolElts(ans)
     }
 )
 
