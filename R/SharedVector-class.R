@@ -358,7 +358,11 @@ setMethod("as.numeric", "SharedVector",
 
 ### Return the hexadecimal address of any R object in a string.
 address <- function(x)
-    .Call2("address_asSTRSXP", x, PACKAGE="XVector")
+    .Call2("get_object_address", x, PACKAGE="XVector")
+
+### 'x' must be a list. Fast implementation of sapply(x, address).
+addresses <- function(x)
+    .Call2("get_list_addresses", x, PACKAGE="XVector")
 
 setMethod("==", signature(e1="SharedVector", e2="SharedVector"),
     function(e1, e2) address(e1@xp) == address(e2@xp)

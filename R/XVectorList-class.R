@@ -125,9 +125,9 @@ setReplaceMethod("names", "XVectorList",
     pool_len <- length(x@pool)
     if (pool_len == 0L)
         return(x)
-    addresses <- sapply(x@pool@xp_list, address)
-    keep_idx <- which(!duplicated(addresses))
-    remap <- match(addresses, addresses[keep_idx])
+    addr <- addresses(x@pool@xp_list)
+    keep_idx <- which(!duplicated(addr))
+    remap <- match(addr, addr[keep_idx])
     x@pool <- x@pool[keep_idx]
     x@ranges@group <- remap[x@ranges@group]
     x

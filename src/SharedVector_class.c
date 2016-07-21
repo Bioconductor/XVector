@@ -8,18 +8,51 @@
 
 
 /****************************************************************************
- * --- .Call ENTRY POINT ---
+ * get_object_address() and get_list_addresses()
+ *
  * From R:
- *   .Call("address_asSTRSXP", 6:4, PACKAGE="XVector")
- *   .Call("address_asSTRSXP", new("externalptr"), PACKAGE="XVector")
+ *   .Call("get_object_address", 6:4, PACKAGE="XVector")
+ *   .Call("get_object_address", new("externalptr"), PACKAGE="XVector")
  */
 
-SEXP address_asSTRSXP(SEXP s)
+SEXP address_as_CHARSXP(SEXP x)
 {
-        char buf[40]; /* should be enough, even for 128-bit addresses */
+	static char buf[40]; /* should be enough, even for 128-bit addresses */
 
-        snprintf(buf, sizeof(buf), "%p", s);
-        return mkString(buf);
+	snprintf(buf, sizeof(buf), "%p", x);
+	return mkChar(buf);
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP get_object_address(SEXP x)
+{
+	SEXP ans, ans_elt;
+
+	PROTECT(ans_elt = address_as_CHARSXP(x));
+	PROTECT(ans = ScalarString(ans_elt));
+	UNPROTECT(2);
+	return ans;
+}
+
+/* --- .Call ENTRY POINT --- */
+SEXP get_list_addresses(SEXP x)
+{
+	int x_len, i;
+	SEXP ans, x_elt, ans_elt;
+
+	if (!isVectorList(x))  // IS_LIST() is broken
+		error("XVector internal error in get_list_addresses(): "
+		      "'x' must be a list");
+	x_len = LENGTH(x);
+	PROTECT(ans = NEW_CHARACTER(x_len));
+	for (i = 0; i < x_len; i++) {
+		x_elt = VECTOR_ELT(x, i);
+		PROTECT(ans_elt = address_as_CHARSXP(x_elt));
+		SET_STRING_ELT(ans, i, ans_elt);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
+	return ans;
 }
 
 

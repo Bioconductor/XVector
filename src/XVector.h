@@ -248,7 +248,9 @@ void _vector_mcopy(
 
 /* SharedVector_class.c */
 
-SEXP address_asSTRSXP(SEXP s);
+SEXP get_object_address(SEXP x);
+
+SEXP get_list_addresses(SEXP x);
 
 SEXP externalptr_new();
 
