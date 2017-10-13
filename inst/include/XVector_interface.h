@@ -16,6 +16,12 @@
  * io_utils.c
  */
 
+int filexp_read(
+	SEXP filexp,
+	char *buf,
+	int buf_size
+);
+
 int filexp_gets(
 	SEXP filexp,
 	char *buf,

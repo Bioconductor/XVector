@@ -13,6 +13,9 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(new_output_filexp, 4),
 	CALLMETHOD_DEF(finalize_filexp, 1),
 
+/* parse_RDS.c */
+	CALLMETHOD_DEF(parse_RDS_file, 3);
+
 /* SharedVector_class.c */
 	CALLMETHOD_DEF(get_object_address, 1),
 	CALLMETHOD_DEF(get_list_addresses, 1),
@@ -94,6 +97,7 @@ void R_init_XVector(DllInfo *info)
 	R_registerRoutines(info, NULL, callMethods, NULL, NULL);
 
 /* io_utils.c */
+	REGISTER_CCALLABLE(_filexp_read);
 	REGISTER_CCALLABLE(_filexp_gets);
 	REGISTER_CCALLABLE(_filexp_seek);
 	REGISTER_CCALLABLE(_filexp_rewind);

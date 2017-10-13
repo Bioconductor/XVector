@@ -12,6 +12,12 @@
 
 /* io_utils.c */
 
+int _filexp_read(
+	SEXP filexp,
+	char *buf,
+	int buf_size
+);
+
 int _filexp_gets(
 	SEXP filexp,
 	char *buf,
@@ -53,6 +59,15 @@ SEXP finalize_filexp(SEXP filexp);
 int _delete_trailing_LF_or_CRLF(
 	const char *buf,
 	int buf_len
+);
+
+
+/* parse_RDS.c */
+
+SEXP parse_RDS_file(
+	SEXP filexp,
+	SEXP attribs_only,
+	SEXP attrib_names_cache
 );
 
 

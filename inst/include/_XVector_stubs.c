@@ -31,6 +31,11 @@ void stubname Targs \
  * Stubs for callables defined in io_utils.c
  */
 
+DEFINE_CCALLABLE_STUB(int, filexp_read,
+	(SEXP filexp, char *buf, int buf_size),
+	(     filexp,       buf,     buf_size)
+)
+
 DEFINE_CCALLABLE_STUB(int, filexp_gets,
 	(SEXP filexp, char *buf, int buf_size, int *EOL_in_buf),
 	(     filexp,       buf,     buf_size,      EOL_in_buf)

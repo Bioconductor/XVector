@@ -101,6 +101,43 @@ static void iZFile_close(const ZFile *zfile)
 }
 
 /*
+  Here is how gzread() is declared in zlib.h:
+
+    int gzread(gzFile file, voidp buf, unsigned len);
+
+  And also, according to zlib.h:
+
+    gzread returns the number of uncompressed bytes actually read, less
+    than len for end of file, or -1 for error.
+
+  But gzread returns an int and len is an unsigned int so can be > INT_MAX.
+  So how can gzread return the number of uncompressed bytes actually read
+  when len is INT_MAX? Sounds like poor interface design to me.
+  So for iZFile_read(), we set the type of buf_size to int, not unsigned int.
+*/
+static int iZFile_read(const ZFile *zfile, char *buf, int buf_size)
+{
+	int ztype;
+	void *file;
+
+	ztype = zfile->ztype;
+	file = zfile->file;
+	switch (ztype) {
+	    case UNCOMPRESSED:
+	    case GZ_TYPE:
+		return gzread((gzFile) file, buf, (unsigned int) buf_size);
+//#ifndef _WIN32
+//	    case BZ2_TYPE:
+//		break;
+//#endif
+	    default:
+		error(INTERNAL_ERR_IN "iZFile_read(): "
+		      "invalid ztype value %d", ztype);
+	}
+	return 0;
+}
+
+/*
  * Similar to fgets()/gzgets(), except that it returns a code instead of
  * NULL/Z_NULL or a pointer to the buffer. The returned code can be:
  *    2: if reading stopped after an EOF or a newline,
@@ -435,6 +472,12 @@ static void ZFile_close(const ZFile *zfile)
 		R_CheckUserInterrupt(); \
 		i = 0; \
 	} \
+}
+
+int _filexp_read(SEXP filexp, char *buf, int buf_size)
+{
+	CHECK_USER_INTERRUPT(2000);
+	return iZFile_read(R_ExternalPtrAddr(filexp), buf, buf_size);
 }
 
 int _filexp_gets(SEXP filexp, char *buf, int buf_size, int *EOL_in_buf)
