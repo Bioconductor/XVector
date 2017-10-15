@@ -14,7 +14,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(finalize_filexp, 1),
 
 /* parse_RDS.c */
-	CALLMETHOD_DEF(read_RDS_file, 2),
+	CALLMETHOD_DEF(read_RDS_file, 3),
 
 /* SharedVector_class.c */
 	CALLMETHOD_DEF(get_object_address, 1),

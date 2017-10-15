@@ -66,7 +66,8 @@ int _delete_trailing_LF_or_CRLF(
 
 SEXP read_RDS_file(
 	SEXP filexp,
-	SEXP mode
+	SEXP mode,
+	SEXP attribs_dump
 );
 
 
