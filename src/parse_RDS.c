@@ -4,6 +4,14 @@
  *                            Author: H. Pag\`es                            *
  ****************************************************************************
  ****************************************************************************/
+
+/*
+  The current implementation assumes that:
+    - sizeof(int) = 4
+    - sizeof(double) = sizeof(long long int) = 8
+    - platform is little endian
+*/
+
 #include "XVector.h"
 #include "IRanges_interface.h"
 #include "S4Vectors_interface.h"
@@ -113,7 +121,7 @@ static void read_RDS_chars(SEXP filexp, size_t n, int parse_only,
 	return;
 }
 
-static void swap_4_bytes(char *bytes)
+static void swap_4_bytes(unsigned char *bytes)
 {
 	unsigned int *tmp;
 
@@ -125,7 +133,26 @@ static void swap_4_bytes(char *bytes)
 	return;
 }
 
-static void swap_8_bytes(char *bytes)
+static const char *read_RDS_ints(SEXP filexp, size_t n, int parse_only,
+		int *buf)
+{
+	const char *errmsg;
+	size_t i;
+
+	/* Integer values are *always* 4 bytes in an RDS file, even if
+	   sizeof(int) != 4 on the machine running this code! */
+	errmsg = read_RDS_bytes(filexp, n * 4, parse_only,
+				(unsigned char *) buf);
+	if (errmsg != NULL)
+		return errmsg;
+	/* FIXME: Don't swap bytes if platform is big endian */
+	if (!parse_only)
+		for (i = 0; i < n; i++)
+			swap_4_bytes((unsigned char *) (buf + i));
+	return NULL;
+}
+
+static void swap_8_bytes(unsigned char *bytes)
 {
 	unsigned long long int *tmp;
 
@@ -141,60 +168,54 @@ static void swap_8_bytes(char *bytes)
 	return;
 }
 
-static const char *read_RDS_ints(SEXP filexp, size_t n, int parse_only,
-		int *buf)
-{
-	size_t n2, i;
-	const char *errmsg;
-
-	n2 = sizeof(int) * n;
-	errmsg = read_RDS_bytes(filexp, n2, parse_only,
-				(unsigned char *) buf);
-	if (errmsg != NULL)
-		return errmsg;
-	/* FIXME: Don't swap bytes if platform is big endian */
-	if (!parse_only)
-		for (i = 0; i < n; i++)
-			swap_4_bytes((char *) (buf + i));
-	return NULL;	
-}
-
 static const char *read_RDS_doubles(SEXP filexp, size_t n, int parse_only,
 		double *buf)
 {
-	size_t n2, i;
 	const char *errmsg;
+	size_t i;
 
-	n2 = sizeof(double) * n;
-	errmsg = read_RDS_bytes(filexp, n2, parse_only,
+	/* Double values are *always* 8 bytes in an RDS file, even if
+	   sizeof(double) != 8 on the machine running this code! */
+	errmsg = read_RDS_bytes(filexp, n * 8, parse_only,
 				(unsigned char *) buf);
 	if (errmsg != NULL)
 		return errmsg;
 	/* FIXME: Don't swap bytes if platform is big endian */
 	if (!parse_only)
 		for (i = 0; i < n; i++)
-			swap_8_bytes((char *) (buf + i));
-	return NULL;	
+			swap_8_bytes((unsigned char *) (buf + i));
+	return NULL;
 }
 
-/* Long vectors NOT supported yet! */
-static int read_RDS_vector_length(SEXP filexp)
+static R_xlen_t read_RDS_vector_length(SEXP filexp)
 {
 	const char *errmsg;
-	int vector_length;
+	unsigned char buf[8], LONGLENGTH_bytes[4] = {0xff, 0xff, 0xff, 0xff};
+	int *length;
+	long long int *long_length;
 
-	errmsg = read_RDS_ints(filexp, 1, 0, &vector_length);
+	errmsg = read_RDS_bytes(filexp, 4, 0, buf);
 	if (errmsg != NULL)
 		error(errmsg);
-	return vector_length;
+	if (memcmp(buf, LONGLENGTH_bytes, 4) != 0) {
+		swap_4_bytes(buf);
+		length = (int *) buf;
+		return (R_xlen_t) *length;
+	}
+	errmsg = read_RDS_bytes(filexp, 8, 0, buf);
+	if (errmsg != NULL)
+		error(errmsg);
+	swap_8_bytes(buf);
+	long_length = (long long int *) buf;
+	return (R_xlen_t) *long_length;
 }
 
-/* Long strings not supported. String encoding not supported. */
+/* Encoded strings not supported. */
 static int read_RDS_string(SEXP filexp, int parse_only, CharAE *string_buf)
 {
 	const char *errmsg;
 	unsigned char buf[4], NA_STRING_bytes[4] = {0xff, 0xff, 0xff, 0xff};
-	int ans_len;
+	R_xlen_t ans_len;
 
 	errmsg = read_RDS_bytes(filexp, sizeof(buf), 0, buf);
 	if (errmsg != NULL)
@@ -220,12 +241,13 @@ static int read_RDS_string(SEXP filexp, int parse_only, CharAE *string_buf)
 static SEXP read_RDS_character_vector(SEXP filexp, int parse_only,
 		CharAE *string_buf, int indent)
 {
-	int ans_len, i, is_na;
+	R_xlen_t ans_len, i;
+	int is_na;
 	SEXP ans, ans_elt;
 
 	PRINTIFVERBOSE1("start reading character vector");
 	ans_len = read_RDS_vector_length(filexp);
-	PRINTIFVERBOSE2("object length: %d", ans_len);
+	PRINTIFVERBOSE2("object length: %td", ans_len);
 	ans = parse_only ? R_NilValue : PROTECT(NEW_CHARACTER(ans_len));
 	for (i = 0; i < ans_len; i++) {
 		is_na = read_RDS_string(filexp, parse_only, string_buf);
@@ -249,13 +271,13 @@ static SEXP read_RDS_character_vector(SEXP filexp, int parse_only,
 static SEXP read_RDS_atomic_vector(SEXP filexp, SEXPTYPE type,
 		int parse_only, int indent)
 {
-	int ans_len;
+	R_xlen_t ans_len;
 	SEXP ans;
 	const char *errmsg;
 
 	PRINTIFVERBOSE2("start reading %s vector", CHAR(type2str(type)));
 	ans_len = read_RDS_vector_length(filexp);
-	PRINTIFVERBOSE2("object length: %d", ans_len);
+	PRINTIFVERBOSE2("object length: %td", ans_len);
 	ans = parse_only ? R_NilValue : PROTECT(allocVector(type, ans_len));
 	switch (type) {
 	    case LGLSXP:
@@ -294,12 +316,12 @@ static SEXP read_RDS_object(SEXP filexp, int mode, SEXP attribs_dump,
 static SEXP read_RDS_list(SEXP filexp, int parse_only,
 		CharAE *string_buf, CharAEAE *attrnames_buf, int indent)
 {
-	int ans_len, i;
+	R_xlen_t ans_len, i;
 	SEXP ans, ans_elt;
 
 	PRINTIFVERBOSE1("start reading list object");
 	ans_len = read_RDS_vector_length(filexp);
-	PRINTIFVERBOSE2("object length: %d", ans_len);
+	PRINTIFVERBOSE2("object length: %td", ans_len);
 	ans = parse_only ? R_NilValue : PROTECT(NEW_LIST(ans_len));
 	for (i = 0; i < ans_len; i++) {
 		ans_elt = read_RDS_object(filexp, parse_only, R_NilValue,
