@@ -46,12 +46,10 @@ static void printf_margin(int indent)
 	} \
 }
 
-static const char *RDStype2str(unsigned char type)
+static SEXPTYPE RDStype2Rtype(unsigned char type)
 {
 	/* NULL type is 0xfe in RDS, not NILSXP */
-	if (type == 0xfe)
-		return "NULL";
-	return CHAR(type2str(type));
+	return type == 0xfe ? NILSXP : type;
 }
 
 #define	IS_ATOMIC_TYPE(type) \
@@ -208,6 +206,41 @@ static R_xlen_t read_RDS_vector_length(SEXP filexp)
 	swap_8_bytes(buf);
 	long_length = (long long int *) buf;
 	return (R_xlen_t) *long_length;
+}
+
+SEXP get_typeof_and_length_as_list(SEXP filexp, SEXPTYPE type)
+{
+	R_xlen_t length;
+	SEXP ans, ans_elt, ans_names, ans_names_elt;
+
+	length = type == NILSXP ? 0 : read_RDS_vector_length(filexp);
+
+	ans = PROTECT(NEW_LIST(2));
+
+	/* Set "typeof" element. */
+	ans_elt = PROTECT(ScalarString(type2str(type)));
+	SET_VECTOR_ELT(ans, 0, ans_elt);
+	UNPROTECT(1);
+	/* Set "length" element. */
+	if (length <= INT_MAX)
+		ans_elt = PROTECT(ScalarInteger((int) length));
+	else
+		ans_elt = PROTECT(ScalarReal((double) length));
+	SET_VECTOR_ELT(ans, 1, ans_elt);
+	UNPROTECT(1);
+
+	ans_names = PROTECT(NEW_CHARACTER(2));
+	ans_names_elt = PROTECT(mkChar("typeof"));
+	SET_STRING_ELT(ans_names, 0, ans_names_elt);
+	UNPROTECT(1);
+	ans_names_elt = PROTECT(mkChar("length"));
+	SET_STRING_ELT(ans_names, 1, ans_names_elt);
+	UNPROTECT(1);
+	SET_NAMES(ans, ans_names);
+	UNPROTECT(1);
+
+	UNPROTECT(1);
+	return ans;
 }
 
 /* Encoded strings not supported. */
@@ -432,16 +465,18 @@ static void read_RDS_attribs(SEXP filexp, int mode,
      mode 1: (parse-only mode) Don't load anything and return R_NilValue.
      mode 2: Load only the attributes and dump them in the 'attribs_dump'
              environment.
-   Mode 3 is like mode 2 but with early bailout if the header of the object
-   indicates that it has not attributes. This is the only mode where the
-   object is not guaranteed to be fully parsed (only its header gets parsed
-   if the object has no attributes). */
+   Mode 3 is like mode 2 but with early bailout if the object header indicates
+   that the object has no attributes. So in this mode the object gets fully
+   parsed only if it has attributes. Otherwise only its header gets parsed.
+   In mode 4 only the object header and length get parsed.
+ */
 static SEXP read_RDS_object(SEXP filexp, int mode, SEXP attribs_dump,
 		CharAE *string_buf, CharAEAE *attrnames_buf, int indent)
 {
 	const char *errmsg;
-	unsigned char header[4], type;
+	unsigned char header[4];
 	int has_attribs;
+	SEXPTYPE type;
 	SEXP ans;
 
 	PRINTIFVERBOSE1("start reading object header");
@@ -464,22 +499,24 @@ static SEXP read_RDS_object(SEXP filexp, int mode, SEXP attribs_dump,
 	} else {
 		error("unexpected 3rd byte in object header");
 	}
-	type = header[3];
-	PRINTIFVERBOSE2("object type: %s", RDStype2str(type));
-	if (type == 0xfe) {  /* NULL type is 0xfe in RDS, not NILSXP */
+	type = RDStype2Rtype(header[3]);
+	PRINTIFVERBOSE2("object type: %s", CHAR(type2str(type)));
+	if (mode == 4)
+		return get_typeof_and_length_as_list(filexp, type);
+	if (type == NILSXP) {
 		ans = R_NilValue;
 	} else if (type == STRSXP) {
 		ans = read_RDS_character_vector(filexp, mode != 0,
 						string_buf, indent);
 	} else if (IS_ATOMIC_TYPE(type)) {
-		ans = read_RDS_atomic_vector(filexp, (SEXPTYPE) type,
-					     mode != 0, indent);
+		ans = read_RDS_atomic_vector(filexp, type, mode != 0,
+					     indent);
 	} else if (type == VECSXP) {
 		ans = read_RDS_list(filexp, mode != 0,
 				    string_buf, attrnames_buf, indent);
 	} else {
 		error("RDS parser does not support type: %s",
-		      RDStype2str(type));
+		      CHAR(type2str(type)));
 	}
 	if (has_attribs) {
 		if (!isNull(ans))
