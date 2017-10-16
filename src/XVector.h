@@ -64,10 +64,15 @@ int _delete_trailing_LF_or_CRLF(
 
 /* parse_RDS.c */
 
-SEXP read_RDS_file(
+SEXP RDS_read_file(
 	SEXP filexp,
 	SEXP mode,
 	SEXP attribs_dump
+);
+
+SEXP RDS_extract_vector_positions(
+	SEXP filexp,
+	SEXP pos
 );
 
 

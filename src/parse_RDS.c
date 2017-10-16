@@ -76,7 +76,7 @@ static void *dataptr(SEXP x)
 	      "%s type not supported", CHAR(type2str(TYPEOF(x))));
 }
 
-static const char *read_RDS_bytes(SEXP filexp, size_t n, int parse_only,
+static const char *RDS_read_bytes(SEXP filexp, size_t n, int parse_only,
 		unsigned char *buf)
 {
 	int n2, n3;
@@ -103,14 +103,14 @@ static const char *read_RDS_bytes(SEXP filexp, size_t n, int parse_only,
 	return NULL;
 }
 
-static void read_RDS_chars(SEXP filexp, size_t n, int parse_only,
+static void RDS_read_chars(SEXP filexp, size_t n, int parse_only,
 		CharAE *string_buf)
 {
 	const char *errmsg;
 
 	if (!parse_only && n > string_buf->_buflength)
 		CharAE_extend(string_buf, n);
-	errmsg = read_RDS_bytes(filexp, n, parse_only,
+	errmsg = RDS_read_bytes(filexp, n, parse_only,
 				(unsigned char *) string_buf->elts);
 	if (errmsg != NULL)
 		error(errmsg);
@@ -131,7 +131,7 @@ static void swap_4_bytes(unsigned char *bytes)
 	return;
 }
 
-static const char *read_RDS_ints(SEXP filexp, size_t n, int parse_only,
+static const char *RDS_read_ints(SEXP filexp, size_t n, int parse_only,
 		int *buf)
 {
 	const char *errmsg;
@@ -139,7 +139,7 @@ static const char *read_RDS_ints(SEXP filexp, size_t n, int parse_only,
 
 	/* Integer values are *always* 4 bytes in an RDS file, even if
 	   sizeof(int) != 4 on the machine running this code! */
-	errmsg = read_RDS_bytes(filexp, n * 4, parse_only,
+	errmsg = RDS_read_bytes(filexp, n * 4, parse_only,
 				(unsigned char *) buf);
 	if (errmsg != NULL)
 		return errmsg;
@@ -166,7 +166,7 @@ static void swap_8_bytes(unsigned char *bytes)
 	return;
 }
 
-static const char *read_RDS_doubles(SEXP filexp, size_t n, int parse_only,
+static const char *RDS_read_doubles(SEXP filexp, size_t n, int parse_only,
 		double *buf)
 {
 	const char *errmsg;
@@ -174,7 +174,7 @@ static const char *read_RDS_doubles(SEXP filexp, size_t n, int parse_only,
 
 	/* Double values are *always* 8 bytes in an RDS file, even if
 	   sizeof(double) != 8 on the machine running this code! */
-	errmsg = read_RDS_bytes(filexp, n * 8, parse_only,
+	errmsg = RDS_read_bytes(filexp, n * 8, parse_only,
 				(unsigned char *) buf);
 	if (errmsg != NULL)
 		return errmsg;
@@ -185,22 +185,23 @@ static const char *read_RDS_doubles(SEXP filexp, size_t n, int parse_only,
 	return NULL;
 }
 
-static R_xlen_t read_RDS_vector_length(SEXP filexp)
+static R_xlen_t RDS_read_vector_length(SEXP filexp)
 {
 	const char *errmsg;
-	unsigned char buf[8], LONGLENGTH_bytes[4] = {0xff, 0xff, 0xff, 0xff};
+	const unsigned char LONG_LENGTH_bytes[4] = {0xff, 0xff, 0xff, 0xff};
+	unsigned char buf[8];
 	int *length;
 	long long int *long_length;
 
-	errmsg = read_RDS_bytes(filexp, 4, 0, buf);
+	errmsg = RDS_read_bytes(filexp, 4, 0, buf);
 	if (errmsg != NULL)
 		error(errmsg);
-	if (memcmp(buf, LONGLENGTH_bytes, 4) != 0) {
+	if (memcmp(buf, LONG_LENGTH_bytes, 4) != 0) {
 		swap_4_bytes(buf);
 		length = (int *) buf;
 		return (R_xlen_t) *length;
 	}
-	errmsg = read_RDS_bytes(filexp, 8, 0, buf);
+	errmsg = RDS_read_bytes(filexp, 8, 0, buf);
 	if (errmsg != NULL)
 		error(errmsg);
 	swap_8_bytes(buf);
@@ -213,7 +214,7 @@ SEXP get_typeof_and_length_as_list(SEXP filexp, SEXPTYPE type)
 	R_xlen_t length;
 	SEXP ans, ans_elt, ans_names, ans_names_elt;
 
-	length = type == NILSXP ? 0 : read_RDS_vector_length(filexp);
+	length = type == NILSXP ? 0 : RDS_read_vector_length(filexp);
 
 	ans = PROTECT(NEW_LIST(2));
 
@@ -244,19 +245,20 @@ SEXP get_typeof_and_length_as_list(SEXP filexp, SEXPTYPE type)
 }
 
 /* Encoded strings not supported. */
-static int read_RDS_string(SEXP filexp, int parse_only, CharAE *string_buf)
+static int RDS_read_string(SEXP filexp, int parse_only, CharAE *string_buf)
 {
 	const char *errmsg;
-	unsigned char buf[4], NA_STRING_bytes[4] = {0xff, 0xff, 0xff, 0xff};
+	const unsigned char NA_STRING_bytes[4] = {0xff, 0xff, 0xff, 0xff};
+	unsigned char buf[4];
 	R_xlen_t ans_len;
 
-	errmsg = read_RDS_bytes(filexp, sizeof(buf), 0, buf);
+	errmsg = RDS_read_bytes(filexp, sizeof(buf), 0, buf);
 	if (errmsg != NULL)
 		error(errmsg);
 	if (buf[0] != 0 || buf[2] != 0 || buf[3] != 0x09)
 		error("unsupported RDS file");
 	if (buf[1] == 0) {
-		errmsg = read_RDS_bytes(filexp, sizeof(buf), 0, buf);
+		errmsg = RDS_read_bytes(filexp, sizeof(buf), 0, buf);
 		if (errmsg != NULL)
 			error(errmsg);
 		if (memcmp(buf, NA_STRING_bytes, sizeof(buf)) != 0)
@@ -265,13 +267,13 @@ static int read_RDS_string(SEXP filexp, int parse_only, CharAE *string_buf)
 	}
 	if (buf[1] != 0x04)
 		error("unsupported string header");
-	ans_len = read_RDS_vector_length(filexp);
-	read_RDS_chars(filexp, (size_t) ans_len, parse_only, string_buf);
+	ans_len = RDS_read_vector_length(filexp);
+	RDS_read_chars(filexp, (size_t) ans_len, parse_only, string_buf);
 	return 0;
 }
 
 /* Return R_NilValue if parse_only != 0. */
-static SEXP read_RDS_character_vector(SEXP filexp, int parse_only,
+static SEXP RDS_read_character_vector(SEXP filexp, int parse_only,
 		CharAE *string_buf, int indent)
 {
 	R_xlen_t ans_len, i;
@@ -279,11 +281,11 @@ static SEXP read_RDS_character_vector(SEXP filexp, int parse_only,
 	SEXP ans, ans_elt;
 
 	PRINTIFVERBOSE1("start reading character vector");
-	ans_len = read_RDS_vector_length(filexp);
+	ans_len = RDS_read_vector_length(filexp);
 	PRINTIFVERBOSE2("object length: %td", ans_len);
 	ans = parse_only ? R_NilValue : PROTECT(NEW_CHARACTER(ans_len));
 	for (i = 0; i < ans_len; i++) {
-		is_na = read_RDS_string(filexp, parse_only, string_buf);
+		is_na = RDS_read_string(filexp, parse_only, string_buf);
 		if (parse_only)
 			continue;
 		if (is_na) {
@@ -301,7 +303,7 @@ static SEXP read_RDS_character_vector(SEXP filexp, int parse_only,
 }
 
 /* Return R_NilValue if parse_only != 0. */
-static SEXP read_RDS_atomic_vector(SEXP filexp, SEXPTYPE type,
+static SEXP RDS_read_atomic_vector(SEXP filexp, SEXPTYPE type,
 		int parse_only, int indent)
 {
 	R_xlen_t ans_len;
@@ -309,29 +311,29 @@ static SEXP read_RDS_atomic_vector(SEXP filexp, SEXPTYPE type,
 	const char *errmsg;
 
 	PRINTIFVERBOSE2("start reading %s vector", CHAR(type2str(type)));
-	ans_len = read_RDS_vector_length(filexp);
+	ans_len = RDS_read_vector_length(filexp);
 	PRINTIFVERBOSE2("object length: %td", ans_len);
 	ans = parse_only ? R_NilValue : PROTECT(allocVector(type, ans_len));
 	switch (type) {
 	    case LGLSXP:
 	    case INTSXP:
-		errmsg = read_RDS_ints(filexp, (size_t) ans_len,
+		errmsg = RDS_read_ints(filexp, (size_t) ans_len,
 				parse_only, parse_only ? NULL : dataptr(ans));
 		break;
 	    case REALSXP:
-		errmsg = read_RDS_doubles(filexp, (size_t) ans_len,
+		errmsg = RDS_read_doubles(filexp, (size_t) ans_len,
 				parse_only, parse_only ? NULL : dataptr(ans));
 		break;
 	    case CPLXSXP:
-		errmsg = read_RDS_doubles(filexp, (size_t) ans_len * 2,
+		errmsg = RDS_read_doubles(filexp, (size_t) ans_len * 2,
 				parse_only, parse_only ? NULL : dataptr(ans));
 		break;
 	    case RAWSXP:
-		errmsg = read_RDS_bytes(filexp, (size_t) ans_len,
+		errmsg = RDS_read_bytes(filexp, (size_t) ans_len,
 				parse_only, parse_only ? NULL : dataptr(ans));
 		break;
 	    default:
-		error("XVector internal error in read_RDS_atomic_vector(): "
+		error("XVector internal error in RDS_read_atomic_vector(): "
 		      "unexpected type: %s", CHAR(type2str(type)));
 	}
 	if (errmsg != NULL)
@@ -342,23 +344,23 @@ static SEXP read_RDS_atomic_vector(SEXP filexp, SEXPTYPE type,
 	return ans;
 }
 
-static SEXP read_RDS_object(SEXP filexp, int mode, SEXP attribs_dump,
-		CharAE *string_buf, CharAEAE *attrnames_buf, int indent);
+static SEXP RDS_read_object(SEXP filexp, int mode, SEXP attribs_dump,
+		CharAE *string_buf, CharAEAE *symbols_buf, int indent);
 
 /* Return R_NilValue if parse_only != 0. */
-static SEXP read_RDS_list(SEXP filexp, int parse_only,
-		CharAE *string_buf, CharAEAE *attrnames_buf, int indent)
+static SEXP RDS_read_list(SEXP filexp, int parse_only,
+		CharAE *string_buf, CharAEAE *symbols_buf, int indent)
 {
 	R_xlen_t ans_len, i;
 	SEXP ans, ans_elt;
 
 	PRINTIFVERBOSE1("start reading list object");
-	ans_len = read_RDS_vector_length(filexp);
+	ans_len = RDS_read_vector_length(filexp);
 	PRINTIFVERBOSE2("object length: %td", ans_len);
 	ans = parse_only ? R_NilValue : PROTECT(NEW_LIST(ans_len));
 	for (i = 0; i < ans_len; i++) {
-		ans_elt = read_RDS_object(filexp, parse_only, R_NilValue,
-					  string_buf, attrnames_buf,
+		ans_elt = RDS_read_object(filexp, parse_only, R_NilValue,
+					  string_buf, symbols_buf,
 					  indent + 1);
 		if (parse_only)
 			continue;
@@ -372,94 +374,95 @@ static SEXP read_RDS_list(SEXP filexp, int parse_only,
 	return ans;
 }
 
-static int read_RDS_attrib_separator(SEXP filexp)
+static int RDS_read_attrib_separator(SEXP filexp)
 {
 	const char *errmsg;
-	unsigned char buf[4], EOA_bytes[4] = {0x00, 0x00, 0x00, 0xfe},
-			      ATTRIB_sep[4] = {0x00, 0x00, 0x04, 0x02};
+	const unsigned char EOA_bytes[4] = {0x00, 0x00, 0x00, 0xfe},
+			    ATTRIB_SEP_bytes[4] = {0x00, 0x00, 0x04, 0x02};
+	unsigned char buf[4];
 
-	errmsg = read_RDS_bytes(filexp, sizeof(buf), 0, buf);
+	errmsg = RDS_read_bytes(filexp, sizeof(buf), 0, buf);
 	if (errmsg != NULL)
 		error(errmsg);
 	if (memcmp(buf, EOA_bytes, sizeof(buf)) == 0)
 		return 0;
-	if (memcmp(buf, ATTRIB_sep, sizeof(buf)) != 0)
+	if (memcmp(buf, ATTRIB_SEP_bytes, sizeof(buf)) != 0)
 		error("unrecognized attribute header");
 	return 1;
 }
 
-/* Store attrib name (as 0-terminated string) in one of 'attrnames_buf'
-   elements. Return the "key" of this element i.e. its 0-based index in
-   'attrnames_buf'. */
-static unsigned int read_RDS_attrname(SEXP filexp, CharAEAE *attrnames_buf,
+/* Store symbol (as 0-terminated string) in one of 'symbols_buf' elements.
+   Return the "key" of this element i.e. its 0-based index in 'symbols_buf'. */
+static unsigned int RDS_read_symbol(SEXP filexp, CharAEAE *symbols_buf,
 		int indent)
 {
 	const char *errmsg;
-	unsigned char buf[4], NEWATTRIB_bytes[4] = {0x00, 0x00, 0x00, 0x01};
+	const unsigned char NEW_SYMBOL_bytes[4] = {0x00, 0x00, 0x00, 0x01};
+	unsigned char buf[4];
 	unsigned int key;
 	CharAE *namebuf;
 
-	PRINTIFVERBOSE1("start reading attribute name");
-	errmsg = read_RDS_bytes(filexp, sizeof(buf), 0, buf);
+	PRINTIFVERBOSE1("start reading symbol");
+	errmsg = RDS_read_bytes(filexp, sizeof(buf), 0, buf);
 	if (errmsg != NULL)
 		error(errmsg);
-	if (memcmp(buf, NEWATTRIB_bytes, sizeof(buf)) == 0) {
-		/* New attrib name. */
+	if (memcmp(buf, NEW_SYMBOL_bytes, sizeof(buf)) == 0) {
+		/* New symbol. */
 		namebuf = new_CharAE(0);
-		if (read_RDS_string(filexp, 0, namebuf))
-			error("invalid attrib name (NA)");
+		if (RDS_read_string(filexp, 0, namebuf))
+			error("invalid symbol (NA)");
 		CharAE_insert_at(namebuf, CharAE_get_nelt(namebuf), '\0');
-		key = CharAEAE_get_nelt(attrnames_buf);
-		CharAEAE_insert_at(attrnames_buf, key, namebuf);
+		key = CharAEAE_get_nelt(symbols_buf);
+		CharAEAE_insert_at(symbols_buf, key, namebuf);
 	} else {
-		/* Known attrib name (i.e. already in 'attrnames_buf'). */
+		/* Known symbol (i.e. already in 'symbols_buf'). */
 		key = (((unsigned int) buf[0]) << 16) |
 		      (((unsigned int) buf[1]) << 8) |
 		       ((unsigned int) buf[2]);
 		if (buf[3] != 0xff || key == 0)
-			error("unsupported attrib name specifier");
+			error("unsupported symbol specifier");
 		key--;
 	}
-	PRINTIFVERBOSE2("done reading attribute name [%s]",
-			attrnames_buf->elts[key]->elts);
+	PRINTIFVERBOSE2("done reading symbol [%s]",
+			symbols_buf->elts[key]->elts);
 	return key;
 }
 
-/* Always parses the full attributes.
+/* Always parse the full attributes.
    In mode 0: Load and set the attributes on 'object', return R_NilValue.
    In mode 1: (parse-only mode) Don't load anything, don't set anything on
               'object' (which should be R_NilValue), and return R_NilValue;
    In mode 2: Load the attributes and do NOT set them on 'object' ('object'
 	      is ignored), but dump them in the 'attribs_dump' environment. */
-static void read_RDS_attribs(SEXP filexp, int mode,
+static void RDS_read_attribs(SEXP filexp, int mode,
 		SEXP object, SEXP attribs_dump,
-		CharAE *string_buf, CharAEAE *attrnames_buf, int indent)
+		CharAE *string_buf, CharAEAE *symbols_buf, int indent)
 {
 	unsigned int key;
 	SEXP attrval;
-	const char *attrname;
+	const char *symbol;
 
 	PRINTIFVERBOSE1("start reading object attributes");
-	while (read_RDS_attrib_separator(filexp)) {
-		key = read_RDS_attrname(filexp, attrnames_buf, indent + 1);
-		attrval = read_RDS_object(filexp, mode == 1, R_NilValue,
-					  string_buf, attrnames_buf,
+	while (RDS_read_attrib_separator(filexp)) {
+		key = RDS_read_symbol(filexp, symbols_buf, indent + 1);
+		attrval = RDS_read_object(filexp, mode == 1, R_NilValue,
+					  string_buf, symbols_buf,
 					  indent + 1);
 		if (mode == 1)
 			continue;
 		PROTECT(attrval);
-		attrname = attrnames_buf->elts[key]->elts;
+		symbol = symbols_buf->elts[key]->elts;
 		if (mode == 0)
-			setAttrib(object, install(attrname), attrval);
+			setAttrib(object, install(symbol), attrval);
 		else /* mode 2 */
-			defineVar(install(attrname), attrval, attribs_dump);
+			defineVar(install(symbol), attrval, attribs_dump);
 		UNPROTECT(1);
 	}
 	PRINTIFVERBOSE1("done reading object attributes");
 	return;
 }
 
-/* In modes 0-2, read_RDS_object() parses the full object but the specific
+/* In modes 0-2, RDS_read_object() parses the full object but the specific
    mode controls what parts of the object to load and to return as an SEXP:
      mode 0: Load everything and return the full object.
      mode 1: (parse-only mode) Don't load anything and return R_NilValue.
@@ -470,8 +473,8 @@ static void read_RDS_attribs(SEXP filexp, int mode,
    parsed only if it has attributes. Otherwise only its header gets parsed.
    In mode 4 only the object header and length get parsed.
  */
-static SEXP read_RDS_object(SEXP filexp, int mode, SEXP attribs_dump,
-		CharAE *string_buf, CharAEAE *attrnames_buf, int indent)
+static SEXP RDS_read_object(SEXP filexp, int mode, SEXP attribs_dump,
+		CharAE *string_buf, CharAEAE *symbols_buf, int indent)
 {
 	const char *errmsg;
 	unsigned char header[4];
@@ -480,7 +483,7 @@ static SEXP read_RDS_object(SEXP filexp, int mode, SEXP attribs_dump,
 	SEXP ans;
 
 	PRINTIFVERBOSE1("start reading object header");
-	errmsg = read_RDS_bytes(filexp, sizeof(header), 0, header);
+	errmsg = RDS_read_bytes(filexp, sizeof(header), 0, header);
 	if (errmsg != NULL)
 		error(errmsg);
 	if (header[0] != 0 || header[1] != 0)
@@ -506,14 +509,14 @@ static SEXP read_RDS_object(SEXP filexp, int mode, SEXP attribs_dump,
 	if (type == NILSXP) {
 		ans = R_NilValue;
 	} else if (type == STRSXP) {
-		ans = read_RDS_character_vector(filexp, mode != 0,
+		ans = RDS_read_character_vector(filexp, mode != 0,
 						string_buf, indent);
 	} else if (IS_ATOMIC_TYPE(type)) {
-		ans = read_RDS_atomic_vector(filexp, type, mode != 0,
+		ans = RDS_read_atomic_vector(filexp, type, mode != 0,
 					     indent);
 	} else if (type == VECSXP) {
-		ans = read_RDS_list(filexp, mode != 0,
-				    string_buf, attrnames_buf, indent);
+		ans = RDS_read_list(filexp, mode != 0,
+				    string_buf, symbols_buf, indent);
 	} else {
 		error("RDS parser does not support type: %s",
 		      CHAR(type2str(type)));
@@ -521,38 +524,109 @@ static SEXP read_RDS_object(SEXP filexp, int mode, SEXP attribs_dump,
 	if (has_attribs) {
 		if (!isNull(ans))
 			PROTECT(ans);
-		read_RDS_attribs(filexp, mode, ans, attribs_dump,
-				 string_buf, attrnames_buf, indent);
+		RDS_read_attribs(filexp, mode, ans, attribs_dump,
+				 string_buf, symbols_buf, indent);
 		if (!isNull(ans))
 			UNPROTECT(1);
 	}
 	return ans;
 }
 
-/* --- .Call ENTRY POINT --- */
-SEXP read_RDS_file(SEXP filexp, SEXP mode, SEXP attribs_dump)
+static void RDS_read_file_header(SEXP filexp)
 {
 	const char *errmsg;
-	unsigned char buf[14], RDS_header[14] = {0x58, 0x0a,
-						 0x00, 0x00, 0x00, 0x02,
-						 0x00, 0x03, 0x04, 0x02,
-						 0x00, 0x02, 0x03, 0x00};
-	int indent, mode0;
-	CharAE *string_buf;
-	CharAEAE *attrnames_buf;
+	const unsigned char RDS_header[14] = {0x58, 0x0a,
+					      0x00, 0x00, 0x00, 0x02,
+					      0x00, 0x03, 0x04, 0x02,
+					      0x00, 0x02, 0x03, 0x00};
+	unsigned char buf[sizeof(RDS_header)];
+	int indent;
 
 	indent = 0;
 	PRINTIFVERBOSE1("start reading file header");
-	errmsg = read_RDS_bytes(filexp, sizeof(buf), 0, buf);
+	errmsg = RDS_read_bytes(filexp, sizeof(buf), 0, buf);
 	if (errmsg != NULL)
 		error(errmsg);
 	if (memcmp(buf, RDS_header, sizeof(buf)) != 0)
 		error("does not look like an RDS file");
 	PRINTIFVERBOSE1("done reading file header");
+	return;
+}
+
+
+/****************************************************************************
+ * RDS_read_file()
+ */
+
+/* --- .Call ENTRY POINT --- */
+SEXP RDS_read_file(SEXP filexp, SEXP mode, SEXP attribs_dump)
+{
+	int mode0;
+	CharAE *string_buf;
+	CharAEAE *symbols_buf;
+
+	RDS_read_file_header(filexp);
 	mode0 = INTEGER(mode)[0];
 	string_buf = new_CharAE(0);
-	attrnames_buf = new_CharAEAE(0, 0);
-	return read_RDS_object(filexp, mode0, attribs_dump,
-			       string_buf, attrnames_buf, indent + 1);
+	symbols_buf = new_CharAEAE(0, 0);
+	return RDS_read_object(filexp, mode0, attribs_dump,
+			       string_buf, symbols_buf, 1);
+}
+
+
+/****************************************************************************
+ * RDS_extract_vector_positions()
+ */
+
+static SEXP RDS_read_atomic_vector_elts(SEXP filexp,
+		SEXPTYPE x_type, R_xlen_t x_len,
+		const void *pos, R_xlen_t pos_len, int pos_is_L)
+{
+	SEXP ans;
+
+	return ans;
+}
+
+/* --- .Call ENTRY POINT ---
+ * Random access to the elements of a serialized atomic vector.
+ * 'pos' must be an integer or LLint vector containing valid element positions
+ * in the serialized vector. The positions must be 1-based. So no NAs and all
+ * values must be >= 1 and <= vector length. In addition 'pos' must be sorted
+ * in strictly ascending order.
+ * Character vectors not supported yet.
+ */
+SEXP RDS_extract_vector_positions(SEXP filexp, SEXP pos)
+{
+	const char *errmsg;
+	unsigned char header[4];
+	SEXPTYPE x_type;
+	R_xlen_t x_len, pos_len;
+	int pos_is_L;
+	const void *pos_dataptr;
+
+	/* Get type and length of serialized atomic vector. */
+	RDS_read_file_header(filexp);
+	errmsg = RDS_read_bytes(filexp, sizeof(header), 0, header);
+	if (errmsg != NULL)
+		error(errmsg);
+	x_type = RDStype2Rtype(header[3]);
+	if (!IS_ATOMIC_TYPE(x_type) || x_type == STRSXP)
+		error("%s type not supported", CHAR(type2str(x_type)));
+	x_len = RDS_read_vector_length(filexp);
+
+	if (IS_INTEGER(pos)) {
+		pos_is_L = 0;
+		pos_len = XLENGTH(pos);
+		pos_dataptr = INTEGER(pos);
+	} else if (is_LLint(pos)) {
+		pos_is_L = 1;
+		pos_len = get_LLint_length(pos);
+		pos_dataptr = get_LLint_dataptr(pos);
+	} else {
+		error("'pos' must be an integer or LLint vector");
+	}
+	return RDS_read_atomic_vector_elts(filexp,
+			x_type, x_len,
+			pos_dataptr, pos_len, pos_is_L);
 }
 
