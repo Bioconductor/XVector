@@ -76,6 +76,23 @@ static void *dataptr(SEXP x)
 	      "%s type not supported", CHAR(type2str(TYPEOF(x))));
 }
 
+static size_t type2atomsize(SEXPTYPE type)
+{
+	switch (type) {
+	    case LGLSXP:
+	    case INTSXP:
+		return sizeof(int);
+	    case REALSXP:
+		return sizeof(double);
+	    case CPLXSXP:
+		return sizeof(Rcomplex);
+	    case RAWSXP:
+		return sizeof(Rbyte);
+	}
+	error("XVector internal error in type2atomsize(): "
+	      "undefined atom size for type %s", CHAR(type2str(type)));
+}
+
 static const char *RDS_read_bytes(SEXP filexp, size_t n, int parse_only,
 		unsigned char *buf)
 {
@@ -578,21 +595,87 @@ SEXP RDS_read_file(SEXP filexp, SEXP mode, SEXP attribs_dump)
  * RDS_extract_vector_positions()
  */
 
+static void RDS_read_atomic_vector_elt_at_offset(SEXP filexp,
+		long long int offset, SEXP ans, R_xlen_t i)
+{
+	size_t n;
+	const char *errmsg;
+
+	if (offset < 0)
+		error("positions of elements to extract must be sorted");
+	n = offset * type2atomsize(TYPEOF(ans));
+	errmsg = RDS_read_bytes(filexp, n, 1, NULL);
+	if (errmsg != NULL)
+		error(errmsg);
+	switch (TYPEOF(ans)) {
+	    case LGLSXP:
+		errmsg = RDS_read_ints(filexp, 1, 0, LOGICAL(ans) + i);
+		break;
+	    case INTSXP:
+		errmsg = RDS_read_ints(filexp, 1, 0, INTEGER(ans) + i);
+		break;
+	    case REALSXP:
+		errmsg = RDS_read_doubles(filexp, 1, 0, REAL(ans) + i);
+		break;
+	    case CPLXSXP:
+		errmsg = RDS_read_doubles(filexp, 2, 0,
+					  (double *) (COMPLEX(ans) + i));
+		break;
+	    case RAWSXP:
+		errmsg = RDS_read_bytes(filexp, 1, 0, RAW(ans) + i);
+		break;
+	    default:
+		error("XVector internal error in "
+		      "RDS_read_atomic_vector_elt_at_offset(): "
+		      "unexpected type: %s", CHAR(type2str(TYPEOF(ans))));
+	}
+	if (errmsg != NULL)
+		error(errmsg);
+	return;
+}
+
 static SEXP RDS_read_atomic_vector_elts(SEXP filexp,
 		SEXPTYPE x_type, R_xlen_t x_len,
 		const void *pos, R_xlen_t pos_len, int pos_is_L)
 {
 	SEXP ans;
+	R_xlen_t i;
+	long long int pos_elt, prev_pos_elt, offset;
+	int tmp, is_na;
 
+	ans = PROTECT(allocVector(x_type, pos_len));
+	prev_pos_elt = 0;
+	for (i = 0; i < pos_len; i++) {
+		if (pos_is_L) {
+			pos_elt = ((const long long int *) pos)[i];
+			is_na = pos_elt == NA_LLINT;
+		} else {
+			tmp = ((const int *) pos)[i];
+			is_na = tmp == NA_INTEGER;
+			pos_elt = (long long int) tmp;
+		}
+		if (is_na) {
+			UNPROTECT(1);
+			error("'pos' cannot contain NAs");
+		}
+		if (pos_elt < 1 || pos_elt > x_len) {
+			UNPROTECT(1);
+			error("'pos' contains invalid positions");
+		}
+		offset = pos_elt - prev_pos_elt - 1;
+		RDS_read_atomic_vector_elt_at_offset(filexp, offset, ans, i);
+		prev_pos_elt = pos_elt;
+	}
+	UNPROTECT(1);
 	return ans;
 }
 
 /* --- .Call ENTRY POINT ---
  * Random access to the elements of a serialized atomic vector.
- * 'pos' must be an integer or LLint vector containing valid element positions
- * in the serialized vector. The positions must be 1-based. So no NAs and all
- * values must be >= 1 and <= vector length. In addition 'pos' must be sorted
- * in strictly ascending order.
+ * 'pos' must be an integer, LLint, or double vector containing valid element
+ * positions in the serialized vector. The positions must be 1-based. So no
+ * NAs and all values must be >= 1 and <= vector length. In addition 'pos'
+ * must be sorted.
  * Character vectors not supported yet.
  */
 SEXP RDS_extract_vector_positions(SEXP filexp, SEXP pos)
@@ -611,7 +694,8 @@ SEXP RDS_extract_vector_positions(SEXP filexp, SEXP pos)
 		error(errmsg);
 	x_type = RDStype2Rtype(header[3]);
 	if (!IS_ATOMIC_TYPE(x_type) || x_type == STRSXP)
-		error("%s type not supported", CHAR(type2str(x_type)));
+		error("extracting from a %s object is not supported",
+		      CHAR(type2str(x_type)));
 	x_len = RDS_read_vector_length(filexp);
 
 	if (IS_INTEGER(pos)) {
