@@ -8,7 +8,7 @@
 #include "IRanges_interface.h"
 #include "S4Vectors_interface.h"
 
-#include <limits.h>  /* for INT_MAX */
+#include <limits.h>  // for INT_MAX
 
 static int verbose = 0;
 
@@ -474,7 +474,7 @@ static void RDS_read_attribs(SEXP filexp, int mode,
 		symbol = symbols_buf->elts[key]->elts;
 		if (mode == 0)
 			setAttrib(object, install(symbol), attrval);
-		else /* mode 2 */
+		else // mode 2
 			defineVar(install(symbol), attrval, attribs_dump);
 		UNPROTECT(1);
 	}
@@ -501,7 +501,7 @@ static SEXP RDS_read_object(SEXP filexp, int mode, SEXP attribs_dump,
 	if (obj_header[2] == 0) {
 		/* Object has no attributes. */
 		if (mode == 3)
-			return R_NilValue;  /* early bail out */
+			return R_NilValue;  // early bail out
 		has_attribs = 0;
 	} else if (obj_header[2] == 0x02 || obj_header[2] == 0x03) {
 		/* Object has attributes (code 0x03 seems to be specific
@@ -618,8 +618,8 @@ static SEXPTYPE extract_top_level_object_type(SEXP filexp)
 		error(errmsg);
 	x_type = RDStype2Rtype(obj_header[3]);
 	if (!IS_ATOMIC_TYPE(x_type) || x_type == STRSXP)
-		error("extracting elements from a %s object is not supported",
-		      CHAR(type2str(x_type)));
+		error("extracting elements from a serialized object of "
+                      "type %s is not supported", CHAR(type2str(x_type)));
 	return x_type;
 }
 
@@ -632,17 +632,17 @@ static const char *get_pos(int pos_type, const void *pos,
 	static char errmsg_buf[80];
 
 	switch (pos_type) {
-	    case 0:  /* 'pos' contains int values */
+	    case 0:  // 'pos' contains int values
 		tmp0 = ((const int *) pos)[i];
 		is_na = tmp0 == NA_INTEGER;
 		*pos_elt = (long long int) tmp0;
 		break;
-	    case 1:  /* 'pos' contains double values */
+	    case 1:  // 'pos' contains double values
 		tmp1 = ((const double *) pos)[i];
 		is_na = ISNAN(tmp1);
 		*pos_elt = (long long int) tmp1;
 		break;
-	    case 2:  /* 'pos' contains long long int values */
+	    case 2:  // 'pos' contains long long int values
 		tmp2 = ((const long long int *) pos)[i];
 		is_na = tmp2 == NA_LLINT;
 		*pos_elt = tmp2;
@@ -791,21 +791,39 @@ SEXP RDS_extract_subvector(SEXP filexp, SEXP pos)
 SEXP RDS_extract_subarray(SEXP filexp, SEXP dim, SEXP index)
 {
 	SEXPTYPE x_type;
-	R_xlen_t x_len;
-	int ndim;
-	SEXP ans;
+	R_xlen_t x_len, dimprod;
+	int ndim, i;
+	SEXP subscript, ans;
 
 	/* Get type and length of serialized array. */
 	x_type = extract_top_level_object_type(filexp);
 	x_len = RDS_read_vector_length(filexp);
 
+	/* Check 'dim'. */
 	if (!IS_INTEGER(dim))
 		error("'dim' must be an integer vector");
 	ndim = LENGTH(dim);
-	if (!IS_LIST(index))
+	dimprod = 1;
+	for (i = 0; i < ndim; i++)
+		dimprod *= INTEGER(dim)[i];
+	if (dimprod > x_len)  // this is dangerous
+		error("supplied 'dim' implies that serialized array "
+		      "has more elements than it effectively has");
+	if (dimprod < x_len)  // this is not
+		warning("supplied 'dim' implies that serialized array "
+		      "has less elements than it effectively has");
+
+	/* Check 'index'. */
+	if (!isVectorList(index))  // IS_LIST() is broken
 		error("'index' must be a list");
 	if (LENGTH(index) != ndim)
 		error("'index' must have the same length as 'dim'");
+	for (i = 0; i < ndim; i++) {
+		subscript = VECTOR_ELT(index, i);
+		if (!IS_INTEGER(subscript))
+			error("all subscripts in list 'index' must be "
+			      "integer vectors");
+	}
 	return R_NilValue;
 }
 

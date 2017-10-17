@@ -38,7 +38,9 @@ extract_subvector_from_RDS_vector <- function(file, pos)
 extract_subarray_from_RDS_array <- function(file, index)
 {
     attribs_dump <- read_RDS(file, attribs.only=TRUE)
-    x_dim <- get("dim", envir=attribs_dump, inherits=FALSE)
+    x_dim <- try(get("dim", envir=attribs_dump, inherits=FALSE), silent=TRUE)
+    if (inherits(x_dim , "try-error"))
+        stop("serialized object is not an array")
     filexp <- .open_input_file(file)
     .Call("RDS_extract_subarray", filexp, x_dim, index, PACKAGE="XVector")
 }
