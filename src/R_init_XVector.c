@@ -13,7 +13,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(new_output_filexp, 4),
 	CALLMETHOD_DEF(finalize_filexp, 1),
 
-/* parse_RDS.c */
+/* RDS_random_access.c */
 	CALLMETHOD_DEF(RDS_read_file, 3),
 	CALLMETHOD_DEF(RDS_extract_vector_positions, 2),
 

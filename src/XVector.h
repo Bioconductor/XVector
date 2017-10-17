@@ -62,7 +62,7 @@ int _delete_trailing_LF_or_CRLF(
 );
 
 
-/* parse_RDS.c */
+/* RDS_random_access.c */
 
 SEXP RDS_read_file(
 	SEXP filexp,
