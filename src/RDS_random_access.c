@@ -479,17 +479,6 @@ static void RDS_read_attribs(SEXP filexp, int mode,
 	return;
 }
 
-/* In modes 0-2, RDS_read_object() parses the full object but the specific
-   mode controls what parts of the object to load and to return as an SEXP:
-     mode 0: Load everything and return the full object.
-     mode 1: (parse-only mode) Don't load anything and return R_NilValue.
-     mode 2: Load only the attributes and dump them in the 'attribs_dump'
-             environment.
-   Mode 3 is like mode 2 but with early bailout if the object header indicates
-   that the object has no attributes. So in this mode the object gets fully
-   parsed only if it has attributes. Otherwise only its header gets parsed.
-   In mode 4 only the object header and length get parsed.
- */
 static SEXP RDS_read_object(SEXP filexp, int mode, SEXP attribs_dump,
 		CharAE *string_buf, CharAEAE *symbols_buf, int indent)
 {
@@ -573,9 +562,27 @@ static void RDS_read_file_header(SEXP filexp)
 
 /****************************************************************************
  * RDS_read_file()
+ *
+ * --- .Call ENTRY POINT ---
+ * Read/parse an RDS file. Only support a serialized atomic vector or a NULL
+ * or a list (possibly nested) made of the formers. Support attributes (if
+ * made of the formers).
+ * Args:
+ *   filexp: External pointer to a FILE pointer.
+ *   mode:   Control what parts of the object to load. In modes 0, 1, 2 the
+ *           full object gets parsed:
+ *             mode 0: Load everything and return the full object.
+ *             mode 1: (parse-only mode) Don't load anything and return
+ *                     R_NilValue.
+ *             mode 2: Load only the attributes and dump them in the
+ *                     'attribs_dump' environment.
+ *           Mode 3 is like mode 2 but with early bailout if the object header
+ *           indicates that the object has no attributes. So in this mode the
+ *           object gets fully parsed only if it has attributes. Otherwise
+ *           only its header gets parsed.
+ *           In mode 4 only the object header and length get parsed.
+ *   attribs_dump: Environment used in modes 2 and 3 to dump the attributes.
  */
-
-/* --- .Call ENTRY POINT --- */
 SEXP RDS_read_file(SEXP filexp, SEXP mode, SEXP attribs_dump)
 {
 	int mode0;
@@ -671,7 +678,7 @@ static void RDS_read_atom_at_offset(SEXP filexp,
 	return;
 }
 
-static const char *RDS_read_atoms_at_pos(SEXP filexp,
+static const char *RDS_read_atoms_at_positions(SEXP filexp,
 		R_xlen_t x_len, int pos_type, const void *pos, SEXP ans)
 {
 	long long int pos_elt, prev_pos_elt, offset;
@@ -698,11 +705,13 @@ static const char *RDS_read_atoms_at_pos(SEXP filexp,
 
 /* --- .Call ENTRY POINT ---
  * Random access to the elements of a serialized atomic vector.
- * 'pos' must be an integer, double, or LLint vector containing valid element
- * positions in the serialized vector. The positions must be 1-based. So no
- * NAs and all values must be >= 1 and <= vector length. In addition 'pos'
- * must be sorted.
- * Character vectors not supported yet.
+ * Character vectors not supported.
+ * Args:
+ *   filexp: External pointer to a FILE pointer.
+ *   pos:    An integer, double, or LLint vector containing valid element
+ *           positions in the serialized vector. The positions must be 1-based.
+ *           So no NAs and all values must be >= 1 and <= vector length.
+ *           In addition 'pos' must be sorted.
  */
 SEXP RDS_extract_vector_positions(SEXP filexp, SEXP pos)
 {
@@ -743,11 +752,33 @@ SEXP RDS_extract_vector_positions(SEXP filexp, SEXP pos)
 	}
 
 	ans = PROTECT(allocVector(x_type, pos_len));
-	errmsg = RDS_read_atoms_at_pos(filexp, x_len,
-				       pos_type, pos_dataptr, ans);
+	errmsg = RDS_read_atoms_at_positions(filexp, x_len,
+					     pos_type, pos_dataptr, ans);
 	UNPROTECT(1);
 	if (errmsg != NULL)
 		error(errmsg);
+	return ans;
+}
+
+
+/****************************************************************************
+ * RDS_extract_array_elements()
+ */
+
+/* --- .Call ENTRY POINT ---
+ * Random access to the elements of a serialized array.
+ * Character arrays not supported.
+ * Args:
+ *   filexp: External pointer to a FILE pointer.
+ *   dim:    The dimensions of the array. Typically extracted earlier with
+ *           RDS_read_file(filexp, 3, attribs_dump).
+ *   index:  A list of subscripts as positive integer vectors. One vector of
+ *           subscripts per array dimension. Each subscript must be sorted.
+ */
+SEXP RDS_extract_array_elements(SEXP filexp, SEXP dim, SEXP index)
+{
+	SEXP ans;
+
 	return ans;
 }
 
