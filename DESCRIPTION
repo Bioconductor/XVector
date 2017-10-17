@@ -2,7 +2,7 @@ Package: XVector
 Title: Representation and manipulation of external sequences
 Description: Memory efficient S4 classes for storing sequences "externally"
 	(behind an R external pointer, or on disk).
-Version: 0.17.1
+Version: 0.17.2
 Encoding: UTF-8
 Author: Hervé Pagès and Patrick Aboyoun
 Maintainer: Hervé Pagès <hpages@fredhutch.org>
@@ -14,6 +14,7 @@ LinkingTo: S4Vectors, IRanges
 Suggests: Biostrings, drosophila2probe, RUnit
 License: Artistic-2.0
 Collate: io-utils.R
+	RDS-random-access.R
 	SharedVector-class.R
 	SharedRaw-class.R
 	SharedInteger-class.R

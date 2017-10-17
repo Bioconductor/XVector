@@ -1,17 +1,9 @@
 /****************************************************************************
  ****************************************************************************
- *                      A simple and fast RDS parser                        *
+ *   Random access to the elements of a serialized atomic vector or array   *
  *                            Author: H. Pag\`es                            *
  ****************************************************************************
  ****************************************************************************/
-
-/*
-  The current implementation assumes that:
-    - sizeof(int) = 4
-    - sizeof(double) = sizeof(long long int) = 8
-    - platform is little endian
-*/
-
 #include "XVector.h"
 #include "IRanges_interface.h"
 #include "S4Vectors_interface.h"
@@ -20,37 +12,6 @@
 
 static int verbose = 0;
 
-static void printf_margin(int indent)
-{
-	int i;
-
-	for (i = 0; i < indent; i++)
-		printf("  ");
-	return;
-}
-
-#define	PRINTIFVERBOSE1(msg) \
-{ \
-	if (verbose) { \
-		printf_margin(indent); \
-		printf(msg); \
-		printf("\n"); \
-	} \
-}
-#define	PRINTIFVERBOSE2(format, value) \
-{ \
-	if (verbose) { \
-		printf_margin(indent); \
-		printf(format, value); \
-		printf("\n"); \
-	} \
-}
-
-static SEXPTYPE RDStype2Rtype(unsigned char type)
-{
-	/* NULL type is 0xfe in RDS, not NILSXP */
-	return type == 0xfe ? NILSXP : type;
-}
 
 #define	IS_ATOMIC_TYPE(type) \
 	((type) == LGLSXP  || (type) == INTSXP || (type) == REALSXP || \
@@ -91,6 +52,48 @@ static size_t type2atomsize(SEXPTYPE type)
 	}
 	error("XVector internal error in type2atomsize(): "
 	      "undefined atom size for type %s", CHAR(type2str(type)));
+}
+
+
+/****************************************************************************
+ * A simple RDS parser
+ *
+ * The current implementation assumes that:
+ *  - sizeof(int) = 4
+ *  - sizeof(double) = sizeof(long long int) = 8
+ *  - platform is little endian
+ */
+
+static void printf_margin(int indent)
+{
+	int i;
+
+	for (i = 0; i < indent; i++)
+		printf("  ");
+	return;
+}
+
+#define	PRINTIFVERBOSE1(msg) \
+{ \
+	if (verbose) { \
+		printf_margin(indent); \
+		printf(msg); \
+		printf("\n"); \
+	} \
+}
+#define	PRINTIFVERBOSE2(format, value) \
+{ \
+	if (verbose) { \
+		printf_margin(indent); \
+		printf(format, value); \
+		printf("\n"); \
+	} \
+}
+
+static SEXPTYPE RDStype2Rtype(unsigned char type)
+{
+	/* NULL type is 0xfe in RDS, not NILSXP */
+	return type == 0xfe ? NILSXP : type;
 }
 
 static const char *RDS_read_bytes(SEXP filexp, size_t n, int parse_only,
@@ -483,32 +486,33 @@ static SEXP RDS_read_object(SEXP filexp, int mode, SEXP attribs_dump,
 		CharAE *string_buf, CharAEAE *symbols_buf, int indent)
 {
 	const char *errmsg;
-	unsigned char header[4];
+	unsigned char obj_header[4];
 	int has_attribs;
 	SEXPTYPE type;
 	SEXP ans;
 
 	PRINTIFVERBOSE1("start reading object header");
-	errmsg = RDS_read_bytes(filexp, sizeof(header), 0, header);
+	errmsg = RDS_read_bytes(filexp, sizeof(obj_header), 0, obj_header);
 	if (errmsg != NULL)
 		error(errmsg);
-	if (header[0] != 0 || header[1] != 0)
+	if (obj_header[0] != 0 || obj_header[1] != 0)
 		error("unsupported RDS file");
 	PRINTIFVERBOSE1("done reading object header");
-	if (header[2] == 0) {
+	if (obj_header[2] == 0) {
 		/* Object has no attributes. */
 		if (mode == 3)
 			return R_NilValue;  /* early bail out */
 		has_attribs = 0;
-	} else if (header[2] == 0x02) {
-		/* Object has attributes. */
+	} else if (obj_header[2] == 0x02 || obj_header[2] == 0x03) {
+		/* Object has attributes (code 0x03 seems to be specific
+		   to factors). */
 		if (mode == 3)
 			mode = 2;
 		has_attribs = 1;
 	} else {
 		error("unexpected 3rd byte in object header");
 	}
-	type = RDStype2Rtype(header[3]);
+	type = RDStype2Rtype(obj_header[3]);
 	PRINTIFVERBOSE2("object type: %s", CHAR(type2str(type)));
 	if (mode == 4)
 		return get_typeof_and_length_as_list(filexp, type);
@@ -545,15 +549,15 @@ static void RDS_read_file_header(SEXP filexp)
 					      0x00, 0x00, 0x00, 0x02,
 					      0x00, 0x03, 0x04, 0x02,
 					      0x00, 0x02, 0x03, 0x00};
-	unsigned char buf[sizeof(RDS_header)];
+	unsigned char file_header[sizeof(RDS_header)];
 	int indent;
 
 	indent = 0;
 	PRINTIFVERBOSE1("start reading file header");
-	errmsg = RDS_read_bytes(filexp, sizeof(buf), 0, buf);
+	errmsg = RDS_read_bytes(filexp, sizeof(file_header), 0, file_header);
 	if (errmsg != NULL)
 		error(errmsg);
-	if (memcmp(buf, RDS_header, sizeof(buf)) != 0)
+	if (memcmp(file_header, RDS_header, sizeof(file_header)) != 0)
 		error("does not look like an RDS file");
 	PRINTIFVERBOSE1("done reading file header");
 	return;
@@ -599,8 +603,25 @@ SEXP RDS_read_file(SEXP filexp, SEXP mode, SEXP attribs_dump)
 
 
 /****************************************************************************
- * RDS_extract_vector_positions()
+ * RDS_extract_subvector()
  */
+
+static SEXPTYPE extract_top_level_object_type(SEXP filexp)
+{
+	const char *errmsg;
+	unsigned char obj_header[4];
+	SEXPTYPE x_type;
+
+	RDS_read_file_header(filexp);
+	errmsg = RDS_read_bytes(filexp, sizeof(obj_header), 0, obj_header);
+	if (errmsg != NULL)
+		error(errmsg);
+	x_type = RDStype2Rtype(obj_header[3]);
+	if (!IS_ATOMIC_TYPE(x_type) || x_type == STRSXP)
+		error("extracting elements from a %s object is not supported",
+		      CHAR(type2str(x_type)));
+	return x_type;
+}
 
 static const char *get_pos(int pos_type, const void *pos,
 		R_xlen_t i, long long int *pos_elt)
@@ -713,25 +734,17 @@ static const char *RDS_read_atoms_at_positions(SEXP filexp,
  *           So no NAs and all values must be >= 1 and <= vector length.
  *           In addition 'pos' must be sorted.
  */
-SEXP RDS_extract_vector_positions(SEXP filexp, SEXP pos)
+SEXP RDS_extract_subvector(SEXP filexp, SEXP pos)
 {
-	const char *errmsg;
-	unsigned char header[4];
 	SEXPTYPE x_type;
 	R_xlen_t x_len, pos_len;
 	int pos_type;
 	const void *pos_dataptr;
 	SEXP ans;
+	const char *errmsg;
 
 	/* Get type and length of serialized atomic vector. */
-	RDS_read_file_header(filexp);
-	errmsg = RDS_read_bytes(filexp, sizeof(header), 0, header);
-	if (errmsg != NULL)
-		error(errmsg);
-	x_type = RDStype2Rtype(header[3]);
-	if (!IS_ATOMIC_TYPE(x_type) || x_type == STRSXP)
-		error("extracting from a %s object is not supported",
-		      CHAR(type2str(x_type)));
+	x_type = extract_top_level_object_type(filexp);
 	x_len = RDS_read_vector_length(filexp);
 
 	/* Get 'pos' length and pointer to data. */
@@ -762,7 +775,7 @@ SEXP RDS_extract_vector_positions(SEXP filexp, SEXP pos)
 
 
 /****************************************************************************
- * RDS_extract_array_elements()
+ * RDS_extract_subarray()
  */
 
 /* --- .Call ENTRY POINT ---
@@ -775,10 +788,24 @@ SEXP RDS_extract_vector_positions(SEXP filexp, SEXP pos)
  *   index:  A list of subscripts as positive integer vectors. One vector of
  *           subscripts per array dimension. Each subscript must be sorted.
  */
-SEXP RDS_extract_array_elements(SEXP filexp, SEXP dim, SEXP index)
+SEXP RDS_extract_subarray(SEXP filexp, SEXP dim, SEXP index)
 {
+	SEXPTYPE x_type;
+	R_xlen_t x_len;
+	int ndim;
 	SEXP ans;
 
-	return ans;
+	/* Get type and length of serialized array. */
+	x_type = extract_top_level_object_type(filexp);
+	x_len = RDS_read_vector_length(filexp);
+
+	if (!IS_INTEGER(dim))
+		error("'dim' must be an integer vector");
+	ndim = LENGTH(dim);
+	if (!IS_LIST(index))
+		error("'index' must be a list");
+	if (LENGTH(index) != ndim)
+		error("'index' must have the same length as 'dim'");
+	return R_NilValue;
 }
 

@@ -70,9 +70,15 @@ SEXP RDS_read_file(
 	SEXP attribs_dump
 );
 
-SEXP RDS_extract_vector_positions(
+SEXP RDS_extract_subvector(
 	SEXP filexp,
 	SEXP pos
+);
+
+SEXP RDS_extract_subarray(
+	SEXP filexp,
+	SEXP dim,
+	SEXP index
 );
 
 
