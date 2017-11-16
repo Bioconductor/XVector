@@ -62,7 +62,6 @@ exportMethods(
     pcompare,
     elementNROWS,
     relistToClass,
-    endoapply,
 
     ## Methods for generics defined in the IRanges package:
     Views,

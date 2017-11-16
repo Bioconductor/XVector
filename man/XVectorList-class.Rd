@@ -22,8 +22,6 @@
 \alias{subseq,XVectorList-method}
 \alias{c,XVectorList-method}
 
-\alias{endoapply,XVectorList-method}
-
 \alias{showAsCell,XVectorList-method}
 
 \alias{unlist_list_of_XVectorList}
