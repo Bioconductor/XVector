@@ -244,28 +244,24 @@ setMethod("extractList", c("XVector", "Ranges"),
 ### XVectorList subsetting.
 ###
 
-### TODO: Make this a "getListElement" method for XVectorList objects.
-XVectorList.getElement <- function(x, i)
+.getListElement_XVectorList <- function(x, i, exact=TRUE)
 {
+    i2 <- normalizeDoubleBracketSubscript(i, x, exact=exact,
+                                          allow.NA=TRUE,
+                                          allow.nomatch=TRUE)
+    if (is.na(i2))
+        return(NULL)
     ans_class <- elementType(x)
-    ans_shared <- x@pool[[x@ranges@group[i]]]
-    ans_offset <- x@ranges@start[i] - 1L
-    ans_length <- x@ranges@width[i]
-    ans <- new2(ans_class,
-                shared=ans_shared,
-                offset=ans_offset,
-                length=ans_length,
-                check=FALSE)
-    return(ans)
+    ans_shared <- x@pool[[x@ranges@group[i2]]]
+    ans_offset <- x@ranges@start[i2] - 1L
+    ans_length <- x@ranges@width[i2]
+    new2(ans_class, shared=ans_shared,
+                    offset=ans_offset,
+                    length=ans_length,
+                    check=FALSE)
 }
 
-setMethod("[[", "XVectorList",
-    function(x, i, j, ..., exact=TRUE)
-    {
-        i <- normalizeDoubleBracketSubscript(i, x)
-        XVectorList.getElement(x, i)
-    }
-)
+setMethod("getListElement", "XVectorList", .getListElement_XVectorList)
 
 setMethod("extractROWS", "XVectorList",
     function(x, i)
@@ -388,23 +384,6 @@ setMethod("c", "XVectorList",
         }
         unlist_list_of_XVectorList(class(x), args,
                                    use.names=FALSE, ignore.mcols=ignore.mcols)
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Replacement methods.
-###
-
-setReplaceMethod("[[", "XVectorList",
-    function(x, i, j, ..., value)
-    {
-        i <- normalizeDoubleBracketSubscript(i, x)
-        if (!is(value, elementType(x)))
-            stop("supplied replacement value must be a ",
-                 elementType(x), " object")
-        x[i] <- as(value, class(x))
-        x
     }
 )
 
