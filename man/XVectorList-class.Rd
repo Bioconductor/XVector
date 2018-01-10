@@ -11,7 +11,6 @@
 
 \alias{as.data.frame,GroupedIRanges-method}
 \alias{show,GroupedIRanges-method}
-\alias{c,GroupedIRanges-method}
 
 \alias{length,XVectorList-method}
 \alias{width,XVectorList-method}
@@ -20,11 +19,10 @@
 \alias{names<-,XVectorList-method}
 \alias{[,XVectorList-method}
 \alias{subseq,XVectorList-method}
-\alias{c,XVectorList-method}
+\alias{concatenateObjects,XVectorList-method}
 
 \alias{showAsCell,XVectorList-method}
 
-\alias{unlist_list_of_XVectorList}
 \alias{unsplit_list_of_XVectorList}
 
 

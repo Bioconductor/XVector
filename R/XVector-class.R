@@ -26,61 +26,67 @@ setClass("XVector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Getters.
+### Getters
 ###
 
 setMethod("length", "XVector", function(x) x@length)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining.
+### Concatenation
 ###
 
-### Should work as an endomorphism (e.g. will return a DNAString instance if
-### 'x' is a DNAString instance).
-setMethod("c", "XVector",
-    function(x, ..., recursive=FALSE)
-    {
-        if (!identical(recursive, FALSE))
-            stop("\"c\" method for XVector objects ",
-                 "does not support the 'recursive' argument")
-        if (missing(x)) {
-            args <- unname(list(...))
-            x <- args[[1L]]
-        } else {
-            args <- unname(list(x, ...))
-        }
-        if (length(args) == 1L)
-            return(x)
-        arg_is_null <- sapply(args, is.null)
-        ## Remove NULL elements by setting them to NULL!
-        if (any(arg_is_null))
-            args[arg_is_null] <- NULL
-        if (!all(sapply(args, is, class(x))))
-            stop("all arguments in '...' must be ",
-                 class(x), " objects (or NULLs)")
-        ans_length <- sum(sapply(args, length))
-        ans_shared <- SharedVector(class(x@shared), length=ans_length)
-        dest_offset <- 0L
-        for (arg in args) {
-            width <- length(arg)
-            if (width == 0L)  # will be TRUE on NULLs too...
-                next
-            ## ... so from here 'arg' is guaranteed to be an XVector object.
-            src <- arg@shared
-            src_start <- arg@offset + 1L
-            SharedVector.mcopy(ans_shared, dest_offset, src, src_start, width)
-            dest_offset <- dest_offset + width
-        }
-        ans <- new2(class(x), length=ans_length, check=FALSE)
-        ans@shared <- ans_shared
-        ans
+.concatenate_XVector_objects <-
+    function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
+{
+    if (!is.list(objects))
+        stop("'objects' must be a list")
+    if (!isTRUEorFALSE(use.names))
+        stop("'use.names' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(ignore.mcols))
+        stop("'ignore.mcols' must be TRUE or FALSE")
+
+    objects <- unname(S4Vectors:::delete_NULLs(objects))
+    S4Vectors:::check_class_of_objects_to_concatenate(.Object, objects)
+
+    if (length(objects) == 0L) {
+        if (length(.Object) != 0L)
+            .Object <- .Object[integer(0)]
+        return(.Object)
     }
-)
+
+    ans_len <- suppressWarnings(sum(lengths(objects)))
+    if (is.na(ans_len))
+        stop("too many vector elements to concatenate")
+
+    ans_shared <- SharedVector(class(.Object@shared), length=ans_len)
+    dest_offset <- 0L
+    for (object in objects) {
+        width <- length(object)
+        if (width == 0L)  # would be TRUE on NULLs too...
+            next
+        ## From here 'object' is guaranteed to be an XVector object.
+        src <- object@shared
+        src_start <- object@offset + 1L
+        SharedVector.mcopy(ans_shared, dest_offset, src, src_start, width)
+        dest_offset <- dest_offset + width
+    }
+
+    .Object <- new2(class(.Object), shared=ans_shared,
+                                    length=ans_len,
+                                    check=FALSE)
+
+    ## Call method for Vector objects to concatenate all the parallel
+    ## slots (only "elementMetadata" in the case of XVector) and stick
+    ## them into '.Object'.
+    callNextMethod()
+}
+
+setMethod("concatenateObjects", "XVector", .concatenate_XVector_objects)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting.
+### Subsetting
 ###
 
 setMethod("extractROWS", "XVector",
@@ -136,7 +142,7 @@ setReplaceMethod("subseq", "XVector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
+### Coercion
 ###
 
 ### Works as long as as.integer() works on 'x'.
@@ -148,8 +154,9 @@ setAs("XVector", "Rle", function(from) {
   Rle(as.vector(from))
 })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "show" method.
+### The "show" method
 ###
 
 setMethod("show", "XVector",
@@ -164,7 +171,7 @@ setMethod("show", "XVector",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Equality.
+### Equality
 ###
 
 .XVector.equal <- function(x, y)

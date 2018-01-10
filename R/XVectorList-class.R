@@ -8,6 +8,7 @@
 ### current S4 implementation is *very* inefficient at.
 ###
 
+
 setClass("GroupedIRanges",
     contains="IRanges",
     representation(
@@ -26,20 +27,30 @@ setClass("XVectorList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### GroupedIRanges methods.
+### parallelSlotNames()
 ###
+
+### Combine the new parallel slots with those of the parent class. Make sure
+### to put the new parallel slots *first*.
 
 ### Ugly workaround a serious callNextMethod inefficiency reported here:
 ###   https://bugs.r-project.org/bugzilla/show_bug.cgi?id=16974
 .GroupedIRanges_parallelSlotNames <-
     c("group", parallelSlotNames(new("IRanges")))
 
-### Combine the new parallel slots with those of the parent class. Make sure
-### to put the new parallel slots *first*.
 setMethod("parallelSlotNames", "GroupedIRanges",
     #function(x) c("group", callNextMethod())
     function(x) .GroupedIRanges_parallelSlotNames
 )
+
+setMethod("parallelSlotNames", "XVectorList",
+    function(x) c("ranges", callNextMethod())
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### GroupedIRanges methods
+###
 
 .valid.GroupedIRanges <- function(x)
 {
@@ -59,25 +70,9 @@ setMethod("show", "GroupedIRanges",
     function(object) show(as.data.frame(object))
 )
 
-setMethod("c", "GroupedIRanges",
-    function(x, ..., recursive=FALSE)
-    {
-        if (!identical(recursive, FALSE))
-            stop("\"c\" method for GroupedIRanges objects ",
-                 "does not support the 'recursive' argument")
-        old_val <- S4Vectors:::disableValidity()
-        on.exit(S4Vectors:::disableValidity(old_val))
-        S4Vectors:::disableValidity(TRUE)
-        ans <- callNextMethod(x, ..., recursive=FALSE)
-        ans@group <-
-            do.call(c, lapply(unname(list(x, ...)), function(arg) arg@group))
-        ans
-    }
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### XVectorList accessor-like methods.
+### XVectorList accessors
 ###
 
 setMethod("length", "XVectorList", function(x) length(x@ranges))
@@ -99,7 +94,7 @@ setReplaceMethod("names", "XVectorList",
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### 2 internal bookkeeping functions to keep the XVectorList "pool" slot
-### clean and tidy.
+### clean and tidy
 ###
 
 ### Used in "extractROWS" method for XVectorList objects.
@@ -135,7 +130,7 @@ setReplaceMethod("names", "XVectorList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### XVectorList constructors.
+### XVectorList constructors
 ###
 
 new_XVectorList_from_list_of_XVector <- function(classname, x)
@@ -189,7 +184,7 @@ XVectorList <- function(classname, length=0L)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Going from XVector to XVectorList with extractList() and family.
+### Going from XVector to XVectorList with extractList() and family
 ###
 
 setMethod("relistToClass", "XVector",
@@ -241,7 +236,7 @@ setMethod("extractList", c("XVector", "Ranges"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### XVectorList subsetting.
+### XVectorList subsetting
 ###
 
 .getListElement_XVectorList <- function(x, i, exact=TRUE)
@@ -289,107 +284,54 @@ setMethod("subseq", "XVectorList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining.
-###
-### The "c" method for XVectorList objects is implemented to behave like an
-### endomorphism i.e. to return an object of the same class as 'x'. In
-### particular 'c(x)' returns 'x' and not 'as(x, "XVectorList")'.
-### It's easy to implement specific "c" methods for XVectorList subclasses.
-### Typically they just need to do something like:
-###
-###     old_val <- S4Vectors:::disableValidity()
-###     on.exit(S4Vectors:::disableValidity(old_val))
-###     S4Vectors:::disableValidity(TRUE)
-###     ans <- callNextMethod(x, ..., recursive=FALSE)
-###     ...
-###
-### and to take care of the additional slots (aka the subclass-specific
-### slots). If there aren't any additional slots (e.g. XRawList), or if the
-### additional slots don't need to be modified, then no need to implement a
-### specific method at all.
+### Concatenation
 ###
 
-### 'Class' must be the name of a concrete subclass that extends XVectorList.
-### Returns an instance of class 'Class'.
-unlist_list_of_XVectorList <- function(Class, x,
-                                       use.names=TRUE, ignore.mcols=FALSE)
+.concatenate_XVectorList_objects <-
+    function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    if (!isSingleString(Class))
-        stop("'Class' must be a single character string")
-    if (!extends(Class, "XVectorList"))
-        stop("'Class' must be the name of a class that extends XVectorList")
-    if (!is.list(x))
-        stop("'x' must be a list")
-    if (!isTRUEorFALSE(use.names))
-        stop("'use.names' must be TRUE or FALSE")
-    ### TODO: Support 'use.names=TRUE'.
-    if (use.names)
-        stop("'use.names=TRUE' is not supported yet")
-    if (!isTRUEorFALSE(ignore.mcols))
-        stop("'ignore.mcols' must be TRUE or FALSE")
+    if (!isTRUEorFALSE(check))
+        stop("'check' must be TRUE or FALSE")
 
-    ## TODO: Implement (in C) fast elementIsNull(x), that does
-    ## 'sapply(x, is.null, USE.NAMES=FALSE)' on list 'x', and use it here.
-    null_idx <- which(sapply(x, is.null, USE.NAMES=FALSE))
-    if (length(null_idx) != 0L)
-        x <- x[-null_idx]
-    if (length(x) == 0L)
-        return(new(Class))
-    ## TODO: Implement (in C) fast elementIs(x, class), that does
-    ## 'sapply(x, is, class, USE.NAMES=FALSE)' on list 'x', and use it here.
-    ## 'elementIs(x, "NULL")' should work and be equivalent to
-    ## 'elementIsNull(x)'.
-    if (!all(sapply(x, is, Class, USE.NAMES=FALSE)))
-        stop("all elements in 'x' must be ", Class, " objects (or NULLs)")
-    x_names <- names(x)
-    names(x) <- NULL  # so lapply(x, ...) below returns an unnamed list
+    objects <- unname(S4Vectors:::delete_NULLs(objects))
+    S4Vectors:::check_class_of_objects_to_concatenate(.Object, objects)
 
-    ## Combine "pool" slots.
-    pool_slots <- lapply(x, function(xi) xi@pool)
-    ## TODO: Implement unlist_list_of_SharedRaw_Pool() and use it here.
-    ans_pool <- do.call(c, pool_slots)
+    if (length(objects) == 0L) {
+        if (length(.Object) != 0L)
+            .Object <- .Object[integer(0)]
+        return(.Object)
+    }
 
-    ## Combine "ranges" slots.
-    ranges_slots <- lapply(x, function(xi) xi@ranges)
-    ## TODO: Implement unlist_list_of_GroupedRanges() (that takes an 'offsets'
-    ## arg) and use it here.
-    ans_ranges <- do.call(c, ranges_slots)
+    ## Call method for Vector objects to concatenate all the parallel slots
+    ## (i.e. "ranges" and "elementMetadata" in the case of XVectorList) and
+    ## stick them into '.Object'.
+    .Object <- callNextMethod(.Object, objects, use.names=use.names,
+                                                ignore.mcols=ignore.mcols,
+                                                check=FALSE)
 
-    breakpoints <- cumsum(elementNROWS(pool_slots))
+    ## Concatenate "pool" slots.
+    pool_list <- lapply(objects, slot, "pool")
+    .Object@pool <- do.call(c, pool_list)
+
+    ## Fix '.Object@ranges@group'.
+    breakpoints <- cumsum(lengths(pool_list))
     offsets <- c(0L, breakpoints[-length(breakpoints)])
-    offsets <- rep.int(offsets, elementNROWS(ranges_slots))
-    ans_ranges@group <- ans_ranges@group + offsets
+    offsets <- rep.int(offsets, lengths(objects))
+    .Object@ranges@group <- .Object@ranges@group + offsets
 
-    ## Combine "mcols" slots.
-    ans_mcols <- do.call(S4Vectors:::rbind_mcols, x)
+    if (check)
+        validObject(.Object)
 
-    ## Make 'ans' and return it.
-    ans <- new(Class, pool=ans_pool,
-                      ranges=ans_ranges,
-                      elementMetadata=ans_mcols)
-    .dropDuplicatedPoolElts(ans)
+    .dropDuplicatedPoolElts(.Object)
 }
 
-setMethod("c", "XVectorList",
-    function(x, ..., ignore.mcols=FALSE, recursive=FALSE)
-    {
-        if (!identical(recursive, FALSE))
-            stop("\"c\" method for XVectorList objects ",
-                 "does not support the 'recursive' argument")
-        if (missing(x)) {
-            args <- list(...)
-            x <- args[[1L]]
-        } else {
-            args <- list(x, ...)
-        }
-        unlist_list_of_XVectorList(class(x), args,
-                                   use.names=FALSE, ignore.mcols=ignore.mcols)
-    }
+setMethod("concatenateObjects", "XVectorList",
+    .concatenate_XVectorList_objects
 )
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Show method for data column.
+### Show method for data column
 ###
 
 setMethod("showAsCell", "XVectorList", function(object) as.character(object))
@@ -401,7 +343,7 @@ setMethod("showAsCell", "XVectorList", function(object) as.character(object))
 ### Not intended for the end user.
 ###
 ### 'f' must be a factor with number of levels equal to 'length(x)' and
-### length equal to 'sum(elementNROWS(x))'. 
+### length equal to 'sum(lengths(x))'. 
 unsplit_list_of_XVectorList <- function(classname, x, f)
 {
     ans <- XVectorList(classname, length(f))
