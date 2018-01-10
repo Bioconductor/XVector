@@ -258,18 +258,9 @@ setMethod("extractList", c("XVector", "Ranges"),
 
 setMethod("getListElement", "XVectorList", .getListElement_XVectorList)
 
+### Drop unused pool elements.
 setMethod("extractROWS", "XVectorList",
-    function(x, i)
-    {
-        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        ans_ranges <- extractROWS(x@ranges, i)
-        ans_mcols <- extractROWS(x@elementMetadata, i)
-        ans <- BiocGenerics:::replaceSlots(x, ranges=ans_ranges,
-                                              mcols=ans_mcols,
-                                              check=FALSE)
-        ## Drop unused pool elements.
-        .dropUnusedPoolElts(ans)
-    }
+    function(x, i) .dropUnusedPoolElts(callNextMethod())
 )
 
 
@@ -343,7 +334,7 @@ setMethod("showAsCell", "XVectorList", function(object) as.character(object))
 ### Not intended for the end user.
 ###
 ### 'f' must be a factor with number of levels equal to 'length(x)' and
-### length equal to 'sum(lengths(x))'. 
+### length equal to 'sum(lengths(x))'.
 unsplit_list_of_XVectorList <- function(classname, x, f)
 {
     ans <- XVectorList(classname, length(f))
