@@ -1,6 +1,7 @@
 useDynLib(XVector)
 
 import(methods)
+importFrom(utils, download.file)
 import(zlibbioc)
 import(BiocGenerics)
 import(S4Vectors)

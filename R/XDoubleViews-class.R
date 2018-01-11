@@ -234,7 +234,7 @@ setMethod("==", signature(e1="XDoubleViews", e2="XDouble"),
 setMethod("==", signature(e1="XDoubleViews", e2="numeric"),
     function(e1, e2)
     {
-        if (length(e2) == 0 || anyMissing(e2))
+        if (length(e2) == 0 || S4Vectors:::anyMissing(e2))
             stop("comparison between an XDoubleViews object and an integer ",
                  "vector of length 0 or with NAs is not supported")
         XDoubleViews.equal(e1, as(e2, "Views"))

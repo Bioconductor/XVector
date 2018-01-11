@@ -48,7 +48,8 @@
 
 \S4method{is.unsorted}{XRawList}(x, na.rm=FALSE, strictly=FALSE)
 
-\S4method{order}{XRawList}(..., na.last=TRUE, decreasing=FALSE)
+\S4method{order}{XRawList}(..., na.last=TRUE, decreasing=FALSE,
+           method=c("auto", "shell", "radix"))
 
 \S4method{rank}{XRawList}(x, na.last=TRUE,
      ties.method=c("average", "first", "random", "max", "min"))
@@ -76,7 +77,7 @@
     The value to be returned in the case when no match is found.
     It is coerced to an \code{integer}.
   }
-  \item{na.rm, na.last}{
+  \item{na.rm, na.last, method}{
     Ignored.
   }
   \item{strictly}{

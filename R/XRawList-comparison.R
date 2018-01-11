@@ -84,8 +84,11 @@ setMethod("is.unsorted", "XRawList",
     }
 )
 
+### 'na.last' is pointless (XRawList objects don't contain NAs) so is ignored.
+### 'method' is also ignored at the moment.
 setMethod("order", "XRawList",
-    function(..., na.last=TRUE, decreasing=FALSE)
+    function(..., na.last=TRUE, decreasing=FALSE,
+                  method=c("auto", "shell", "radix"))
     {
         if (!identical(na.last, TRUE))
             warning("\"order\" method for XRawList objects ",
