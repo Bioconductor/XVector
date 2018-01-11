@@ -75,8 +75,6 @@ setMethod("show", "GroupedIRanges",
 ### XVectorList accessors
 ###
 
-setMethod("length", "XVectorList", function(x) length(x@ranges))
-
 setMethod("width", "XVectorList", function(x) width(x@ranges))
 
 setMethod("elementNROWS", "XVectorList", function(x) width(x))
