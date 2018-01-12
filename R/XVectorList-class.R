@@ -282,8 +282,7 @@ setMethod("subseq", "XVectorList",
     if (!isTRUEorFALSE(check))
         stop("'check' must be TRUE or FALSE")
 
-    objects <- unname(S4Vectors:::delete_NULLs(objects))
-    S4Vectors:::check_class_of_objects_to_concatenate(.Object, objects)
+    objects <- S4Vectors:::prepare_objects_to_concatenate(.Object, objects)
 
     if (length(objects) == 0L) {
         if (length(.Object) != 0L)

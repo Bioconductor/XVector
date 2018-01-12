@@ -39,15 +39,12 @@ setMethod("length", "XVector", function(x) x@length)
 .concatenate_XVector_objects <-
     function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    if (!is.list(objects))
-        stop("'objects' must be a list")
     if (!isTRUEorFALSE(use.names))
         stop("'use.names' must be TRUE or FALSE")
     if (!isTRUEorFALSE(ignore.mcols))
         stop("'ignore.mcols' must be TRUE or FALSE")
 
-    objects <- unname(S4Vectors:::delete_NULLs(objects))
-    S4Vectors:::check_class_of_objects_to_concatenate(.Object, objects)
+    objects <- S4Vectors:::prepare_objects_to_concatenate(.Object, objects)
 
     if (length(objects) == 0L) {
         if (length(.Object) != 0L)
