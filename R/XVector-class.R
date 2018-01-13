@@ -37,28 +37,34 @@ setMethod("length", "XVector", function(x) x@length)
 ###
 
 .concatenate_XVector_objects <-
-    function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
+    function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    if (!isTRUEorFALSE(use.names))
-        stop("'use.names' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(ignore.mcols))
-        stop("'ignore.mcols' must be TRUE or FALSE")
+    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    all_objects <- c(list(x), objects)
 
-    objects <- S4Vectors:::prepare_objects_to_concatenate(.Object, objects)
-
-    if (length(objects) == 0L) {
-        if (length(.Object) != 0L)
-            .Object <- .Object[integer(0)]
-        return(.Object)
-    }
-
-    ans_len <- suppressWarnings(sum(lengths(objects)))
+    ans_len <- suppressWarnings(sum(lengths(all_objects)))
     if (is.na(ans_len))
         stop("too many vector elements to concatenate")
 
-    ans_shared <- SharedVector(class(.Object@shared), length=ans_len)
+    ## 1. Take care of the parallel slots
+
+    ## Call method for Vector objects to concatenate all the parallel
+    ## slots (only "elementMetadata" in the case of XVector) and stick them
+    ## into 'ans'. Note that the resulting 'ans' can be an invalid object
+    ## ball method for Vector objects to concatenate all the parallel
+    ## slots (only "elementMetadata" in the case of IPos) and stick them
+    ## into 'ans'. Note that the resulting 'ans' can be an invalid object
+    ## because its "elementMetadata" slot can be longer (i.e. have more rows)
+    ## than 'ans' itself so we use 'check=FALSE' to skip validation.
+    ans <- callNextMethod(x, objects, use.names=use.names,
+                                      ignore.mcols=ignore.mcols,
+                                      check=FALSE)
+
+    ## 2. Take care of the non-parallel slots
+
+    ans_shared <- SharedVector(class(x@shared), length=ans_len)
     dest_offset <- 0L
-    for (object in objects) {
+    for (object in all_objects) {
         width <- length(object)
         if (width == 0L)  # would be TRUE on NULLs too...
             next
@@ -69,14 +75,9 @@ setMethod("length", "XVector", function(x) x@length)
         dest_offset <- dest_offset + width
     }
 
-    .Object <- new2(class(.Object), shared=ans_shared,
-                                    length=ans_len,
-                                    check=FALSE)
-
-    ## Call method for Vector objects to concatenate all the parallel
-    ## slots (only "elementMetadata" in the case of XVector) and stick
-    ## them into '.Object'.
-    callNextMethod()
+    BiocGenerics:::replaceSlots(ans, shared=ans_shared,
+                                     length=ans_len,
+                                     check=check)
 }
 
 setMethod("concatenateObjects", "XVector", .concatenate_XVector_objects)

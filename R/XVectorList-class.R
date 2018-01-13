@@ -277,40 +277,39 @@ setMethod("subseq", "XVectorList",
 ###
 
 .concatenate_XVectorList_objects <-
-    function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
+    function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    if (!isTRUEorFALSE(check))
-        stop("'check' must be TRUE or FALSE")
-
-    objects <- S4Vectors:::prepare_objects_to_concatenate(.Object, objects)
-
-    if (length(objects) == 0L) {
-        if (length(.Object) != 0L)
-            .Object <- .Object[integer(0)]
-        return(.Object)
-    }
+    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    all_objects <- c(list(x), objects)
 
     ## Call method for Vector objects to concatenate all the parallel slots
     ## (i.e. "ranges" and "elementMetadata" in the case of XVectorList) and
-    ## stick them into '.Object'.
-    .Object <- callNextMethod(.Object, objects, use.names=use.names,
-                                                ignore.mcols=ignore.mcols,
-                                                check=FALSE)
+    ## stick them into 'ans'. Note that the resulting 'ans' can be an invalid
+    ## object so we use 'check=FALSE' to skip validation.
+    ans <- callNextMethod(x, objects, use.names=use.names,
+                                      ignore.mcols=ignore.mcols,
+                                      check=FALSE)
 
-    ## Concatenate "pool" slots.
-    pool_list <- lapply(objects, slot, "pool")
-    .Object@pool <- do.call(c, pool_list)
+    ## 2. Take care of the non-parallel slots
 
-    ## Fix '.Object@ranges@group'.
+    ## Concatenate the "pool" slots.
+    pool_list <- lapply(all_objects, slot, "pool")
+    ans_pool <- do.call(c, pool_list)
+
+    ## 3. Fix parallel slot "ranges"
+
+    ans_ranges <- ans@ranges
     breakpoints <- cumsum(lengths(pool_list))
     offsets <- c(0L, breakpoints[-length(breakpoints)])
-    offsets <- rep.int(offsets, lengths(objects))
-    .Object@ranges@group <- .Object@ranges@group + offsets
+    offsets <- rep.int(offsets, lengths(all_objects))
+    ans_ranges@group <- ans_ranges@group + offsets
+    if (!(use.names || is.null(names(ans_ranges))))
+        names(ans_ranges) <- NULL
 
-    if (check)
-        validObject(.Object)
-
-    .dropDuplicatedPoolElts(.Object)
+    ans <- BiocGenerics:::replaceSlots(ans, pool=ans_pool,
+                                            ranges=ans_ranges,
+                                            check=check)
+    .dropDuplicatedPoolElts(ans)
 }
 
 setMethod("concatenateObjects", "XVectorList",
