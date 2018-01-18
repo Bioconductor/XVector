@@ -33,57 +33,6 @@ setMethod("length", "XVector", function(x) x@length)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Concatenation
-###
-
-.concatenate_XVector_objects <-
-    function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
-{
-    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
-    all_objects <- c(list(x), objects)
-
-    ans_len <- suppressWarnings(sum(lengths(all_objects)))
-    if (is.na(ans_len))
-        stop("too many vector elements to concatenate")
-
-    ## 1. Take care of the parallel slots
-
-    ## Call method for Vector objects to concatenate all the parallel
-    ## slots (only "elementMetadata" in the case of XVector) and stick them
-    ## into 'ans'. Note that the resulting 'ans' can be an invalid object
-    ## ball method for Vector objects to concatenate all the parallel
-    ## slots (only "elementMetadata" in the case of IPos) and stick them
-    ## into 'ans'. Note that the resulting 'ans' can be an invalid object
-    ## because its "elementMetadata" slot can be longer (i.e. have more rows)
-    ## than 'ans' itself so we use 'check=FALSE' to skip validation.
-    ans <- callNextMethod(x, objects, use.names=use.names,
-                                      ignore.mcols=ignore.mcols,
-                                      check=FALSE)
-
-    ## 2. Take care of the non-parallel slots
-
-    ans_shared <- SharedVector(class(x@shared), length=ans_len)
-    dest_offset <- 0L
-    for (object in all_objects) {
-        width <- length(object)
-        if (width == 0L)  # would be TRUE on NULLs too...
-            next
-        ## From here 'object' is guaranteed to be an XVector object.
-        src <- object@shared
-        src_start <- object@offset + 1L
-        SharedVector.mcopy(ans_shared, dest_offset, src, src_start, width)
-        dest_offset <- dest_offset + width
-    }
-
-    BiocGenerics:::replaceSlots(ans, shared=ans_shared,
-                                     length=ans_len,
-                                     check=check)
-}
-
-setMethod("concatenateObjects", "XVector", .concatenate_XVector_objects)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting
 ###
 
@@ -166,6 +115,58 @@ setMethod("show", "XVector",
             cat(" [1] ", S4Vectors:::toNumSnippet(object, getOption("width")-5), "\n", sep="")
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Concatenation
+###
+
+.concatenate_XVector_objects <-
+    function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
+{
+    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    all_objects <- c(list(x), objects)
+
+    ans_len <- suppressWarnings(sum(lengths(all_objects)))
+    if (is.na(ans_len))
+        stop("too many vector elements to concatenate")
+
+    ## 1. Take care of the parallel slots
+
+    ## Call method for Vector objects to concatenate all the parallel
+    ## slots (only "elementMetadata" in the case of XVector) and stick them
+    ## into 'ans'. Note that the resulting 'ans' can be an invalid object
+    ## ball method for Vector objects to concatenate all the parallel
+    ## slots (only "elementMetadata" in the case of IPos) and stick them
+    ## into 'ans'. Note that the resulting 'ans' can be an invalid object
+    ## because its "elementMetadata" slot can be longer (i.e. have more rows)
+    ## than 'ans' itself so we use 'check=FALSE' to skip validation.
+    ans <- callNextMethod(x, objects, use.names=use.names,
+                                      ignore.mcols=ignore.mcols,
+                                      check=FALSE)
+
+    ## 2. Take care of the non-parallel slots
+
+    ans_shared <- SharedVector(class(x@shared), length=ans_len)
+    dest_offset <- 0L
+    for (object in all_objects) {
+        object_len <- length(object)
+        if (object_len == 0L)  # would be TRUE on NULLs too...
+            next
+        ## From here 'object' is guaranteed to be an XVector object.
+        src <- object@shared
+        src_start <- object@offset + 1L
+        SharedVector.mcopy(ans_shared, dest_offset, src, src_start, object_len)
+        dest_offset <- dest_offset + object_len
+    }
+
+    BiocGenerics:::replaceSlots(ans, shared=ans_shared,
+                                     offset=0L,
+                                     length=ans_len,
+                                     check=check)
+}
+
+setMethod("concatenateObjects", "XVector", .concatenate_XVector_objects)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
