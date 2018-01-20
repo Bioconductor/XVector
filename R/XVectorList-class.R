@@ -35,12 +35,12 @@ setClass("XVectorList",
 
 ### Ugly workaround a serious callNextMethod inefficiency reported here:
 ###   https://bugs.r-project.org/bugzilla/show_bug.cgi?id=16974
-.GroupedIRanges_parallelSlotNames <-
+.parallelSlotNames_of_GroupedIRanges <-
     c("group", parallelSlotNames(new("IRanges")))
 
 setMethod("parallelSlotNames", "GroupedIRanges",
     #function(x) c("group", callNextMethod())
-    function(x) .GroupedIRanges_parallelSlotNames
+    function(x) .parallelSlotNames_of_GroupedIRanges
 )
 
 setMethod("parallelSlotNames", "XVectorList",
@@ -189,7 +189,7 @@ setMethod("relistToClass", "XVector",
     function(x) paste0(class(x), "List")
 )
 
-### Takes one XVector object ('x') and a Ranges object ('i') defining
+### Takes one XVector object ('x') and a IntegerRanges object ('i') defining
 ### 1-based ranges on 'x' (conceptually equivalent to defining views on
 ### subject 'x').
 .unsafe.extractList <- function(x, i)
@@ -222,7 +222,7 @@ setMethod("relist", c("XVector", "PartitioningByEnd"),
 )
 
 ### Does not copy the sequence data!
-setMethod("extractList", c("XVector", "Ranges"),
+setMethod("extractList", c("XVector", "IntegerRanges"),
     function(x, i)
     {
         if (length(i) != 0L
