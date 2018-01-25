@@ -4,11 +4,13 @@
 ###
 
 
-setMethod("narrow", "XVectorList",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+### The "narrow" method for Vector objects calls windows() so we only need to
+### implement a "windows" method for XVectorList objects to make narrow()
+### work on these objects.
+setMethod("windows", "XVectorList",
+    function(x, start=NA, end=NA, width=NA)
     {
-        x@ranges <- narrow(x@ranges, start=start, end=end, width=width,
-                                     use.names=use.names)
+        x@ranges <- windows(x@ranges, start=start, end=end, width=width)
         x
     }
 )

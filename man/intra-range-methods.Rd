@@ -3,6 +3,7 @@
 \alias{intra-range-methods}
 
 \alias{narrow}
+\alias{windows,XVectorList-method}
 \alias{narrow,XVectorList-method}
 
 \alias{threebands}

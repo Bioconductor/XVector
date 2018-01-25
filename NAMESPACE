@@ -71,6 +71,7 @@ exportMethods(
     viewMins, viewMaxs, viewSums, viewMeans,
     viewWhichMins, viewWhichMaxs,
     extractList,
+    windows,
     reverse,
     slice
 )
