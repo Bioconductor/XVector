@@ -4,9 +4,9 @@
 ###
 
 
-### The "narrow" method for Vector objects calls windows() so we only need to
-### implement a "windows" method for XVectorList objects to make narrow()
-### work on these objects.
+### The default "narrow" method calls windows() so we only need to implement
+### a "windows" method for XVectorList objects to make narrow() work on these
+### objects.
 setMethod("windows", "XVectorList",
     function(x, start=NA, end=NA, width=NA)
     {
