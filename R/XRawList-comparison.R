@@ -90,9 +90,14 @@ setMethod("order", "XRawList",
     function(..., na.last=TRUE, decreasing=FALSE,
                   method=c("auto", "shell", "radix"))
     {
-        if (!identical(na.last, TRUE))
-            warning("\"order\" method for XRawList objects ",
-                    "ignores the 'na.last' argument")
+        ## Turn off this warning for now since it triggers spurious warnings
+        ## when calling sort() on an XRawList derivative. The root of the
+        ## problem is inconsistent defaults for 'na.last' between order()
+        ## and sort(), as reported here:
+        ##   https://stat.ethz.ch/pipermail/r-devel/2015-November/072012.html
+        #if (!identical(na.last, TRUE))
+        #    warning("\"order\" method for XRawList objects ",
+        #            "ignores the 'na.last' argument")
         if (!isTRUEorFALSE(decreasing))
             stop("'decreasing' must be TRUE or FALSE")
         ## All arguments in '...' are guaranteed to be XRawList objects.
