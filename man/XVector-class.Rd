@@ -7,7 +7,7 @@
 \alias{XVector}
 
 \alias{length,XVector-method}
-\alias{concatenateObjects,XVector-method}
+\alias{bindROWS,XVector-method}
 \alias{subseq}
 \alias{subseq<-}
 \alias{subseq,XVector-method}

@@ -279,7 +279,7 @@ setMethod("subseq", "XVectorList",
 .concatenate_XVectorList_objects <-
     function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    objects <- S4Vectors:::prepare_objects_to_bind(x, objects)
     all_objects <- c(list(x), objects)
 
     ## Call method for Vector objects to concatenate all the parallel slots
@@ -312,9 +312,7 @@ setMethod("subseq", "XVectorList",
     .dropDuplicatedPoolElts(ans)
 }
 
-setMethod("concatenateObjects", "XVectorList",
-    .concatenate_XVectorList_objects
-)
+setMethod("bindROWS", "XVectorList", .concatenate_XVectorList_objects)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

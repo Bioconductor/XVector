@@ -124,7 +124,7 @@ setMethod("show", "XVector",
 .concatenate_XVector_objects <-
     function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    objects <- S4Vectors:::prepare_objects_to_bind(x, objects)
     all_objects <- c(list(x), objects)
 
     ans_len <- suppressWarnings(sum(lengths(all_objects)))
@@ -166,7 +166,7 @@ setMethod("show", "XVector",
                                      check=check)
 }
 
-setMethod("concatenateObjects", "XVector", .concatenate_XVector_objects)
+setMethod("bindROWS", "XVector", .concatenate_XVector_objects)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

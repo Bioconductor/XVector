@@ -21,7 +21,7 @@
 \alias{names<-,XVectorList-method}
 \alias{[,XVectorList-method}
 \alias{subseq,XVectorList-method}
-\alias{concatenateObjects,XVectorList-method}
+\alias{bindROWS,XVectorList-method}
 
 \alias{showAsCell,XVectorList-method}
 
