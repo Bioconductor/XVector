@@ -67,7 +67,7 @@ setMethod("subseq", "XVector",
                                                          start, end, width)
         x@offset <- x@offset + start(solved_SEW) - 1L
         x@length <- width(solved_SEW)
-        mcols(x) <- extractROWS(mcols(x), solved_SEW)
+        mcols(x) <- extractROWS(mcols(x, use.names=FALSE), solved_SEW)
         x
     }
 )
