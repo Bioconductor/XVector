@@ -338,7 +338,7 @@ static SEXP alloc_XVectorList(const char *classname,
 		SEXP width)
 {
 	int ans_length, tag_length, new_tag_length, i, nelt;
-	SEXP start, group, ranges, tags, tag, ans;
+	SEXP start, group, names, ranges, tags, tag, ans;
 	IntAE *tag_lengths;
 
 	ans_length = LENGTH(width);
@@ -363,7 +363,12 @@ static SEXP alloc_XVectorList(const char *classname,
 		IntAE_insert_at(tag_lengths,
 			IntAE_get_nelt(tag_lengths), tag_length);
 	}
-	PROTECT(ranges = new_IRanges("IRanges", start, width, NULL));
+	names = GET_NAMES(width);
+	if (names != R_NilValue) {
+		PROTECT(width = duplicate(width));
+		SET_NAMES(width, R_NilValue);
+	}
+	PROTECT(ranges = new_IRanges("IRanges", start, width, names));
 	nelt = IntAE_get_nelt(tag_lengths);
 	PROTECT(tags = NEW_LIST(nelt));
 	if (strcmp(tag_type, "raw") == 0) {
@@ -395,6 +400,8 @@ static SEXP alloc_XVectorList(const char *classname,
 		error("IRanges internal error in alloc_XVectorList(): "
 		      "%s: invalid 'tag_type'", tag_type);
 	}
+	if (names != R_NilValue)
+		UNPROTECT(1);
 	UNPROTECT(5);
 	return ans;
 }

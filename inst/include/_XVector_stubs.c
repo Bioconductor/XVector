@@ -41,6 +41,11 @@ DEFINE_CCALLABLE_STUB(int, filexp_gets,
 	(     filexp,       buf,     buf_size,      EOL_in_buf)
 )
 
+DEFINE_CCALLABLE_STUB(long long int, filexp_tell,
+	(SEXP filexp),
+	(     filexp)
+)
+
 DEFINE_NOVALUE_CCALLABLE_STUB(filexp_seek,
 	(SEXP filexp, long long int offset, int whence),
 	(     filexp,               offset,     whence)

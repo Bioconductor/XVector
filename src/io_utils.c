@@ -193,6 +193,26 @@ static int iZFile_gets(const ZFile *zfile,
 	return *EOL_in_buf ? 2 : 1;
 }
 
+static long long int iZFile_tell(ZFile *zfile)
+{
+	int ztype;
+	void *file;
+	long long int offset;
+
+	ztype = zfile->ztype;
+	file = zfile->file;
+	switch (ztype) {
+	    case UNCOMPRESSED:
+	    case GZ_TYPE:
+		offset = gztell((gzFile) file);
+		break;
+	    default:
+		error(INTERNAL_ERR_IN "iZFile_tell(): "
+		      "invalid ztype value %d", ztype);
+	}
+	return offset;
+}
+
 static void iZFile_seek(ZFile *zfile, long long int offset, int whence)
 {
 	int ztype;
@@ -487,6 +507,12 @@ int _filexp_gets(SEXP filexp, char *buf, int buf_size, int *EOL_in_buf)
 			   buf, buf_size, EOL_in_buf);
 }
 
+long long int _filexp_tell(SEXP filexp)
+{
+	CHECK_USER_INTERRUPT(100);
+	return iZFile_tell(R_ExternalPtrAddr(filexp));
+}
+
 void _filexp_seek(SEXP filexp, long long int offset, int whence)
 {
 	CHECK_USER_INTERRUPT(100);
@@ -546,7 +572,7 @@ static SEXP new_filexp(SEXP filepath,
  * From R:
  *   x <- .Call("new_input_filexp", "path/to/some/file", PACKAGE="XVector")
  *   reg.finalizer(x,
- *       function(e) .Call("finalize_filexp", e, PACKAGE="XVector"),
+ *       function(e) .Call("close_filexp", e, PACKAGE="XVector"),
  *       onexit=TRUE)
  */
 SEXP new_input_filexp(SEXP filepath)
@@ -579,7 +605,7 @@ SEXP new_output_filexp(SEXP filepath, SEXP append,
 /* --- .Call ENTRY POINT ---
  * Closes the file pointed to by 'filexp'.
  */
-SEXP finalize_filexp(SEXP filexp)
+SEXP close_filexp(SEXP filexp)
 {
 	ZFile *zfile;
 

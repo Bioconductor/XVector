@@ -29,6 +29,8 @@ int filexp_gets(
 	int *EOL_in_buf
 );
 
+long long int filexp_tell(SEXP filexp);
+
 void filexp_seek(
 	SEXP filexp,
 	long long int offset,

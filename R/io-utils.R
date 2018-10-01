@@ -24,9 +24,9 @@ new_output_filexp <- function(filepath, append, compress, compression_level)
            PACKAGE="XVector")
 }
 
-finalize_filexp <- function(filexp)
+close_filexp <- function(filexp)
 {
-    .Call2("finalize_filexp", filexp, PACKAGE="XVector")
+    .Call2("close_filexp", filexp, PACKAGE="XVector")
 }
 
 .normarg_input_filepath <- function(filepath)
@@ -71,7 +71,7 @@ open_input_files <- function(filepath)
            function(fp)
            {
                filexp <- new_input_filexp(fp)
-               reg.finalizer(filexp, finalize_filexp, onexit=TRUE)
+               reg.finalizer(filexp, close_filexp, onexit=TRUE)
                filexp
            })
     names(ans) <- filepath
@@ -124,7 +124,7 @@ open_output_file <- function(filepath, append=FALSE,
     filepath2 <- path.expand(filepath)
     filexp <- new_output_filexp(filepath2, append,
                                 compress, compression_level)
-    reg.finalizer(filexp, finalize_filexp, onexit=TRUE)
+    reg.finalizer(filexp, close_filexp, onexit=TRUE)
     ans <- list(filexp)
     names(ans) <- filepath
     ans

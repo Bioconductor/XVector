@@ -25,6 +25,8 @@ int _filexp_gets(
 	int *EOL_in_buf
 );
 
+long long int _filexp_tell(SEXP filexp);
+
 void _filexp_seek(
 	SEXP filexp,
 	long long int offset,
@@ -54,7 +56,7 @@ SEXP new_output_filexp(
 	SEXP compression_level
 );
 
-SEXP finalize_filexp(SEXP filexp);
+SEXP close_filexp(SEXP filexp);
 
 int _delete_trailing_LF_or_CRLF(
 	const char *buf,

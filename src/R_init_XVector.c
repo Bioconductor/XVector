@@ -11,7 +11,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(new_input_filexp, 1),
 	CALLMETHOD_DEF(rewind_filexp, 1),
 	CALLMETHOD_DEF(new_output_filexp, 4),
-	CALLMETHOD_DEF(finalize_filexp, 1),
+	CALLMETHOD_DEF(close_filexp, 1),
 
 /* RDS_random_access.c */
 	CALLMETHOD_DEF(RDS_read_file, 3),
@@ -101,6 +101,7 @@ void R_init_XVector(DllInfo *info)
 /* io_utils.c */
 	REGISTER_CCALLABLE(_filexp_read);
 	REGISTER_CCALLABLE(_filexp_gets);
+	REGISTER_CCALLABLE(_filexp_tell);
 	REGISTER_CCALLABLE(_filexp_seek);
 	REGISTER_CCALLABLE(_filexp_rewind);
 	REGISTER_CCALLABLE(_filexp_puts);

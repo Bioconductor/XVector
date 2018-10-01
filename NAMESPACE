@@ -82,6 +82,7 @@ exportMethods(
 ###
 
 export(
+    open_input_files,
     SharedVector.compare,
     SharedVector.copy,
     SharedRaw,
