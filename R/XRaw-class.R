@@ -42,7 +42,7 @@ XRaw <- function(length=0L, val=NULL)
 ###   x <- subseq(as(charToRaw("--Hello--"), "XRaw"), 3, 7)
 ###   extract_character_from_XRaw_by_positions(x, 5:2)
 ###   extract_character_from_XRaw_by_positions(x, 5:2, collapse=TRUE)
-###   lkup <- c(0:96, 65:90, 91:255)  # capitalization lookup
+###   lkup <- S4Vectors:::TOUPPER_LOOKUP
 ###   extract_character_from_XRaw_by_positions(x, 5:2, lkup=lkup)
 ###   extract_character_from_XRaw_by_positions(x, 5:2, collapse=TRUE, lkup=lkup)
 extract_character_from_XRaw_by_positions <- function(x, pos,
@@ -58,7 +58,7 @@ extract_character_from_XRaw_by_positions <- function(x, pos,
 ###   x <- subseq(as(charToRaw("--Hello--"), "XRaw"), 3, 7)
 ###   extract_character_from_XRaw_by_ranges(x, 3:1, c(2:1, 4L))
 ###   extract_character_from_XRaw_by_ranges(x, 3:1, c(2:1, 4L), collapse=TRUE)
-###   lkup <- c(0:96, 65:90, 91:255)  # capitalization lookup
+###   lkup <- S4Vectors:::TOUPPER_LOOKUP
 ###   extract_character_from_XRaw_by_ranges(x, 3:1, c(2:1, 4L), lkup=lkup)
 ###   extract_character_from_XRaw_by_ranges(x, 3:1, c(2:1, 4L), collapse=TRUE,
 ###                                         lkup=lkup)
