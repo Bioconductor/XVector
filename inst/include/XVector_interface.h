@@ -198,23 +198,38 @@ int get_XVector_length(SEXP x);
 
 SEXP get_XVector_tag(SEXP x);
 
-Chars_holder hold_XRaw(SEXP x);
-
-Ints_holder hold_XInteger(SEXP x);
-
-Doubles_holder hold_XDouble(SEXP x);
-
 SEXP new_XVector(const char *classname, SEXP shared, int offset, int length);
+
+/*
+ * Low-level manipulation of XRaw objects.
+ * (see XRaw_class.c)
+ */
+
+Chars_holder hold_XRaw(SEXP x);
 
 SEXP new_XRaw_from_tag(const char *classname, SEXP tag);
 
-SEXP new_XInteger_from_tag(const char *classname, SEXP tag);
-
-SEXP new_XDouble_from_tag(const char *classname, SEXP tag);
-
 SEXP alloc_XRaw(const char *classname, int length);
 
+/*
+ * Low-level manipulation of XInteger objects.
+ * (see XInteger_class.c)
+ */
+
+Ints_holder hold_XInteger(SEXP x);
+
+SEXP new_XInteger_from_tag(const char *classname, SEXP tag);
+
 SEXP alloc_XInteger(const char *classname, int length);
+
+/*
+ * Low-level manipulation of XDouble objects.
+ * (see XDouble_class.c)
+ */
+
+Doubles_holder hold_XDouble(SEXP x);
+
+SEXP new_XDouble_from_tag(const char *classname, SEXP tag);
 
 SEXP alloc_XDouble(const char *classname, int length);
 

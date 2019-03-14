@@ -538,12 +538,6 @@ int _get_XVector_length(SEXP x);
 
 SEXP _get_XVector_tag(SEXP x);
 
-Chars_holder _hold_XRaw(SEXP x);
-
-Ints_holder _hold_XInteger(SEXP x);
-
-Doubles_holder _hold_XDouble(SEXP x);
-
 SEXP _new_XVector(
 	const char *classname,
 	SEXP shared,
@@ -551,17 +545,12 @@ SEXP _new_XVector(
 	int length
 );
 
+
+/* XRaw_class.c */
+
+Chars_holder _hold_XRaw(SEXP x);
+
 SEXP _new_XRaw_from_tag(
-	const char *classname,
-	SEXP tag
-);
-
-SEXP _new_XInteger_from_tag(
-	const char *classname,
-	SEXP tag
-);
-
-SEXP _new_XDouble_from_tag(
 	const char *classname,
 	SEXP tag
 );
@@ -571,9 +560,29 @@ SEXP _alloc_XRaw(
 	int length
 );
 
+
+/* XInteger_class.c */
+
+Ints_holder _hold_XInteger(SEXP x);
+
+SEXP _new_XInteger_from_tag(
+	const char *classname,
+	SEXP tag
+);
+
 SEXP _alloc_XInteger(
 	const char *classname,
 	int length
+);
+
+
+/* XDouble_class.c */
+
+Doubles_holder _hold_XDouble(SEXP x);
+
+SEXP _new_XDouble_from_tag(
+	const char *classname,
+	SEXP tag
 );
 
 SEXP _alloc_XDouble(

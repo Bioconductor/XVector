@@ -43,50 +43,6 @@ SEXP _get_XVector_tag(SEXP x)
 
 
 /****************************************************************************
- * Caching.
- */
-
-Chars_holder _hold_XRaw(SEXP x)
-{
-	Chars_holder x_holder;
-	SEXP tag;
-	int offset;
-
-	tag = _get_XVector_tag(x);
-	offset = _get_XVector_offset(x);
-	x_holder.ptr = (const char *) (RAW(tag) + offset);
-	x_holder.length = _get_XVector_length(x);
-	return x_holder;
-}
-
-Ints_holder _hold_XInteger(SEXP x)
-{
-	Ints_holder x_holder;
-	SEXP tag;
-	int offset;
-
-	tag = _get_XVector_tag(x);
-	offset = _get_XVector_offset(x);
-	x_holder.ptr = (const int *) (INTEGER(tag) + offset);
-	x_holder.length = _get_XVector_length(x);
-	return x_holder;
-}
-
-Doubles_holder _hold_XDouble(SEXP x)
-{
-	Doubles_holder x_holder;
-	SEXP tag;
-	int offset;
-
-	tag = _get_XVector_tag(x);
-	offset = _get_XVector_offset(x);
-	x_holder.ptr = (const double *) (REAL(tag) + offset);
-	x_holder.length = _get_XVector_length(x);
-	return x_holder;
-}
-
-
-/****************************************************************************
  * C-level slot setters.
  *
  * Be careful that these functions do NOT duplicate the assigned value!
@@ -122,7 +78,7 @@ static void set_XVector_slots(SEXP x, SEXP shared, SEXP offset, SEXP length)
 
 
 /****************************************************************************
- * C-level constructors.
+ * C-level constructor
  *
  * Be careful that these functions do NOT duplicate their arguments before
  * putting them in the slots of the returned object.
@@ -139,68 +95,6 @@ SEXP _new_XVector(const char *classname, SEXP shared, int offset, int length)
 	PROTECT(ans_length = ScalarInteger(length));
 	set_XVector_slots(ans, shared, ans_offset, ans_length);
 	UNPROTECT(4);
-	return ans;
-}
-
-SEXP _new_XRaw_from_tag(const char *classname, SEXP tag)
-{
-	SEXP shared, ans;
-
-	PROTECT(shared = _new_SharedVector("SharedRaw", tag));
-	PROTECT(ans = _new_XVector(classname, shared, 0, LENGTH(tag)));
-	UNPROTECT(2);
-	return ans;
-}
-
-SEXP _new_XInteger_from_tag(const char *classname, SEXP tag)
-{
-	SEXP shared, ans;
-
-	PROTECT(shared = _new_SharedVector("SharedInteger", tag));
-	PROTECT(ans = _new_XVector(classname, shared, 0, LENGTH(tag)));
-	UNPROTECT(2);
-	return ans;
-}
-
-SEXP _new_XDouble_from_tag(const char *classname, SEXP tag)
-{
-	SEXP shared, ans;
-
-	PROTECT(shared = _new_SharedVector("SharedDouble", tag));
-	PROTECT(ans = _new_XVector(classname, shared, 0, LENGTH(tag)));
-	UNPROTECT(2);
-	return ans;
-}
-
-/* Allocation WITHOUT initialization. */
-
-SEXP _alloc_XRaw(const char *classname, int length)
-{
-	SEXP tag, ans;
-
-	PROTECT(tag = NEW_RAW(length));
-	PROTECT(ans = _new_XRaw_from_tag(classname, tag));
-	UNPROTECT(2);
-	return ans;
-}
-
-SEXP _alloc_XInteger(const char *classname, int length)
-{
-	SEXP tag, ans;
-
-	PROTECT(tag = NEW_INTEGER(length));
-	PROTECT(ans = _new_XInteger_from_tag(classname, tag));
-	UNPROTECT(2);
-	return ans;
-}
-
-SEXP _alloc_XDouble(const char *classname, int length)
-{
-	SEXP tag, ans;
-
-	PROTECT(tag = NEW_NUMERIC(length));
-	PROTECT(ans = _new_XDouble_from_tag(classname, tag));
-	UNPROTECT(2);
 	return ans;
 }
 

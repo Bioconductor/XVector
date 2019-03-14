@@ -173,37 +173,21 @@ DEFINE_CCALLABLE_STUB(SEXP, get_XVector_tag,
 	(     x)
 )
 
-DEFINE_CCALLABLE_STUB(Chars_holder, hold_XRaw,
-	(SEXP x),
-	(     x)
-)
-
-DEFINE_CCALLABLE_STUB(Ints_holder, hold_XInteger,
-	(SEXP x),
-	(     x)
-)
-
-DEFINE_CCALLABLE_STUB(Doubles_holder, hold_XDouble,
-	(SEXP x),
-	(     x)
-)
-
 DEFINE_CCALLABLE_STUB(SEXP, new_XVector,
 	(const char *classname, SEXP shared, int offset, int length),
 	(            classname,      shared,     offset,     length)
 )
 
+/*
+ * Stubs for callables defined in XRaw_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(Chars_holder, hold_XRaw,
+	(SEXP x),
+	(     x)
+)
+
 DEFINE_CCALLABLE_STUB(SEXP, new_XRaw_from_tag,
-	(const char *classname, SEXP tag),
-	(            classname,      tag)
-)
-
-DEFINE_CCALLABLE_STUB(SEXP, new_XInteger_from_tag,
-	(const char *classname, SEXP tag),
-	(            classname,      tag)
-)
-
-DEFINE_CCALLABLE_STUB(SEXP, new_XDouble_from_tag,
 	(const char *classname, SEXP tag),
 	(            classname,      tag)
 )
@@ -213,9 +197,37 @@ DEFINE_CCALLABLE_STUB(SEXP, alloc_XRaw,
 	(            classname,     length)
 )
 
+/*
+ * Stubs for callables defined in XInteger_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(Ints_holder, hold_XInteger,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, new_XInteger_from_tag,
+	(const char *classname, SEXP tag),
+	(            classname,      tag)
+)
+
 DEFINE_CCALLABLE_STUB(SEXP, alloc_XInteger,
 	(const char *classname, int length),
 	(            classname,     length)
+)
+
+/*
+ * Stubs for callables defined in XDouble_class.c
+ */
+
+DEFINE_CCALLABLE_STUB(Doubles_holder, hold_XDouble,
+	(SEXP x),
+	(     x)
+)
+
+DEFINE_CCALLABLE_STUB(SEXP, new_XDouble_from_tag,
+	(const char *classname, SEXP tag),
+	(            classname,      tag)
 )
 
 DEFINE_CCALLABLE_STUB(SEXP, alloc_XDouble,

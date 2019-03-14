@@ -133,15 +133,21 @@ void R_init_XVector(DllInfo *info)
 	REGISTER_CCALLABLE(_get_XVector_offset);
 	REGISTER_CCALLABLE(_get_XVector_length);
 	REGISTER_CCALLABLE(_get_XVector_tag);
-	REGISTER_CCALLABLE(_hold_XRaw);
-	REGISTER_CCALLABLE(_hold_XInteger);
-	REGISTER_CCALLABLE(_hold_XDouble);
 	REGISTER_CCALLABLE(_new_XVector);
+
+/* XRaw_class.c */
+	REGISTER_CCALLABLE(_hold_XRaw);
 	REGISTER_CCALLABLE(_new_XRaw_from_tag);
-	REGISTER_CCALLABLE(_new_XInteger_from_tag);
-	REGISTER_CCALLABLE(_new_XDouble_from_tag);
 	REGISTER_CCALLABLE(_alloc_XRaw);
+
+/* XInteger_class.c */
+	REGISTER_CCALLABLE(_hold_XInteger);
+	REGISTER_CCALLABLE(_new_XInteger_from_tag);
 	REGISTER_CCALLABLE(_alloc_XInteger);
+
+/* XDouble_class.c */
+	REGISTER_CCALLABLE(_hold_XDouble);
+	REGISTER_CCALLABLE(_new_XDouble_from_tag);
 	REGISTER_CCALLABLE(_alloc_XDouble);
 
 /* XVectorList_class.c */
