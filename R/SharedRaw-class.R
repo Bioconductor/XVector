@@ -113,8 +113,8 @@ extract_SharedRaw_positions_as_character <- function(x, pos,
 
 ### Typical use:
 ###   x <- SharedRaw(5, charToRaw("Hello"))
-###   extract_SharedRaw_ranges_as_character(x, 4:2, c(2:1, 4L))
-###   extract_SharedRaw_ranges_as_character(x, 4:2, c(2:1, 4L), collapse=TRUE)
+###   extract_SharedRaw_ranges_as_character(x, 3:1, c(2:1, 4L))
+###   extract_SharedRaw_ranges_as_character(x, 3:1, c(2:1, 4L), collapse=TRUE)
 extract_SharedRaw_ranges_as_character <- function(x, start, width,
                                                   collapse=FALSE, lkup=NULL)
 {
