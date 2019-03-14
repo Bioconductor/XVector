@@ -35,7 +35,7 @@ int _get_XVector_length(SEXP x)
 	return INTEGER(GET_SLOT(x, length_symbol))[0];
 }
 
-/* Not a strict "slot getter" but very much like. */
+/* Not a strict "slot getter" but convenient to have. */
 SEXP _get_XVector_tag(SEXP x)
 {
 	return _get_SharedVector_tag(_get_XVector_shared(x));

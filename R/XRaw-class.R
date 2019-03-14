@@ -34,6 +34,44 @@ XRaw <- function(length=0L, val=NULL)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### extract_character_from_XRaw_by_positions() and
+### extract_character_from_XRaw_by_ranges()
+###
+
+### Typical use:
+###   x <- subseq(as(charToRaw("--Hello--"), "XRaw"), 3, 7)
+###   extract_character_from_XRaw_by_positions(x, 5:2)
+###   extract_character_from_XRaw_by_positions(x, 5:2, collapse=TRUE)
+###   lkup <- c(0:96, 65:90, 91:255)  # capitalization lookup
+###   extract_character_from_XRaw_by_positions(x, 5:2, lkup=lkup)
+###   extract_character_from_XRaw_by_positions(x, 5:2, collapse=TRUE, lkup=lkup)
+extract_character_from_XRaw_by_positions <- function(x, pos,
+                                                     collapse=FALSE,
+                                                     lkup=NULL)
+{
+    .Call("C_extract_character_from_XRaw_by_positions",
+          x, pos, collapse, lkup,
+          PACKAGE="XVector")
+}
+
+### Typical use:
+###   x <- subseq(as(charToRaw("--Hello--"), "XRaw"), 3, 7)
+###   extract_character_from_XRaw_by_ranges(x, 3:1, c(2:1, 4L))
+###   extract_character_from_XRaw_by_ranges(x, 3:1, c(2:1, 4L), collapse=TRUE)
+###   lkup <- c(0:96, 65:90, 91:255)  # capitalization lookup
+###   extract_character_from_XRaw_by_ranges(x, 3:1, c(2:1, 4L), lkup=lkup)
+###   extract_character_from_XRaw_by_ranges(x, 3:1, c(2:1, 4L), collapse=TRUE,
+###                                         lkup=lkup)
+extract_character_from_XRaw_by_ranges <- function(x, start, width,
+                                                  collapse=FALSE, lkup=NULL)
+{
+    .Call("C_extract_character_from_XRaw_by_ranges",
+          x, start, width, collapse, lkup,
+          PACKAGE="XVector")
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 

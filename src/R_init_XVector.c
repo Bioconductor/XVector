@@ -74,6 +74,10 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(SharedDouble_write_nums_to_i1i2, 4),
 	CALLMETHOD_DEF(SharedDouble_write_nums_to_subscript, 3),
 
+/* XRaw_class.c */
+	CALLMETHOD_DEF(C_extract_character_from_XRaw_by_positions, 4),
+	CALLMETHOD_DEF(C_extract_character_from_XRaw_by_ranges, 5),
+
 /* XRawList_comparison.c */
 	CALLMETHOD_DEF(XRawList_pcompare, 2),
 	CALLMETHOD_DEF(XRawList_is_unsorted, 2),

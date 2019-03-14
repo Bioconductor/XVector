@@ -560,6 +560,21 @@ SEXP _alloc_XRaw(
 	int length
 );
 
+SEXP C_extract_character_from_XRaw_by_positions(
+	SEXP x,
+	SEXP pos,
+	SEXP collapse,
+	SEXP lkup
+);
+
+SEXP C_extract_character_from_XRaw_by_ranges(
+	SEXP x,
+	SEXP start,
+	SEXP width,
+	SEXP collapse,
+	SEXP lkup
+);
+
 
 /* XInteger_class.c */
 
