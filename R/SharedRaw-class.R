@@ -95,7 +95,42 @@ setValidity2("SharedRaw_Pool", .valid.SharedRaw_Pool)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Read/write functions.
+### extract_SharedRaw_positions_as_character() and
+### extract_SharedRaw_ranges_as_character()
+###
+
+### Typical use:
+###   x <- SharedRaw(5, charToRaw("Hello"))
+###   extract_SharedRaw_positions_as_character(x, 5:2)
+###   extract_SharedRaw_positions_as_character(x, 5:2, collapse=TRUE)
+extract_SharedRaw_positions_as_character <- function(x, pos,
+                                                     collapse=FALSE, lkup=NULL)
+{
+    .Call("C_extract_SharedRaw_positions_as_character",
+          x, pos, collapse, lkup,
+          PACKAGE="XVector")
+}
+
+### Typical use:
+###   x <- SharedRaw(5, charToRaw("Hello"))
+###   extract_SharedRaw_ranges_as_character(x, 4:2, c(2:1, 4L))
+###   extract_SharedRaw_ranges_as_character(x, 4:2, c(2:1, 4L), collapse=TRUE)
+extract_SharedRaw_ranges_as_character <- function(x, start, width,
+                                                  collapse=FALSE, lkup=NULL)
+{
+    .Call("C_extract_SharedRaw_ranges_as_character",
+          x, start, width, collapse, lkup,
+          PACKAGE="XVector")
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Read/write functions
+###
+### NOTE: This is pretty old stuff! Some of it is now superseded by more
+### modern extract_SharedRaw_positions_as_character() and
+### extract_SharedRaw_ranges_as_character() above.
+###
 ### These are almost safe wrappers to unsafe C functions ("almost" because
 ### they don't check for NAs in their arguments).
 ### If length(i) == 0 then the read functions return an empty vector

@@ -1,15 +1,6 @@
 #include "XVector.h"
 
 
-static int translate_byte(char byte, const int *lkup, int lkup_length)
-{
-	int key;
-
-	key = (unsigned char) byte;
-	return key >= lkup_length ? NA_INTEGER : lkup[key];
-}
-
-
 /****************************************************************************
  All the functions below are performing cyclic copy i.e. copy with recycling
  either at the destination ('dest') or at the source ('src'). In this file,

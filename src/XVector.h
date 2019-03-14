@@ -355,6 +355,21 @@ SEXP SharedRaw_new(
 	SEXP val
 );
 
+SEXP C_extract_SharedRaw_positions_as_character(
+	SEXP x,
+	SEXP pos,
+	SEXP collapse,
+	SEXP lkup
+);
+
+SEXP C_extract_SharedRaw_ranges_as_character(
+	SEXP x,
+	SEXP start,
+	SEXP width,
+	SEXP collapse,
+	SEXP lkup
+);
+
 SEXP SharedRaw_read_chars_from_i1i2(
 	SEXP src,
 	SEXP imin,

@@ -38,12 +38,57 @@ SEXP SharedRaw_new(SEXP length, SEXP val)
  * --------------------------------------------------------------------------
  */
 
+SEXP C_extract_SharedRaw_positions_as_character(SEXP x, SEXP pos,
+						SEXP collapse, SEXP lkup)
+{
+	SEXP x_tag;
+
+	x_tag = _get_SharedVector_tag(x);
+	if (!IS_RAW(x_tag))
+		error("'x' must be a SharedRaw object");
+
+	if (!IS_INTEGER(pos))
+		error("'pos' must be an integer vector");
+
+	if (!(IS_LOGICAL(collapse) && LENGTH(collapse) == 1))
+		error("'collapse' must be TRUE or FALSE");
+
+	return extract_bytes_by_positions(
+				(const char *) RAW(x_tag), LENGTH(x_tag),
+				INTEGER(pos), LENGTH(pos),
+				LOGICAL(collapse)[0], lkup);
+}
+
+SEXP C_extract_SharedRaw_ranges_as_character(SEXP x, SEXP start, SEXP width,
+					     SEXP collapse, SEXP lkup)
+{
+	SEXP x_tag;
+	int nranges;
+	const int *start_p, *width_p;
+
+	x_tag = _get_SharedVector_tag(x);
+	if (!IS_RAW(x_tag))
+		error("'x' must be a SharedRaw object");
+
+	nranges = check_integer_pairs(start, width,
+				      &start_p, &width_p,
+				      "start", "width");
+
+	if (!(IS_LOGICAL(collapse) && LENGTH(collapse) == 1))
+		error("'collapse' must be TRUE or FALSE");
+
+	return extract_bytes_by_ranges(
+				(const char *) RAW(x_tag), LENGTH(x_tag),
+				start_p, width_p, nranges,
+				LOGICAL(collapse)[0], lkup);
+}
+
 /*
  * Return a single string (character vector of length 1).
  * From R:
  *   x <- SharedRaw(15)
  *   x[] < "Hello"
- *   .Call("SharedRaw_read_chars_from_i1i2", x, 2:2, 4:4, PACKAGE="XVector")
+ *   .Call("SharedRaw_read_chars_from_i1i2", x, 2L, 4L, PACKAGE="XVector")
  */
 SEXP SharedRaw_read_chars_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 {
@@ -123,7 +168,7 @@ SEXP SharedRaw_write_chars_to_subscript(SEXP dest, SEXP subscript, SEXP string)
  * Return an integer vector of length 'imax' - 'imin' + 1.
  * From R:
  *   x <- SharedRaw(30)
- *   .Call("SharedRaw_read_ints_from_i1i2", x, 20:20, 25:25, PACKAGE="XVector")
+ *   .Call("SharedRaw_read_ints_from_i1i2", x, 20L, 25L, PACKAGE="XVector")
  */
 SEXP SharedRaw_read_ints_from_i1i2(SEXP src, SEXP imin, SEXP imax)
 {
