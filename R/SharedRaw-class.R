@@ -95,30 +95,33 @@ setValidity2("SharedRaw_Pool", .valid.SharedRaw_Pool)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### extract_SharedRaw_positions_as_character() and
-### extract_SharedRaw_ranges_as_character()
+### extract_character_from_SharedRaw_by_positions() and
+### extract_character_from_SharedRaw_by_ranges()
 ###
 
 ### Typical use:
 ###   x <- SharedRaw(5, charToRaw("Hello"))
-###   extract_SharedRaw_positions_as_character(x, 5:2)
-###   extract_SharedRaw_positions_as_character(x, 5:2, collapse=TRUE)
-extract_SharedRaw_positions_as_character <- function(x, pos,
-                                                     collapse=FALSE, lkup=NULL)
+###   extract_character_from_SharedRaw_by_positions(x, 5:2)
+###   extract_character_from_SharedRaw_by_positions(x, 5:2, collapse=TRUE)
+extract_character_from_SharedRaw_by_positions <- function(x, pos,
+                                                          collapse=FALSE,
+                                                          lkup=NULL)
 {
-    .Call("C_extract_SharedRaw_positions_as_character",
+    .Call("C_extract_character_from_SharedRaw_by_positions",
           x, pos, collapse, lkup,
           PACKAGE="XVector")
 }
 
 ### Typical use:
 ###   x <- SharedRaw(5, charToRaw("Hello"))
-###   extract_SharedRaw_ranges_as_character(x, 3:1, c(2:1, 4L))
-###   extract_SharedRaw_ranges_as_character(x, 3:1, c(2:1, 4L), collapse=TRUE)
-extract_SharedRaw_ranges_as_character <- function(x, start, width,
-                                                  collapse=FALSE, lkup=NULL)
+###   extract_character_from_SharedRaw_by_ranges(x, 3:1, c(2:1, 4L))
+###   extract_character_from_SharedRaw_by_ranges(x, 3:1, c(2:1, 4L),
+###                                              collapse=TRUE)
+extract_character_from_SharedRaw_by_ranges <- function(x, start, width,
+                                                       collapse=FALSE,
+                                                       lkup=NULL)
 {
-    .Call("C_extract_SharedRaw_ranges_as_character",
+    .Call("C_extract_character_from_SharedRaw_by_ranges",
           x, start, width, collapse, lkup,
           PACKAGE="XVector")
 }
@@ -128,8 +131,8 @@ extract_SharedRaw_ranges_as_character <- function(x, start, width,
 ### Read/write functions
 ###
 ### NOTE: This is pretty old stuff! Some of it is now superseded by more
-### modern extract_SharedRaw_positions_as_character() and
-### extract_SharedRaw_ranges_as_character() above.
+### modern extract_character_from_SharedRaw_by_positions() and
+### extract_character_from_SharedRaw_by_ranges() above.
 ###
 ### These are almost safe wrappers to unsafe C functions ("almost" because
 ### they don't check for NAs in their arguments).

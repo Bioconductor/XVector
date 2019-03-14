@@ -36,8 +36,8 @@ static const R_CallMethodDef callMethods[] = {
 /* SharedRaw_class.c */
 	CALLMETHOD_DEF(SharedRaw_new, 2),
 
-	CALLMETHOD_DEF(C_extract_SharedRaw_positions_as_character, 4),
-	CALLMETHOD_DEF(C_extract_SharedRaw_ranges_as_character, 5),
+	CALLMETHOD_DEF(C_extract_character_from_SharedRaw_by_positions, 4),
+	CALLMETHOD_DEF(C_extract_character_from_SharedRaw_by_ranges, 5),
 	CALLMETHOD_DEF(SharedRaw_read_chars_from_i1i2, 3),
 	CALLMETHOD_DEF(SharedRaw_read_chars_from_subscript, 2),
 	CALLMETHOD_DEF(SharedRaw_write_chars_to_i1i2, 4),
