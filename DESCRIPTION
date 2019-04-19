@@ -1,7 +1,7 @@
 Package: XVector
-Title: Representation and manipulation of external sequences
-Description: Memory efficient S4 classes for storing sequences "externally"
-	(behind an R external pointer, or on disk).
+Title: Foundation of external vector representation and manipulation in Bioconductor
+Description: Provides memory efficient S4 classes for storing sequences
+	"externally" (e.g. behind an R external pointer, or on disk).
 Version: 0.23.2
 Encoding: UTF-8
 Author: Hervé Pagès and Patrick Aboyoun
