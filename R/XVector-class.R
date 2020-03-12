@@ -136,9 +136,6 @@ setMethod("show", "XVector",
     ## Call method for Vector objects to concatenate all the parallel
     ## slots (only "elementMetadata" in the case of XVector) and stick them
     ## into 'ans'. Note that the resulting 'ans' can be an invalid object
-    ## ball method for Vector objects to concatenate all the parallel
-    ## slots (only "elementMetadata" in the case of IPos) and stick them
-    ## into 'ans'. Note that the resulting 'ans' can be an invalid object
     ## because its "elementMetadata" slot can be longer (i.e. have more rows)
     ## than 'ans' itself so we use 'check=FALSE' to skip validation.
     ans <- callNextMethod(x, objects, use.names=use.names,

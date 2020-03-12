@@ -282,6 +282,8 @@ setMethod("subseq", "XVectorList",
     objects <- S4Vectors:::prepare_objects_to_bind(x, objects)
     all_objects <- c(list(x), objects)
 
+    ## 1. Take care of the parallel slots
+
     ## Call method for Vector objects to concatenate all the parallel slots
     ## (i.e. "ranges" and "elementMetadata" in the case of XVectorList) and
     ## stick them into 'ans'. Note that the resulting 'ans' can be an invalid
