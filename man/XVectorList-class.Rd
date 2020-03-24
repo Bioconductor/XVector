@@ -9,8 +9,8 @@
 \alias{XVectorList-class}
 \alias{XVectorList}
 
-\alias{parallelSlotNames,GroupedIRanges-method}
-\alias{parallelSlotNames,XVectorList-method}
+\alias{vertical_slot_names,GroupedIRanges-method}
+\alias{vertical_slot_names,XVectorList-method}
 
 \alias{as.data.frame,GroupedIRanges-method}
 \alias{show,GroupedIRanges-method}

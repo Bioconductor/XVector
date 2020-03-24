@@ -60,8 +60,8 @@ exportMethods(
 
     ## Methods for generics defined in the S4Vectors package:
     showAsCell,
+    vertical_slot_names,
     bindROWS,
-    parallelSlotNames,
     pcompare,
     elementNROWS,
     relistToClass,

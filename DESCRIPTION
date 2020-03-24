@@ -2,13 +2,13 @@ Package: XVector
 Title: Foundation of external vector representation and manipulation in Bioconductor
 Description: Provides memory efficient S4 classes for storing sequences
 	"externally" (e.g. behind an R external pointer, or on disk).
-Version: 0.27.1
+Version: 0.27.2
 Encoding: UTF-8
 Author: Hervé Pagès and Patrick Aboyoun
 Maintainer: Hervé Pagès <hpages@fredhutch.org>
 biocViews: Infrastructure, DataRepresentation
 Depends: R (>= 2.8.0), methods, BiocGenerics (>= 0.19.2),
-	S4Vectors (>= 0.21.13), IRanges (>= 2.15.12)
+	S4Vectors (>= 0.25.14), IRanges (>= 2.21.6)
 Imports: methods, utils, zlibbioc, BiocGenerics, S4Vectors, IRanges
 LinkingTo: S4Vectors, IRanges
 Suggests: Biostrings, drosophila2probe, RUnit
