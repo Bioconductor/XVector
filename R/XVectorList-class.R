@@ -27,25 +27,25 @@ setClass("XVectorList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### vertical_slot_names()
+### parallel_slot_names()
 ###
 
-### Combine the new "vertical slots" with those of the parent class. Make
-### sure to put the new vertical slots **first**. See R/bindROWS.R file in
-### the S4Vectors package for what slots should or should not be considered
-### "vertical".
+### Combine the new "parallel slots" with those of the parent class. Make
+### sure to put the new parallel slots **first**. See R/Vector-class.R file
+### in the S4Vectors package for what slots should or should not be considered
+### "parallel".
 
 ### Ugly workaround a serious callNextMethod inefficiency reported here:
 ###   https://bugs.r-project.org/bugzilla/show_bug.cgi?id=16974
-.GroupedIRanges_vertical_slot_names <-
-    c("group", vertical_slot_names(new("IRanges")))
+.GroupedIRanges_parallel_slot_names <-
+    c("group", parallel_slot_names(new("IRanges")))
 
-setMethod("vertical_slot_names", "GroupedIRanges",
+setMethod("parallel_slot_names", "GroupedIRanges",
     #function(x) c("group", callNextMethod())
-    function(x) .GroupedIRanges_vertical_slot_names
+    function(x) .GroupedIRanges_parallel_slot_names
 )
 
-setMethod("vertical_slot_names", "XVectorList",
+setMethod("parallel_slot_names", "XVectorList",
     function(x) c("ranges", callNextMethod())
 )
 
