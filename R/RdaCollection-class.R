@@ -2,6 +2,10 @@
 ### RdaCollection objects
 ### -------------------------------------------------------------------------
 ###
+### June 2020: THE RdaCollection CLASS IS SUPERSEDED BY THE RdsCollection
+### CLASS!
+### TODO: Deprecate the RdaCollection class.
+###
 ### An RdaCollection object points to a collection of serialized R objects
 ### stored as 1 object per rda file, all located in the same folder on the
 ### file system. In addition the name of each rda file must be <objname>.rda,

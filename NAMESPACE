@@ -1,7 +1,9 @@
 useDynLib(XVector)
 
 import(methods)
-importFrom(utils, download.file)
+importFrom(utils, relist, download.file)
+importFrom(tools, file_path_as_absolute)
+
 import(zlibbioc)
 import(BiocGenerics)
 import(S4Vectors)
@@ -19,7 +21,8 @@ exportClasses(
     XVector, XRaw, XInteger, XDouble,
     GroupedIRanges, XVectorList, XRawList,
     XIntegerViews,
-    RdaCollection
+    RdaCollection,
+    RdsCollection
 )
 
 
@@ -42,26 +45,34 @@ export(
 ###
 
 exportMethods(
+    ## Methods for generics defined in the base package:
     length, 
     names, "names<-",
     "[", "[<-", "[[", "[[<-",
     rev,
     as.vector, as.integer, as.numeric, as.raw, as.data.frame,
     toString,
-    coerce,
     c,
-    show,
     "==", "!=", "<=",
     duplicated, match,
     order, rank, is.unsorted,
+
+    ## Methods for generics defined in the methods package:
+    show, coerce,
+
+    ## Methods for generics defined in the utils package:
     relist,
-    width,
+
+    ## Methods for generics defined in the BiocGenerics package:
     updateObject,
+    width,
+    path,
 
     ## Methods for generics defined in the S4Vectors package:
     showAsCell,
-    parallel_slot_names,
     bindROWS,
+    extractROWS, getListElement,
+    parallel_slot_names,
     pcompare,
     elementNROWS,
     relistToClass,
@@ -94,7 +105,8 @@ export(
     XRaw, XInteger, XDouble, XNumeric,
     XVectorList,
     unsplit_list_of_XVectorList,
-    RdaCollection
+    RdaCollection,
+    RdsCollection
 )
 
 
