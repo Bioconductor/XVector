@@ -70,9 +70,9 @@ setMethod("parallel_slot_names", "RdsCollection",
         return(paste0(what, " cannot contain NAs"))
 
     ## Check extension.
-    suffix_end <- nchar(filenames)
-    suffix_start <- suffix_end - nchar(.RDS_FILEEXT) + 1L
-    suffixes <- substr(filenames, suffix_start, suffix_end)
+    suffix_ends <- nchar(filenames)
+    suffix_starts <- suffix_ends - nchar(.RDS_FILEEXT) + 1L
+    suffixes <- substr(filenames, suffix_starts, suffix_ends)
     if (!all(suffixes == .RDS_FILEEXT))
         return(paste0("all filenames in ", what, " must have ",
                       "file extension \"", .RDS_FILEEXT, "\""))
@@ -163,8 +163,9 @@ RdsCollection <- function(path=".", filenames=NULL)
     names <- names(filenames)
     if (is.null(names)) {
         ## Infer names from the filenames.
-        end <- nchar(filenames) - nchar(.RDS_FILEEXT)
-        names(filenames) <- substr(filenames, 1L, end)
+        noext_ends <- nchar(filenames) - nchar(.RDS_FILEEXT)
+        noext_filenames <- substr(filenames, 1L, noext_ends)
+        names(filenames) <- noext_filenames
         check <- TRUE
     } else {
         msg <- .validate_filenames_names(names, what="'filenames'")
@@ -204,7 +205,7 @@ setMethod("getListElement", "RdsCollection",
     function(x, i, exact=TRUE)
     {
         i <- normalizeDoubleBracketSubscript(i, x, exact=exact)
-        readRDS(file.path(x@dirpath, x@filenames[[i]]))
+        readRDS(file.path(path(x), x@filenames[[i]]))
     }
 )
 
