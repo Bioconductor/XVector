@@ -5,7 +5,7 @@ Description: Provides memory efficient S4 classes for storing sequences
 Version: 0.29.3
 Encoding: UTF-8
 Author: Hervé Pagès and Patrick Aboyoun
-Maintainer: Hervé Pagès <hpages@fredhutch.org>
+Maintainer: Hervé Pagès <hpages.on.github@gmail.com>
 biocViews: Infrastructure, DataRepresentation
 Depends: R (>= 2.8.0), methods, BiocGenerics (>= 0.19.2),
 	S4Vectors (>= 0.27.12), IRanges (>= 2.23.9)
