@@ -17,6 +17,9 @@ setClass("SharedVector",
         ## is used for automatic uncaching of the sequences of a BSgenome
         ## object.
         .link_to_cached_object="environment"
+    ),
+    prototype(
+        .link_to_cached_object=new.env(hash=FALSE, parent=emptyenv())
     )
 )
 
