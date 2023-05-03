@@ -48,22 +48,19 @@
   and \code{i} can be a numeric or logical vector.
 
   \describe{
-    \item{}{
-      \code{x[[i]]}:
+    \item{\code{x[[i]]}:}{
       Extract a view as an \link{XDouble} object.
       \code{i} must be a single numeric value (a numeric vector of length 1).
       Can't be used for extracting a view that is "out of limits" (raise an
       error). The returned object has the same \link{XDouble} subtype as
       \code{subject(x)}.
     }
-    \item{}{
-      \code{e1 == e2}:
+    \item{\code{e1 == e2}:}{
       A vector of logicals indicating the result of the view by
       view comparison. The views in the shorter of the two XDoubleViews
       object being compared are recycled as necessary.
     }
-    \item{}{
-      \code{e1 != e2}:
+    \item{\code{e1 != e2}:}{
       Equivalent to \code{!(e1 == e2)}.
     }
   }

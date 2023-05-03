@@ -84,8 +84,7 @@
   In the code snippets below, \code{x} is an XVector object.
 
   \describe{
-    \item{}{
-      \code{subseq(x, start=NA, end=NA, width=NA)}:
+    \item{\code{subseq(x, start=NA, end=NA, width=NA)}:}{
       Extract the subsequence from \code{x} specified by \code{start},
       \code{end} and \code{width}.
       The supplied start/end/width values are solved by a call to
@@ -104,8 +103,7 @@
       in time and memory does not depend on the length of the original sequence
       or on the length of the subsequence to extract).
     }
-    \item{}{
-      \code{subseq(x, start=NA, end=NA, width=NA) <- value}:
+    \item{\code{subseq(x, start=NA, end=NA, width=NA) <- value}:}{
       Replace the subsequence specified on the left (i.e. the subsequence
       in \code{x} specified by \code{start}, \code{end} and \code{width})
       by \code{value}.
