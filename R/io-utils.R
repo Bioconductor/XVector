@@ -53,7 +53,7 @@ close_filexp <- function(filexp)
     for (i in seq_len(length(filepath2))) {
         fp <- filepath2[i]
         con <- file(fp)
-        filetype[i] <- summary(con)$class
+        filetype[i] <- base::summary(con)$class
         close(con)
         if (!(filetype[i] %in% c("file", "gzfile")))
             stop(wmsg("file \"", filepath[i], "\" ",
