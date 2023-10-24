@@ -5,7 +5,7 @@ Description: Provides memory efficient S4 classes for storing sequences
 biocViews: Infrastructure, DataRepresentation
 URL: https://bioconductor.org/packages/XVector
 BugReports: https://github.com/Bioconductor/XVector/issues
-Version: 0.42.0
+Version: 0.43.0
 License: Artistic-2.0
 Encoding: UTF-8
 Author: Hervé Pagès and Patrick Aboyoun
