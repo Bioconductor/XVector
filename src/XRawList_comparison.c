@@ -242,7 +242,7 @@ SEXP XRawList_rank(SEXP x, SEXP ties_method)
 		get_min_rank_from_order(oo, ans_length, INTEGER(ans),
 					&x_holder);
 	} else {
-		error("ties_method \"%s\" is not supported", ties_method);
+		error("ties_method \"%s\" is not supported", method);
 	}
 	UNPROTECT(1);
 	return ans;
