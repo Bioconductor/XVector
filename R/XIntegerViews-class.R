@@ -247,3 +247,16 @@ setMethod("==", signature(e1="integer", e2="XIntegerViews"),
     function(e1, e2) e2 == e1
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### viewApply() method
+###
+
+setMethod("viewApply", "XIntegerViews",
+    function(X, FUN, ..., simplify = TRUE)
+    {
+        FUN_WRAPPER <- function(x, ...) FUN(as.integer(x), ...)
+        callNextMethod(X, FUN_WRAPPER, ..., simplify=simplify)
+    }
+)
+

@@ -48,7 +48,7 @@
         function(xx) {
             if (na.rm_is_missing) {
                 FUN(as.vector(xx))
-	    } else {
+            } else {
                 FUN(as.vector(xx), na.rm=na.rm)
             }
         },
@@ -72,13 +72,14 @@ test_XIntegerViews_summarization <- function() {
         target <- .naive_view_summary(mean, x, na.rm=na.rm, res.type="double")
         current <- viewMeans(x, na.rm=na.rm)
         checkIdentical(target, current)
-        ## viewWhichMins() and viewWhichMaxs() return indices with respect
-        ## to the subject. Terrible choice but that's what it is...
-        target <- .naive_view_summary(.which.min2, x, na.rm=na.rm) + start(x) - 1L
-        current <- viewWhichMins(x, na.rm=na.rm)
+        ## Oh my... it looks like viewWhichMins() and viewWhichMaxs()
+        ## return indices with respect to the subject. What a choice!
+        offsets <- start(x) - 1L
+        target <- .naive_view_summary(.which.min2, x, na.rm=na.rm)
+        current <- viewWhichMins(x, na.rm=na.rm) - offsets
         checkIdentical(target, current)
-        target <- .naive_view_summary(.which.max2, x, na.rm=na.rm) + start(x) - 1L
-        current <- viewWhichMaxs(x, na.rm=na.rm)
+        target <- .naive_view_summary(.which.max2, x, na.rm=na.rm)
+        current <- viewWhichMaxs(x, na.rm=na.rm) - offsets
         checkIdentical(target, current)
     }
 }
@@ -88,28 +89,33 @@ test_XDoubleViews_summarization <- function() {
                 start=c(1:8, 8), end=c(2:8, 8, 7), names=LETTERS[1:9])
     x2 <- Views(rnorm(100), IRanges(c(1, 20, 50, 80), width=c(5, 10, 15, 18)))
     for (x in list(x1, x2)) {
-      for (na.rm in c(FALSE, TRUE)) {
-        target <- .naive_view_summary(.min2, x, na.rm=na.rm, res.type="double")
-        current <- viewMins(x, na.rm=na.rm)
-        checkEqualsNumeric(target, current)
-        target <- .naive_view_summary(.max2, x, na.rm=na.rm, res.type="double")
-        current <- viewMaxs(x, na.rm=na.rm)
-        checkEqualsNumeric(target, current)
-        target <- .naive_view_summary(sum, x, na.rm=na.rm, res.type="double")
-        current <- viewSums(x, na.rm=na.rm)
-        checkEqualsNumeric(target, current)
-        target <- .naive_view_summary(mean, x, na.rm=na.rm, res.type="double")
-        current <- viewMeans(x, na.rm=na.rm)
-        checkEqualsNumeric(target, current)
-        ## viewWhichMins() and viewWhichMaxs() return indices with respect
-        ## to the subject. Terrible choice but that's what it is...
-        target <- .naive_view_summary(.which.min2, x, na.rm=na.rm) + start(x) - 1L
-        current <- viewWhichMins(x, na.rm=na.rm)
-        checkIdentical(target, current)
-        target <- .naive_view_summary(.which.max2, x, na.rm=na.rm) + start(x) - 1L
-        current <- viewWhichMaxs(x, na.rm=na.rm)
-        checkIdentical(target, current)
-      }
+        for (na.rm in c(FALSE, TRUE)) {
+            target <- .naive_view_summary(.min2, x, na.rm=na.rm,
+                                          res.type="double")
+            current <- viewMins(x, na.rm=na.rm)
+            checkEqualsNumeric(target, current)
+            target <- .naive_view_summary(.max2, x, na.rm=na.rm,
+                                          res.type="double")
+            current <- viewMaxs(x, na.rm=na.rm)
+            checkEqualsNumeric(target, current)
+            target <- .naive_view_summary(sum, x, na.rm=na.rm,
+                                          res.type="double")
+            current <- viewSums(x, na.rm=na.rm)
+            checkEqualsNumeric(target, current)
+            target <- .naive_view_summary(mean, x, na.rm=na.rm,
+                                          res.type="double")
+            current <- viewMeans(x, na.rm=na.rm)
+            checkEqualsNumeric(target, current)
+            ## Oh my... it looks like viewWhichMins() and viewWhichMaxs()
+            ## return indices with respect to the subject. What a choice!
+            offsets <- start(x) - 1L
+            target <- .naive_view_summary(.which.min2, x, na.rm=na.rm)
+            current <- viewWhichMins(x, na.rm=na.rm) - offsets
+            checkIdentical(target, current)
+            target <- .naive_view_summary(.which.max2, x, na.rm=na.rm)
+            current <- viewWhichMaxs(x, na.rm=na.rm) - offsets
+            checkIdentical(target, current)
+        }
     }
 }
 

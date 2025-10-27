@@ -247,3 +247,16 @@ setMethod("==", signature(e1="numeric", e2="XDoubleViews"),
     function(e1, e2) e2 == e1
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### viewApply() method
+###
+
+setMethod("viewApply", "XDoubleViews",
+    function(X, FUN, ..., simplify = TRUE)
+    {
+        FUN_WRAPPER <- function(x, ...) FUN(as.double(x), ...)
+        callNextMethod(X, FUN_WRAPPER, ..., simplify=simplify)
+    }
+)
+

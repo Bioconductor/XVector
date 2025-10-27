@@ -19,6 +19,7 @@
 \alias{==,XDouble,XDoubleViews-method}
 \alias{==,numeric,XDoubleViews-method}
 
+\alias{viewApply,XDoubleViews-method}
 
 \title{The XDoubleViews class}
 

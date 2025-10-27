@@ -1,13 +1,21 @@
 ## TODO: Add more tests.
 
-test_XDoubleViews_equality <- function() {
-  x <- rnorm(100)
-  bounds <- IRanges(c(1, 20, 50, 80), width=c(5, 10, 15, 18))
-  bounds2 <- IRanges(c(10, 30, 50, 80), width=c(5, 8, 15, 18))
-  v <- Views(x, bounds)
-  v2 <- Views(x, bounds2)
-  
-  checkTrue(all(v == v))
-  checkTrue(all((v != v2) == c(TRUE, TRUE, FALSE, FALSE)))
+test_XIntegerViews_viewApply <- function() {
+    x <- Views(c(4L, NA, NA, 2:5),
+               start=1:7, end=c(2:6, 6, 6), names=LETTERS[1:7])
+
+    target <- viewSums(x)
+    current1 <- viewApply(x, sum)
+    checkIdentical(target, current1)
+    current2 <- suppressWarnings(viewApply(x, sum, simplify=FALSE))
+    checkTrue(is(current2, "CompressedIntegerList"))
+    checkIdentical(unlist(current2), current1)
+
+    target <- viewMeans(x)
+    current1 <- viewApply(x, mean)
+    checkEqualsNumeric(target, current1)
+    current2 <- suppressWarnings(viewApply(x, mean, simplify=FALSE))
+    checkTrue(is(current2, "CompressedNumericList"))
+    checkIdentical(unlist(current2), current1)
 }
 
