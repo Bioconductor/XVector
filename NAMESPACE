@@ -2,6 +2,7 @@ useDynLib(XVector)
 
 import(methods)
 importFrom(utils, relist, download.file)
+importFrom(stats, setNames)
 importFrom(tools, file_path_as_absolute)
 
 import(BiocGenerics)

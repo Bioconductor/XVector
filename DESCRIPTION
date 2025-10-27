@@ -5,14 +5,14 @@ Description: Provides memory efficient S4 classes for storing sequences
 biocViews: Infrastructure, DataRepresentation
 URL: https://bioconductor.org/packages/XVector
 BugReports: https://github.com/Bioconductor/XVector/issues
-Version: 0.49.1
+Version: 0.49.2
 License: Artistic-2.0
 Encoding: UTF-8
 Author: Hervé Pagès and Patrick Aboyoun
 Maintainer: Hervé Pagès <hpages.on.github@gmail.com>
 Depends: R (>= 4.0.0), methods, BiocGenerics (>= 0.37.0),
 	S4Vectors (>= 0.27.12), IRanges (>= 2.23.9)
-Imports: methods, utils, tools, BiocGenerics, S4Vectors, IRanges
+Imports: methods, utils, stats, tools, BiocGenerics, S4Vectors, IRanges
 LinkingTo: S4Vectors, IRanges
 Suggests: Biostrings, drosophila2probe, RUnit
 Collate: io-utils.R
