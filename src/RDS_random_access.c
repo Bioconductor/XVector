@@ -793,7 +793,7 @@ SEXP RDS_extract_subarray(SEXP filexp, SEXP dim, SEXP index)
 	SEXPTYPE x_type;
 	R_xlen_t x_len, dimprod;
 	int ndim, i;
-	SEXP subscript, ans;
+	SEXP subscript;
 
 	/* Get type and length of serialized array. */
 	x_type = extract_top_level_object_type(filexp);
